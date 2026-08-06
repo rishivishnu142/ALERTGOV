@@ -116,16 +116,23 @@ export default function TalukReports() {
                 <Pie
                   data={ANALYTICS_DATA.incidentsByType}
                   cx="50%" cy="50%"
-                  innerRadius={60} outerRadius={100}
+                  innerRadius={65} outerRadius={100}
                   paddingAngle={5}
                   dataKey="value"
+                  stroke="#ffffff"
+                  strokeWidth={3}
+                  cornerRadius={6}
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  labelLine={{ stroke: 'var(--border)', strokeWidth: 1 }}
                 >
                   {ANALYTICS_DATA.incidentsByType.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => [`${value} Incidents`, 'Count']} />
+                <Tooltip 
+                  formatter={(value) => [`${value} Incidents`, 'Count']} 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} 
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -136,10 +143,13 @@ export default function TalukReports() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={ANALYTICS_DATA.incidentsBySeverity} layout="vertical" margin={{ left: 40 }}>
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
-                <XAxis type="number" />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'var(--bg-muted)' }} />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                <XAxis type="number" tick={{ fill: 'var(--text-muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-secondary)', fontSize: 12, fontWeight: 500 }} />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(0,0,0,0.02)' }} 
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} 
+                />
+                <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                   {ANALYTICS_DATA.incidentsBySeverity.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
@@ -152,12 +162,21 @@ export default function TalukReports() {
         <Card title="Incident Volume (Last 7 Days)" className="span-2" style={{ gridColumn: '1 / -1' }}>
           <div style={{ height: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={ANALYTICS_DATA.incidentsByDay}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip cursor={{ fill: 'var(--bg-muted)' }} />
-                <Bar dataKey="incidents" fill="var(--primary)" radius={[4, 4, 0, 0]} maxBarSize={50} />
+              <BarChart data={ANALYTICS_DATA.incidentsByDay} margin={{ top: 20 }}>
+                <defs>
+                  <linearGradient id="colorIncidents" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--primary)" stopOpacity={1}/>
+                    <stop offset="100%" stopColor="var(--primary-light)" stopOpacity={0.6}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} dx={-10} />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+                  contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
+                />
+                <Bar dataKey="incidents" fill="url(#colorIncidents)" radius={[6, 6, 0, 0]} maxBarSize={45} />
               </BarChart>
             </ResponsiveContainer>
           </div>

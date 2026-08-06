@@ -1,12 +1,13 @@
 import GISMap from '../../components/Map/GISMap';
 import { Card } from '../../components/common/UIComponents';
+import { Map } from 'lucide-react';
 
 export default function StateMap() {
   return (
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">🗺️ State Heatmap</div>
+          <div className="page-title"><Map size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> State Heatmap</div>
           <div className="page-subtitle">Cross-district risk and active disaster visualization</div>
         </div>
       </div>

@@ -3,7 +3,7 @@ import GISMap from '../../components/Map/GISMap';
 import { RESOURCES } from '../../data/mockData';
 import { useIncidents } from '../../context/LiveContext';
 import { Card } from '../../components/common/UIComponents';
-import { Layers } from 'lucide-react';
+import { Layers, Map } from 'lucide-react';
 
 export default function DistrictGISMap() {
   const [showResources, setShowResources] = useState(true);
@@ -21,7 +21,7 @@ export default function DistrictGISMap() {
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">🗺️ District GIS Map</div>
+          <div className="page-title"><Map size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> District GIS Map</div>
           <div className="page-subtitle">Live multi-incident and resource tracking across the district</div>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>

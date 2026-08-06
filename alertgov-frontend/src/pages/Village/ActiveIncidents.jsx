@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { INCIDENTS } from '../../data/mockData';
-import { SeverityBadge, StatusBadge, CategoryBadge, Timeline, AIPanel, Modal } from '../../components/common/UIComponents';
-import { Search, Filter, MapPin, Clock, Eye, ClipboardList } from 'lucide-react';
+import { SeverityBadge, StatusBadge, CategoryBadge } from '../../components/common/UIComponents';
+import { Search, Filter, MapPin, Clock, Eye, ClipboardList, Download, FileText } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function ActiveIncidents() {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
-  const [selected, setSelected] = useState(null);
+  const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const filtered = INCIDENTS.filter(i =>
     (filter === 'All' || i.severity === filter || i.status === filter) &&
@@ -17,20 +20,36 @@ export default function ActiveIncidents() {
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title"><ClipboardList size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Active Incidents</div>
-          <div className="page-subtitle">All incidents you've reported — track real-time status</div>
+          <div className="page-title"><ClipboardList size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Incident Registry & Management', 'சம்பவ பதிவேடு மற்றும் மேலாண்மை')}</div>
+          <div className="page-subtitle">{t('Comprehensive registry of all reported incidents and their current statuses', 'அறிக்கையிடப்பட்ட அனைத்து சம்பவங்கள் மற்றும் அவற்றின் தற்போதைய நிலைகளின் விரிவான பதிவேடு')}</div>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          {['All', 'High', 'Severe', 'Extremely Severe'].map(f => (
-            <button key={f} className={`btn btn-sm ${filter === f ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilter(f)}>{f}</button>
-          ))}
+          <button className="btn btn-secondary btn-sm" onClick={() => navigate('/village/export-pdf')}>
+            <FileText size={14} style={{ marginRight: '6px' }} /> {t('Export PDF', 'PDF ஏற்றுமதி')}
+          </button>
+          <button className="btn btn-secondary btn-sm" onClick={() => alert(t('Exporting to CSV...', 'CSV க்கு ஏற்றுமதி செய்கிறது...'))}>
+            <Download size={14} style={{ marginRight: '6px' }} /> {t('Export CSV', 'CSV ஏற்றுமதி')}
+          </button>
         </div>
       </div>
 
-      {/* Search */}
-      <div className="search-bar" style={{ marginBottom: '16px', maxWidth: '100%' }}>
-        <Search size={14} color="var(--text-muted)" />
-        <input placeholder="Search by incident ID, title, location..." value={search} onChange={e => setSearch(e.target.value)} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '16px', flexWrap: 'wrap' }}>
+        {/* Search */}
+        <div className="search-bar" style={{ flex: 1, minWidth: '300px', margin: 0 }}>
+          <Search size={14} color="var(--text-muted)" />
+          <input placeholder={t('Search by incident ID, title, location...', 'சம்பவ எண், தலைப்பு, இடம் மூலம் தேடவும்...')} value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+
+        {/* Filters */}
+        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <Filter size={14} color="var(--text-muted)" />
+          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>{t('Filter:', 'வடிகட்டி:')}</span>
+          {['All', 'High', 'Severe', 'Extremely Severe'].map(f => (
+            <button key={f} className={`btn btn-sm ${filter === f ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilter(f)}>
+              {f === 'All' ? t('All', 'அனைத்தும்') : f === 'High' ? t('High', 'உயர்') : f === 'Severe' ? t('Severe', 'தீவிரமானது') : t('Extremely Severe', 'மிகவும் தீவிரமானது')}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Table */}
@@ -39,14 +58,14 @@ export default function ActiveIncidents() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Incident ID</th>
-                <th>Title</th>
-                <th>Category</th>
-                <th>Severity</th>
-                <th>Status</th>
-                <th>Location</th>
-                <th>Reported At</th>
-                <th>Actions</th>
+                <th>{t('Incident ID', 'சம்பவ எண்')}</th>
+                <th>{t('Title', 'தலைப்பு')}</th>
+                <th>{t('Category', 'வகை')}</th>
+                <th>{t('Severity', 'தீவிரம்')}</th>
+                <th>{t('Status', 'நிலை')}</th>
+                <th>{t('Location', 'இடம்')}</th>
+                <th>{t('Reported At', 'அறிக்கையிடப்பட்டது')}</th>
+                <th>{t('Actions', 'நடவடிக்கைகள்')}</th>
               </tr>
             </thead>
             <tbody>
@@ -59,17 +78,17 @@ export default function ActiveIncidents() {
                   <td><StatusBadge status={inc.status} /></td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                      <MapPin size={10} /> {inc.location.address.split(',')[0]}
+                      <MapPin size={10} /> {inc.village || inc.taluk || inc.district}
                     </div>
                   </td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, monospace' }}>
-                      <Clock size={10} /> {new Date(inc.reportedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      <Clock size={10} /> {new Date(inc.date || inc.reportedAt || new Date()).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </td>
                   <td>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setSelected(inc)}>
-                      <Eye size={13} /> View
+                    <button className="btn btn-ghost btn-sm" onClick={() => navigate('/village/update-status', { state: { incidentId: inc.id } })}>
+                      <Eye size={13} /> {t('View', 'காண்க')}
                     </button>
                   </td>
                 </tr>
@@ -78,39 +97,6 @@ export default function ActiveIncidents() {
           </table>
         </div>
       </div>
-
-      {/* Detail Modal */}
-      <Modal open={!!selected} onClose={() => setSelected(null)} title={selected?.title}>
-        {selected && (
-          <div>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              <SeverityBadge severity={selected.severity} />
-              <StatusBadge status={selected.status} />
-              <CategoryBadge category={selected.category} />
-              <span className="badge badge-gray font-mono">{selected.id}</span>
-            </div>
-
-            <AIPanel summary={selected.aiSummary} recommendation={selected.aiRecommendation} />
-
-            <div className="grid-2" style={{ marginBottom: '16px' }}>
-              <div>
-                <div className="section-title"><MapPin size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> Location</div>
-                <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{selected.location.address}</p>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, monospace' }}>
-                  {selected.location.lat}, {selected.location.lng}
-                </p>
-              </div>
-              <div>
-                <div className="section-title">👥 Population at Risk</div>
-                <p style={{ fontSize: '22px', fontWeight: 800, color: 'var(--severity-severe)' }}>{selected.populationAtRisk?.toLocaleString()}</p>
-              </div>
-            </div>
-
-            <div className="section-title">📅 Status Timeline</div>
-            <Timeline events={selected.timeline} />
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }

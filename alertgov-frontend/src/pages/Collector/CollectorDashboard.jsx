@@ -1,17 +1,24 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { INCIDENTS } from '../../data/mockData';
+import { IncidentService } from '../../api';
 import { ShieldAlert, ArrowRight, Activity, MapPin, Radio, Brain, Route, AlertTriangle, Cpu, Zap, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
-const GradientCard = ({ gradient, icon, label, value, sub }) => (
-  <div className="gradient-stat-card" style={{ background: gradient }}>
-    <div className="stat-icon-wrapper">{icon}</div>
-    <div className="stat-label">{label}</div>
-    <div className="stat-value">{value}</div>
-    {sub && <div className="stat-sub">{sub}</div>}
-  </div>
-);
+const GradientCard = ({ gradient, label, value, sub }) => {
+  let color = 'primary';
+  if (gradient.includes('gradient-5') || gradient.includes('gradient-warning')) color = 'warning';
+  else if (gradient.includes('gradient-success') || gradient.includes('gradient-4')) color = 'success';
+  else if (gradient.includes('gradient-danger') || gradient.includes('gradient-2')) color = 'danger';
+  
+  return (
+    <div className={`stat-card border-${color}`}>
+      <div className="stat-label">{label}</div>
+      <div className="stat-value">{value}</div>
+      {sub && <div className={`stat-sub ${color === 'danger' ? 'text-danger' : ''}`}>{sub}</div>}
+    </div>
+  );
+};
 
 const SevBadge = ({ severity }) => {
   const c = severity === 'Low' ? 'green' : severity === 'Medium' ? 'orange' : 'red';
@@ -21,9 +28,24 @@ const SevBadge = ({ severity }) => {
 export default function CollectorDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [incidents, setIncidents] = useState([]);
+  
+  useEffect(() => {
+    const fetchIncidents = async () => {
+      try {
+        const data = await IncidentService.getAllIncidents();
+        setIncidents(data);
+      } catch(e) {
+        console.error('Failed to fetch incidents', e);
+      }
+    };
+    fetchIncidents();
+    const interval = setInterval(fetchIncidents, 5000); // Poll every 5s for real-time feel
+    return () => clearInterval(interval);
+  }, []);
 
-  const criticalIncidents = INCIDENTS.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity));
-  const broadcastPending = INCIDENTS.filter(i => i.status === 'Waiting for Collector').length;
+  const criticalIncidents = incidents.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity) && i.status !== 'Resolved');
+  const broadcastPending = incidents.filter(i => i.status === 'Waiting for Collector').length;
   const evacuations = 1;
   const peopleAtRisk = 12400;
 
@@ -113,12 +135,14 @@ export default function CollectorDashboard() {
       showCancelButton: true,
       confirmButtonText: 'Yes, Approve & Move to Broadcast Queue',
       cancelButtonText: 'Cancel'
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        inc.broadcastStatus = 'Pending Dispatch';
-        Swal.fire('Approved!', 'The incident has been added to the Broadcast Queue.', 'success').then(() => {
-          navigate(`/collector/broadcast-approval?id=${inc.id}`);
-        });
+        try {
+          await IncidentService.updateIncidentStatus(inc.id, 'Resolved', 'collector');
+          Swal.fire('Approved!', 'The incident has been resolved and broadcast dispatched.', 'success');
+        } catch (err) {
+          Swal.fire('Error', 'Failed to approve incident.', 'error');
+        }
       }
     });
   };
@@ -210,17 +234,20 @@ export default function CollectorDashboard() {
           {/* District Health */}
           <div className="card" style={{ background: 'var(--gradient-primary)', border: 'none' }}>
             <div style={{ padding: 24, color: 'white', position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', top: -30, right: -30, width: 120, height: 120, background: 'rgba(255,255,255,0.08)', borderRadius: '50%' }} />
               <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: 1.2, opacity: 0.65, marginBottom: 14, textTransform: 'uppercase' }}>
                 District Overall Status
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 14 }}>
-                <div style={{ width: 72, height: 72, borderRadius: '50%', border: '6px solid rgba(255,255,255,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, fontWeight: 900 }}>
-                  74
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 2 }}>
+                  <span style={{ fontSize: 48, fontWeight: 900, lineHeight: 1, letterSpacing: '-1.5px' }}>74</span>
+                  <span style={{ fontSize: 14, fontWeight: 700, opacity: 0.6, marginLeft: 2 }}>/100</span>
                 </div>
-                <div>
-                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 2 }}>Elevated Risk</div>
-                  <div style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.5 }}>1 critical incident driving risk. Resources at 45%.</div>
+                <div style={{ paddingLeft: 16, borderLeft: '2px solid rgba(255,255,255,0.2)' }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 2, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <AlertTriangle size={14} color="#FF9800" />
+                    Elevated Risk
+                  </div>
+                  <div style={{ fontSize: 12, opacity: 0.75, lineHeight: 1.4 }}>1 critical incident driving risk.<br/>Resources at 45%.</div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10 }}>

@@ -1,19 +1,30 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 export default function PrintReport() {
   const [searchParams] = useSearchParams();
-  const incident = searchParams.get('incident') || 'INC-2026-015';
+  const incident = searchParams.get('incident') || 'INC-2026-NEW';
   const veo = searchParams.get('veo') || 'Village Emergency Operator';
-  const date = searchParams.get('date') || '2026-07-15';
-  const time = searchParams.get('time') || '09:20 AM';
+  const date = searchParams.get('date') || new Date().toISOString().split('T')[0];
+  const time = searchParams.get('time') || new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-  // Trigger print dialog on load
+  const [incidentData, setIncidentData] = useState(null);
+
+  // Load from localStorage and trigger print dialog
   useEffect(() => {
+    const stored = localStorage.getItem('latestIncident');
+    if (stored) {
+      try {
+        setIncidentData(JSON.parse(stored));
+      } catch (e) {
+        console.error('Error parsing stored incident', e);
+      }
+    }
+    
     // Slight delay to ensure images are loaded
     const timer = setTimeout(() => {
       window.print();
-    }, 500);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -31,36 +42,35 @@ export default function PrintReport() {
           </div>
 
           <div style={{ fontSize: '10px', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #000', paddingBottom: '10px', marginBottom: '20px' }}>
-            <strong>Reference No. : TAL/OML/FIRE/2026/015</strong>
+            <strong>Reference No. : TAL/OML/{incidentData?.category ? incidentData.category.toUpperCase().substring(0,4) : 'GEN'}/2026/001</strong>
             <strong>Date : {date}</strong>
           </div>
 
           <div style={{ fontSize: '11px', lineHeight: '1.6' }}>
-            <p><strong>From</strong><br/>Taluk Officer,<br/>Omalur Taluk,<br/>Salem District.</p>
-            <p style={{ marginTop: '20px' }}><strong>To</strong><br/>The District Collector,<br/>Salem District.</p>
+            <p><strong>From</strong><br/>Taluk Officer,<br/>Local Taluk,<br/>District.</p>
+            <p style={{ marginTop: '20px' }}><strong>To</strong><br/>The District Collector,<br/>District Collectorate.</p>
             <p style={{ marginTop: '20px' }}>
-              <strong>Subject:</strong> Submission of Incident Report regarding {incident} at SIDCO Industrial Estate, Omalur Taluk.
+              <strong>Subject:</strong> Submission of Incident Report regarding {incidentData?.category || 'Emergency'} at Local Village.
             </p>
             <p style={{ marginTop: '20px' }}>Respected Sir,</p>
             <p style={{ textIndent: '20px', textAlign: 'justify' }}>
-              I hereby submit the incident report regarding the {incident} that occurred on {date} at SIDCO Industrial Estate, Omalur Taluk. The report contains the details of the incident, actions taken by various departments, resource deployment, and recommendations for further action.
+              I hereby submit the incident report regarding the {incidentData?.category || 'Emergency'} that occurred on {date}. The report contains the details of the incident, actions taken by various departments, resource deployment, and recommendations for further action.
             </p>
           </div>
 
           <div style={{ marginTop: '40px', fontSize: '11px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
             <div style={{ width: '80px', height: '80px', border: '2px solid #2563EB', borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#2563EB', textAlign: 'center', fontSize: '9px', fontWeight: 'bold' }}>
               <span>TALUK OFFICE</span>
-              <span>★ OMALUR ★</span>
-              <span>SALEM DT.</span>
+              <span>★ LOCAL ★</span>
             </div>
             <div style={{ textAlign: 'center' }}>
               <p>Yours faithfully,</p>
               <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/John_Hancock_signature.svg" alt="Signature" style={{ width: '100px', margin: '10px 0' }} />
-              <p>Taluk Officer,<br/>Omalur Taluk.</p>
+              <p>Taluk Officer.</p>
             </div>
           </div>
           
-          <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '10px', paddingTop: '20px' }}>Page 1 of 6</div>
+          <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '10px', paddingTop: '20px' }}>Page 1 of 3</div>
         </div>
 
         {/* Middle Column */}
@@ -69,92 +79,63 @@ export default function PrintReport() {
           <table className="info-table">
             <tbody>
               <tr><td><strong>Incident ID</strong></td><td>: {incident}</td></tr>
-              <tr><td><strong>Type</strong></td><td>: Warehouse Fire</td></tr>
+              <tr><td><strong>Type</strong></td><td>: {incidentData?.category || 'General'}</td></tr>
               <tr><td><strong>Date</strong></td><td>: {date}</td></tr>
               <tr><td><strong>Time</strong></td><td>: {time}</td></tr>
-              <tr><td><strong>Village</strong></td><td>: Omalur</td></tr>
-              <tr><td><strong>Taluk</strong></td><td>: Omalur</td></tr>
-              <tr><td><strong>District</strong></td><td>: Salem</td></tr>
-              <tr><td><strong>Location</strong></td><td>: SIDCO Industrial Estate</td></tr>
-              <tr><td><strong>GPS Coordinates</strong></td><td>: 11.6645, 78.1460</td></tr>
-              <tr><td><strong>Severity</strong></td><td>: High</td></tr>
-              <tr><td><strong>Status</strong></td><td>: Resolved</td></tr>
+              <tr><td><strong>Village</strong></td><td>: Local Village</td></tr>
+              <tr><td><strong>GPS Coordinates</strong></td><td>: {incidentData?.lat || '10.9102'}, {incidentData?.lng || '76.9558'}</td></tr>
+              <tr><td><strong>Severity</strong></td><td>: {incidentData?.severity || 'High'}</td></tr>
               <tr><td><strong>Reported By</strong></td><td>: {veo}</td></tr>
             </tbody>
           </table>
 
           <h4 className="section-title" style={{ marginTop: '30px' }}>3. BACKGROUND</h4>
           <p style={{ fontSize: '11px', lineHeight: '1.6', textAlign: 'justify' }}>
-            The incident was first reported by the {veo} after receiving multiple emergency calls from local residents at around {time}. Thick smoke was observed coming from the warehouse located in SIDCO Industrial Estate. The information was immediately forwarded to the Taluk Emergency Control Room and the Fire Department. Weather was clear with no rainfall.
+            {incidentData?.description || 'The incident was first reported by the VEO after receiving emergency calls.'}
+            <br/><br/>
+            <strong>Field Notes:</strong> {incidentData?.fieldNotes || 'None'}
           </p>
 
           <h4 className="section-title" style={{ marginTop: '30px' }}>4. ACTIONS TAKEN</h4>
           <ul style={{ fontSize: '11px', lineHeight: '1.8', paddingLeft: '20px' }}>
             <li>Incident registered in AlertGov AI system.</li>
-            <li>Fire Department informed immediately.</li>
-            <li>Police Department informed and reached the spot.</li>
-            <li>Ambulance services dispatched.</li>
-            <li>Nearby industries and residents alerted.</li>
-            <li>District EOC continuously monitored the incident.</li>
-            <li>Fire brought under control and cooling operations carried out.</li>
-            <li>Situation normalised and incident closed.</li>
+            <li>Initial assessment conducted by Village EOC.</li>
+            <li>Information forwarded to Taluk Office for verification.</li>
+            <li>Collectorate notified through the AI automated pipeline.</li>
           </ul>
 
-          <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '10px', paddingTop: '20px' }}>Page 2 of 6</div>
+          <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '10px', paddingTop: '20px' }}>Page 2 of 3</div>
         </div>
 
         {/* Right Column */}
         <div className="col-3">
-          <h4 className="section-title">8. AI ASSESSMENT</h4>
+          <h4 className="section-title">5. AI ASSESSMENT</h4>
           <table className="info-table" style={{ marginBottom: '15px' }}>
             <tbody>
-              <tr><td><strong>AI Incident Classification</strong></td><td>: Industrial Fire</td></tr>
               <tr><td><strong>AI Severity Score</strong></td><td>: High (8.7/10)</td></tr>
-              <tr><td><strong>AI Risk Level</strong></td><td>: High</td></tr>
+              <tr><td><strong>AI Risk Level</strong></td><td>: {incidentData?.severity || 'High'}</td></tr>
             </tbody>
           </table>
 
-          <div style={{ fontSize: '10px', lineHeight: '1.6' }}>
-            <p><strong>AI Summary</strong><br/>
-            The fire is likely caused due to electrical short circuit in the warehouse. Timely response prevented the fire from spreading to nearby industries. No major casualties reported.</p>
-            
-            <p style={{ marginTop: '15px' }}><strong>AI Predicted Risk</strong><br/>
-            Based on historical data, this industrial zone has moderate fire risk due to high storage of electrical goods and chemicals. Probability of similar incidents in next 30 days: 18%.</p>
-
-            <p style={{ marginTop: '15px' }}><strong>AI Recommendations</strong></p>
-            <ul style={{ paddingLeft: '15px', margin: '5px 0 0 0' }}>
-              <li>Conduct electrical safety inspections in nearby industries.</li>
-              <li>Ensure availability of fire extinguishers and sprinkler systems.</li>
-              <li>Install additional fire hydrants in the industrial estate.</li>
-              <li>Create awareness programmes for workers on fire safety.</li>
-            </ul>
-          </div>
-
-          <h4 className="section-title" style={{ marginTop: '20px' }}>9. PHOTOGRAPHIC EVIDENCE (ANNEXURES)</h4>
+          <h4 className="section-title" style={{ marginTop: '20px' }}>6. PHOTOGRAPHIC EVIDENCE</h4>
           <table className="info-table" style={{ border: 'none', marginBottom: '10px' }}>
             <tbody>
-              <tr><td style={{ border: 'none', padding: '2px 5px' }}>Annexure I</td><td style={{ border: 'none', padding: '2px 5px' }}>: Incident Photographs</td></tr>
-              <tr><td style={{ border: 'none', padding: '2px 5px' }}>Annexure II</td><td style={{ border: 'none', padding: '2px 5px' }}>: Drone Image / Map</td></tr>
-              <tr><td style={{ border: 'none', padding: '2px 5px' }}>Annexure III</td><td style={{ border: 'none', padding: '2px 5px' }}>: CCTV Screenshot (if any)</td></tr>
+              <tr><td style={{ border: 'none', padding: '2px 5px' }}>Annexure I</td><td style={{ border: 'none', padding: '2px 5px' }}>: VEO Incident Photographs</td></tr>
             </tbody>
           </table>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '100%', height: '120px', background: '#f3f4f6', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '12px' }}>[ Evidence Photo 1 ]</div>
-              <div style={{ fontSize: '9px', marginTop: '4px' }}>Photo 1: Fire at the warehouse - Front View</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '100%', height: '120px', background: '#f3f4f6', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '12px' }}>[ Evidence Photo 2 ]</div>
-              <div style={{ fontSize: '9px', marginTop: '4px' }}>Photo 2: Fire Fighting Operations</div>
-            </div>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ width: '100%', height: '120px', background: '#f3f4f6', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '12px' }}>[ Evidence Photo 3 ]</div>
-              <div style={{ fontSize: '9px', marginTop: '4px' }}>Photo 3: Overall View After Fire Brought Under Control</div>
+              {incidentData?.photoBase64 ? (
+                <img src={incidentData.photoBase64} alt="Evidence" style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', border: '1px solid #94a3b8' }} />
+              ) : (
+                <div style={{ width: '100%', height: '120px', background: '#f3f4f6', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '12px' }}>[ No Evidence Provided ]</div>
+              )}
+              <div style={{ fontSize: '9px', marginTop: '4px' }}>Photo 1: Live Capture from Village EOC</div>
             </div>
           </div>
 
-          <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '10px', paddingTop: '10px' }}>Page 3 of 6</div>
+          <div style={{ marginTop: 'auto', textAlign: 'center', fontSize: '10px', paddingTop: '10px' }}>Page 3 of 3</div>
         </div>
       </div>
 

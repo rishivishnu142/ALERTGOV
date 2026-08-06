@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card, AIPanel } from '../../components/common/UIComponents';
-import { Send, AlertTriangle, CloudRain, Droplets, MapPin, CheckCircle, FilePlus } from 'lucide-react';
+import { Send, AlertTriangle, CloudRain, Droplets, MapPin, CheckCircle, FilePlus, Brain } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 const DISTRICTS = ['Coimbatore', 'Chennai', 'Madurai', 'Salem', 'Tiruchirappalli', 'Tirunelveli', 'Erode', 'Cuddalore', 'Nagapattinam'];
@@ -42,7 +42,7 @@ export default function DisasterPrediction() {
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">🧠 AI Disaster Prediction</div>
+          <div className="page-title"><Brain size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> AI Disaster Prediction</div>
           <div className="page-subtitle">Predictive models for weather, floods, and large-scale threats</div>
         </div>
       </div>
@@ -82,10 +82,10 @@ export default function DisasterPrediction() {
                 value={warningType}
                 onChange={e => setWarningType(e.target.value)}
               >
-                <option value="Heavy Rain">🌧️ Heavy Rain / Red Alert</option>
-                <option value="Dam Opening">🌊 Dam Opening / Flood Warning</option>
-                <option value="Cyclone">🌀 Cyclone / Gale Wind Warning</option>
-                <option value="Tsunami">🌊 Tsunami Alert</option>
+                <option value="Heavy Rain">Heavy Rain / Red Alert</option>
+                <option value="Dam Opening">Dam Opening / Flood Warning</option>
+                <option value="Cyclone">Cyclone / Gale Wind Warning</option>
+                <option value="Tsunami">Tsunami Alert</option>
               </select>
             </div>
             

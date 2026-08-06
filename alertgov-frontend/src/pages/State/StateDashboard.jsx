@@ -4,14 +4,20 @@ import { ShieldAlert, Map, BarChart2, Brain, Inbox, Activity, ChevronRight, Aler
 import { useNavigate } from 'react-router-dom';
 import GISMap from '../../components/Map/GISMap';
 
-const GradientCard = ({ gradient, icon, label, value, sub }) => (
-  <div className="gradient-stat-card" style={{ background: gradient }}>
-    <div className="stat-icon-wrapper">{icon}</div>
-    <div className="stat-label">{label}</div>
-    <div className="stat-value">{value}</div>
-    {sub && <div className="stat-sub">{sub}</div>}
-  </div>
-);
+const GradientCard = ({ gradient, label, value, sub }) => {
+  let color = 'primary';
+  if (gradient.includes('gradient-5') || gradient.includes('gradient-warning')) color = 'warning';
+  else if (gradient.includes('gradient-success') || gradient.includes('gradient-4')) color = 'success';
+  else if (gradient.includes('gradient-danger') || gradient.includes('gradient-2')) color = 'danger';
+  
+  return (
+    <div className={`stat-card border-${color}`}>
+      <div className="stat-label">{label}</div>
+      <div className="stat-value">{value}</div>
+      {sub && <div className={`stat-sub ${color === 'danger' ? 'text-danger' : ''}`}>{sub}</div>}
+    </div>
+  );
+};
 
 const districtColors = { Green: 'var(--severity-low)', Yellow: 'var(--severity-medium)', Red: 'var(--severity-severe)' };
 

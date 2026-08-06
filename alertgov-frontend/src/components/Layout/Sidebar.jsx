@@ -1,4 +1,5 @@
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, FilePlus, List, UploadCloud, RefreshCw,
@@ -16,8 +17,17 @@ const ROLE_LABELS = {
   state: 'State Admin',
 };
 
+const ROLE_LABELS_TA = {
+  village: 'கிராம அவசரகால மையம்',
+  taluk: 'தாலுகா அலுவலகம்',
+  district: 'மாவட்ட அவசரகால மையம்',
+  collector: 'ஆட்சியர் அலுவலகம்',
+  state: 'மாநில நிர்வாகம்',
+};
+
 export default function Sidebar() {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const handleLogout = () => { logout(); navigate('/login'); };
 
@@ -27,53 +37,48 @@ export default function Sidebar() {
 
   const menuMap = {
     village: [
-      { section: 'Main' },
-      { path: '/village',                  label: 'Dashboard',        icon: <LayoutDashboard size={18} /> },
-      { path: '/village/create-incident',  label: 'Create Incident',  icon: <FilePlus size={18} /> },
-      { path: '/village/active-incidents', label: 'Active Incidents', icon: <List size={18} /> },
-      { section: 'Actions' },
-      { path: '/village/upload-media',     label: 'Upload Media',     icon: <UploadCloud size={18} /> },
-
+      { section: t('Main', 'முதன்மை') },
+      { path: '/village',                  label: t('Dashboard', 'டாஷ்போர்டு'),        icon: <LayoutDashboard size={18} /> },
+      { path: '/village/create-incident',  label: t('Create Incident', 'சம்பவத்தை உருவாக்கு'),  icon: <FilePlus size={18} /> },
+      { path: '/village/active-incidents', label: t('Active Incidents', 'செயலில் உள்ள சம்பவங்கள்'), icon: <List size={18} /> },
     ],
     taluk: [
-      { section: 'Main' },
-      { path: '/taluk',                  label: 'Dashboard',              icon: <LayoutDashboard size={18} /> },
-      { path: '/taluk/verification',     label: 'Incident Verification',  icon: <CheckSquare size={18} />, badge: pendingTaluk },
-      { path: '/taluk/active-incidents', label: 'Active Incidents',       icon: <List size={18} /> },
-
-      { path: '/taluk/reports',          label: 'Reports',                icon: <BarChart2 size={18} /> },
+      { section: t('Main', 'முதன்மை') },
+      { path: '/taluk',                  label: t('Dashboard', 'டாஷ்போர்டு'),              icon: <LayoutDashboard size={18} /> },
+      { path: '/taluk/verification',     label: t('Incident Verification', 'சம்பவ சரிபார்ப்பு'),  icon: <CheckSquare size={18} />, badge: pendingTaluk },
+      { path: '/taluk/active-incidents', label: t('Active Incidents', 'செயலில் உள்ள சம்பவங்கள்'),       icon: <List size={18} /> },
+      { path: '/taluk/reports',          label: t('Reports', 'அறிக்கைகள்'),                icon: <BarChart2 size={18} /> },
     ],
     district: [
-      { section: 'Operations' },
-      { path: '/district',                   label: 'EOC Dashboard',      icon: <LayoutDashboard size={18} /> },
-      { path: '/district/approval-queue',    label: 'Incident Queue',     icon: <Inbox size={18} />, badge: queueCount },
-      { path: '/district/active-emergencies',label: 'Active Emergencies', icon: <ShieldAlert size={18} /> },
-      { section: 'Command' },
-      { path: '/district/map',               label: 'Live GIS Map',       icon: <Satellite size={18} /> },
-      { path: '/district/resource-command',  label: 'Resource Command',   icon: <Navigation size={18} /> },
-      { path: '/district/alert-broadcast',   label: 'Broadcast Center',   icon: <Radio size={18} /> },
-      { section: 'Intelligence' },
-      { path: '/district/analytics',         label: 'Analytics',          icon: <BarChart2 size={18} /> },
-      { path: '/district/timeline',          label: 'Reports',            icon: <FileText size={18} /> },
+      { section: t('Operations', 'செயல்பாடுகள்') },
+      { path: '/district',                   label: t('EOC Dashboard', 'அவசரகால மைய டாஷ்போர்டு'),      icon: <LayoutDashboard size={18} /> },
+      { path: '/district/approval-queue',    label: t('Incident Queue', 'சம்பவ வரிசை'),     icon: <Inbox size={18} />, badge: queueCount },
+      { path: '/district/active-emergencies',label: t('Active Emergencies', 'செயலில் உள்ள அவசரநிலைகள்'), icon: <ShieldAlert size={18} /> },
+      { section: t('Command', 'கட்டளை') },
+      { path: '/district/map',               label: t('Live GIS Map', 'நேரடி GIS வரைபடம்'),       icon: <Satellite size={18} /> },
+      { path: '/district/resource-command',  label: t('Resource Command', 'வள கட்டளை'),   icon: <Navigation size={18} /> },
+      { path: '/district/alert-broadcast',   label: t('Broadcast Center', 'ஒளிபரப்பு மையம்'),   icon: <Radio size={18} /> },
+      { section: t('Intelligence', 'நுண்ணறிவு') },
+      { path: '/district/analytics',         label: t('Analytics', 'பகுப்பாய்வு'),          icon: <BarChart2 size={18} /> },
+      { path: '/district/timeline',          label: t('Reports', 'அறிக்கைகள்'),            icon: <FileText size={18} /> },
     ],
     collector: [
-      { section: 'Executive' },
-      { path: '/collector',                   label: 'Dashboard',           icon: <LayoutDashboard size={18} /> },
-
-      { path: '/collector/broadcast-approval',label: 'Broadcast Approval',  icon: <Radio size={18} /> },
-      { section: 'Management' },
-      { path: '/collector/situation-map',     label: 'Operations Map',      icon: <Map size={18} /> },
-      { path: '/collector/official-orders',   label: 'Official Orders',     icon: <ClipboardList size={18} /> },
-      { path: '/collector/ai-reports',        label: 'AI Reports',          icon: <Brain size={18} /> },
-      { path: '/collector/state-advisories',  label: 'State Advisories',    icon: <AlertTriangle size={18} /> },
+      { section: t('Executive', 'நிர்வாக') },
+      { path: '/collector',                   label: t('Dashboard', 'டாஷ்போர்டு'),           icon: <LayoutDashboard size={18} /> },
+      { path: '/collector/broadcast-approval',label: t('Broadcast Approval', 'ஒளிபரப்பு ஒப்புதல்'),  icon: <Radio size={18} /> },
+      { section: t('Management', 'மேலாண்மை') },
+      { path: '/collector/situation-map',     label: t('Operations Map', 'செயல்பாட்டு வரைபடம்'),      icon: <Map size={18} /> },
+      { path: '/collector/official-orders',   label: t('Official Orders', 'அதிகாரப்பூர்வ உத்தரவுகள்'),     icon: <ClipboardList size={18} /> },
+      { path: '/collector/ai-reports',        label: t('AI Reports', 'செயற்கை நுண்ணறிவு அறிக்கைகள்'),          icon: <Brain size={18} /> },
+      { path: '/collector/state-advisories',  label: t('State Advisories', 'மாநில ஆலோசனைகள்'),    icon: <AlertTriangle size={18} /> },
     ],
     state: [
-      { section: 'State Overview' },
-      { path: '/state',           label: 'State Dashboard',    icon: <LayoutDashboard size={18} /> },
-      { path: '/state/districts', label: 'District Status',    icon: <Users size={18} /> },
-      { section: 'Actions' },
-      { path: '/state/analytics', label: 'Analytics',          icon: <BarChart2 size={18} /> },
-      { path: '/state/prediction',label: 'AI Prediction',      icon: <Brain size={18} /> },
+      { section: t('State Overview', 'மாநில கண்ணோட்டம்') },
+      { path: '/state',           label: t('State Dashboard', 'மாநில டாஷ்போர்டு'),    icon: <LayoutDashboard size={18} /> },
+      { path: '/state/districts', label: t('District Status', 'மாவட்ட நிலை'),    icon: <Users size={18} /> },
+      { section: t('Actions', 'நடவடிக்கைகள்') },
+      { path: '/state/analytics', label: t('Analytics', 'பகுப்பாய்வு'),          icon: <BarChart2 size={18} /> },
+      { path: '/state/prediction',label: t('AI Prediction', 'செயற்கை நுண்ணறிவு கணிப்பு'),      icon: <Brain size={18} /> },
     ],
   };
 
@@ -87,7 +92,7 @@ export default function Sidebar() {
         <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYrCtU8k-Z8dC8m0yFrXAll8qUAYJeg6ypB-MGZ2-keA&s=10" alt="TN Logo" style={{ width: '55px', height: '55px', objectFit: 'contain', marginLeft: '-4px' }} />
         <div className="sidebar-brand">
           <div className="sidebar-brand-name">AlertGov</div>
-          <div className="sidebar-brand-sub">{ROLE_LABELS[user?.role] || 'Dashboard'}</div>
+          <div className="sidebar-brand-sub">{t(ROLE_LABELS[user?.role] || 'Dashboard', ROLE_LABELS_TA[user?.role] || 'டாஷ்போர்டு')}</div>
         </div>
       </div>
 
@@ -118,7 +123,7 @@ export default function Sidebar() {
           to={`/${user?.role}/notifications`}
           className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
         >
-          <Bell size={18} /> <span>Notifications</span>
+          <Bell size={18} /> <span>{t('Notifications', 'அறிவிப்புகள்')}</span>
         </NavLink>
 
         <div className="sidebar-user" onClick={() => navigate(`/${user?.role}/profile`)}>

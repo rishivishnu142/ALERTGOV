@@ -1,9 +1,13 @@
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { INCIDENTS } from '../../data/mockData';
 import { Upload as UploadIcon, Image, FileText, Video, Mic, CheckCircle } from 'lucide-react';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function UploadMedia() {
-  const [selectedId, setSelectedId] = useState('INC-2024-001');
+  const location = useLocation();
+  const { t } = useLanguage();
+  const [selectedId, setSelectedId] = useState(location.state?.incidentId || 'INC-2024-001');
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -35,15 +39,15 @@ export default function UploadMedia() {
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="page-header">
         <div>
-          <div className="page-title">📤 Upload Media</div>
-          <div className="page-subtitle">Upload photos, videos, or documents to an existing incident</div>
+          <div className="page-title"><UploadIcon size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> {t('Upload Media', 'ஊடகங்களைப் பதிவேற்று')}</div>
+          <div className="page-subtitle">{t('Upload photos, videos, or documents to an existing incident', 'ஏற்கனவே உள்ள சம்பவத்தில் புகைப்படங்கள், வீடியோக்கள் அல்லது ஆவணங்களைப் பதிவேற்றவும்')}</div>
         </div>
       </div>
 
       <div className="card">
         <div className="card-body">
           <div className="form-group">
-            <label className="form-label">Select Incident</label>
+            <label className="form-label">{t('Select Incident', 'சம்பவத்தைத் தேர்ந்தெடு')}</label>
             <select className="form-select" value={selectedId} onChange={e => setSelectedId(e.target.value)}>
               {INCIDENTS.map(i => <option key={i.id} value={i.id}>{i.id} — {i.title}</option>)}
             </select>
@@ -56,13 +60,13 @@ export default function UploadMedia() {
             style={{ marginBottom: '24px', padding: '60px 24px' }}
           >
             <div className="upload-icon"><UploadIcon size={32} color="var(--primary)" /></div>
-            <div className="upload-text">Drag & drop files here or click to browse</div>
-            <div className="upload-hint">Supports: JPG, PNG, MP4, PDF, Voice (WAV) — Max 50MB per file</div>
+            <div className="upload-text">{t('Drag & drop files here or click to browse', 'கோப்புகளை இங்கே இழுத்து விடவும் அல்லது தேட கிளிக் செய்யவும்')}</div>
+            <div className="upload-hint">{t('Supports: JPG, PNG, MP4, PDF, Voice (WAV) — Max 50MB per file', 'ஆதரவு: JPG, PNG, MP4, PDF, Voice (WAV) — அதிகபட்சம் ஒரு கோப்புக்கு 50MB')}</div>
           </div>
 
           {files.length > 0 && (
             <div style={{ marginBottom: '24px' }}>
-              <div className="section-title">Selected Files</div>
+              <div className="section-title">{t('Selected Files', 'தேர்ந்தெடுக்கப்பட்ட கோப்புகள்')}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {files.map((f, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--bg-muted)', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
@@ -83,9 +87,9 @@ export default function UploadMedia() {
           )}
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-            {files.length > 0 && <button className="btn btn-secondary" onClick={() => setFiles([])}>Clear All</button>}
+            {files.length > 0 && <button className="btn btn-secondary" onClick={() => setFiles([])}>{t('Clear All', 'அனைத்தையும் அழி')}</button>}
             <button className="btn btn-primary" onClick={handleUpload} disabled={files.length === 0 || uploading || success}>
-              {uploading ? 'Uploading...' : success ? 'Uploaded Successfully' : 'Upload Files'}
+              {uploading ? t('Uploading...', 'பதிவேற்றுகிறது...') : success ? t('Uploaded Successfully', 'வெற்றிகரமாக பதிவேற்றப்பட்டது') : t('Upload Files', 'கோப்புகளை பதிவேற்று')}
             </button>
           </div>
         </div>

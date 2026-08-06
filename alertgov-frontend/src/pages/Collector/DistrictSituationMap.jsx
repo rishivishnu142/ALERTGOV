@@ -1,13 +1,14 @@
 import GISMap from '../../components/Map/GISMap';
 import { INCIDENTS } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
+import { Map } from 'lucide-react';
 
 export default function DistrictSituationMap() {
   return (
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">🗺️ District Situation Map</div>
+          <div className="page-title"><Map size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> District Situation Map</div>
           <div className="page-subtitle">Executive overview of all district operations</div>
         </div>
       </div>

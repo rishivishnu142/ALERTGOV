@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Design Specification for ALERT 4.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        h1, h2, h3 { color: #2c3e50; border-bottom: 2px solid #eaeaea; padding-bottom: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95rem; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f8f9fa; color: #333; font-weight: 600; }
+        tr:nth-child(even) { background-color: #fbfbfb; }
+        code { background-color: #f1f1f1; padding: 2px 6px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 0.9em; color: #d63384; }
+        @media print {
+            body { padding: 0; max-width: 100%; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            th { background-color: #f8f9fa !important; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div id="content"></div>
+    <script>
+        const markdownContent = `
+# Exhaustive API Design Specification for ALERT 4.0 GOVERNMENT
+
+After a deep analysis of all the components, charts, and data widgets across the frontend pages (including Recharts like \`AreaChart\` and \`BarChart\`, weather widgets, and map overlays), the application will require exactly **71 distinct API calls**. 
+
+Below is the exhaustive breakdown of every data fetch and submission point, mapped to its respective component, designed for a **Java Spring Boot backend**.
+
+---
+
+## 1. Authentication & Common (9 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`LoginPage.jsx\` | \`POST /api/auth/login\` | Validates credentials, returns JWT. |
+| \`Profile.jsx\` | \`GET /api/users/profile\`<br/>\`PUT /api/users/profile\` | Fetches and updates user details. |
+| \`Notifications.jsx\` | \`GET /api/notifications\`<br/>\`PUT /api/notifications/{id}/read\` | Fetches system alerts and marks them read. |
+| \`UserManagement.jsx\`| \`GET /api/users\`<br/>\`POST /api/users\`<br/>\`PUT /api/users/{id}\`<br/>\`DELETE /api/users/{id}\` | Full CRUD operations for role-based users. |
+
+---
+
+## 2. Village Level (8 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`VillageDashboard.jsx\`| \`GET /api/village/dashboard/summary\`<br/>\`GET /api/incidents/village/recent\`<br/>\`GET /api/weather/current\` | Fetches the 4 summary stat cards.<br/>Populates the "Active Incidents in My Jurisdiction" widget.<br/>Fetches local lat/lon weather data for the Weather Card. |
+| \`CreateIncident.jsx\` | \`GET /api/metadata/incident-types\`<br/>\`POST /api/incidents\` | Fetches dropdown values (floods, fire, etc.).<br/>Submits the new incident payload. |
+| \`ActiveIncidents.jsx\` | \`GET /api/incidents?level=village&status=active\` | Full paginated list of active village incidents. |
+| \`UpdateIncidentStatus.jsx\`| \`PUT /api/incidents/{id}/status\` | Submits status transition (e.g. In Progress -> Resolved). |
+| \`UploadMedia.jsx\` | \`POST /api/incidents/{id}/media\` | Multipart form submission for images/videos. |
+
+---
+
+## 3. Taluk Level (9 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`TalukDashboard.jsx\` | \`GET /api/taluk/dashboard/summary\`<br/>\`GET /api/incidents/pending-verification/recent\`<br/>\`GET /api/incidents/recently-verified\` | Fetches 4 summary cards.<br/>Populates the "Priority Verification Queue" widget.<br/>Populates the "Recently Verified" list widget. |
+| \`IncidentVerification.jsx\`| \`GET /api/incidents/pending-verification\`<br/>\`PUT /api/incidents/{id}/verify\` | Full table of incidents waiting to be verified.<br/>Submits the verified/rejected status. |
+| \`TalukActiveIncidents.jsx\`| \`GET /api/incidents?level=taluk&status=active\` | Full table of active incidents in the Taluk. |
+| \`TalukMap.jsx\` | \`GET /api/map/incidents?level=taluk\` | GeoJSON data to plot markers on the map. |
+| \`TalukReports.jsx\` | \`GET /api/reports/taluk\`<br/>\`GET /api/reports/taluk/export\` | Fetches tabular data for reporting.<br/>Generates PDF/CSV byte stream for PrintReport. |
+
+---
+
+## 4. District Level (17 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`DistrictDashboard.jsx\` | \`GET /api/district/dashboard/summary\`<br/>\`GET /api/approvals/district/recent\`<br/>\`GET /api/incidents/district/recent\`<br/>\`GET /api/analytics/district/weekly-chart\` | Fetches 4 summary cards.<br/>Populates "Action Required - Approval Queue".<br/>Populates "Live Active Emergencies" widget.<br/>Data for the small "Weekly Summary" Bar Chart. |
+| \`ActiveEmergencies.jsx\` | \`GET /api/incidents?level=district&severity=high\` | Full table of critical district-wide emergencies. |
+| \`AlertBroadcast.jsx\` | \`GET /api/metadata/broadcast-zones\`<br/>\`POST /api/alerts/broadcast\` | Fetches targetable zones/demographics.<br/>Submits the SMS/Push broadcast payload. |
+| \`DistrictAnalytics.jsx\` | \`GET /api/analytics/district/response-trend\`<br/>\`GET /api/analytics/district/incidents-by-type\`<br/>\`GET /api/analytics/district/broadcasts-by-month\` | Data for the \`AreaChart\` (Response Time).<br/>Data for the vertical \`BarChart\` (Incidents by Type).<br/>Data for the \`BarChart\` (Broadcasts over time). |
+| \`DistrictApprovalQueue.jsx\`| \`GET /api/approvals/district\`<br/>\`PUT /api/approvals/{id}\` | Full table of requests needing approval.<br/>Submits Approve/Reject decision. |
+| \`DistrictGISMap.jsx\` | \`GET /api/map/gis-layers\`<br/>\`GET /api/map/resources\` | Heavy GeoJSON for flood plains and zones.<br/>Live GPS coordinates of resources (vehicles/teams). |
+| \`IncidentTimeline.jsx\` | \`GET /api/incidents/{id}/timeline\` | Audit trail array (who updated what and when). |
+| \`ResourceCommand.jsx\` | \`GET /api/resources\`<br/>\`POST /api/resources/allocate\` | Table of available resources.<br/>Submits allocation to a specific incident. |
+
+---
+
+## 5. Collector (Executive Level) (14 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`CollectorDashboard.jsx\`| \`GET /api/collector/dashboard/summary\`<br/>\`GET /api/incidents/collector/escalations-queue\` | Fetches 4 summary cards.<br/>Populates the "Critical Escalations Queue" widget. |
+| \`AIReports.jsx\` | \`GET /api/ai/insights\`<br/>\`GET /api/ai/insights/download\` | Fetches generated predictive text lists.<br/>Triggers PDF download of the AI report. |
+| \`BroadcastApproval.jsx\` | \`GET /api/alerts/pending-approval\`<br/>\`PUT /api/alerts/{id}/approve\` | Full table of major public broadcasts needing sign-off.<br/>Submits Collector's final approval. |
+| \`CriticalIncidents.jsx\` | \`GET /api/incidents/critical\` | Table restricted to "Red Alert" status incidents. |
+| \`DistrictSituationMap.jsx\`| \`GET /api/map/situation-overview\` | Unified map overlaying active incidents and assets. |
+| \`ExecutiveAnalytics.jsx\`| \`GET /api/analytics/executive/response-trend\`<br/>\`GET /api/analytics/executive/financial-impact\`<br/>\`GET /api/analytics/executive/taluk-performance\` | Data for executive \`AreaChart\`.<br/>Data for financial \`BarChart\`.<br/>Data for comparative \`BarChart\` across taluks. |
+| \`OfficialOrders.jsx\` | \`GET /api/orders\`<br/>\`POST /api/orders\` | Table of Section 144 / holidays issued.<br/>Submits a new official mandate. |
+| \`StateAdvisories.jsx\` | \`GET /api/advisories/state\` | Table of directives pushed down from the state level. |
+
+---
+
+## 6. State Level (8 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`StateDashboard.jsx\` | \`GET /api/state/dashboard/summary\`<br/>\`GET /api/map/state-heatmap\`<br/>\`GET /api/incidents/state/escalations\` | Fetches 4 summary cards.<br/>Data for the mini "State Heatmap" widget on dashboard.<br/>Populates "Escalations from Collectors" list widget. |
+| \`DisasterPrediction.jsx\`| \`GET /api/predictions/weather-models\`<br/>\`GET /api/predictions/risk-probability\` | Graph data from integrated metrological APIs.<br/>Data for probability/risk gauge charts. |
+| \`DistrictMonitor.jsx\` | \`GET /api/state/districts-monitor\` | Comparative matrix data table for all districts. |
+| \`DistrictStatus.jsx\` | \`GET /api/state/districts/{id}/status\` | Drill-down data for a single district. |
+| \`StateMap.jsx\` | \`GET /api/map/state-overview\` | Full screen statewide choropleth map. |
+
+---
+
+## 7. Public & Landing Pages (6 APIs)
+| Component / Page | Expected API Calls (Spring Boot) | Data Served |
+| :--- | :--- | :--- |
+| \`LandingPage.jsx\` | \`GET /api/public/stats\`<br/>\`GET /api/public/alerts\` | Fetches total incidents resolved (for landing cards).<br/>Fetches the scrolling text for active public warnings. |
+| \`Feedback.jsx\` | \`POST /api/public/feedback\` | Submits the grievance form. |
+| \`ContactUs.jsx\` | \`POST /api/public/contact\` | Submits the contact us form. |
+| \`WebsitePolicies.jsx\` | \`GET /api/public/content/policies\` | Fetches dynamic policy text. |
+| \`HelpPage.jsx\` | \`GET /api/public/content/faq\` | Fetches FAQs. |
+        `;
+        document.getElementById('content').innerHTML = marked.parse(markdownContent);
+    </script>
+</body>
+</html>

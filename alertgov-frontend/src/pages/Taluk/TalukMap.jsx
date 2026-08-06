@@ -2,7 +2,7 @@ import { useState } from 'react';
 import GISMap from '../../components/Map/GISMap';
 import { INCIDENTS, RESOURCES } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
-import { Layers } from 'lucide-react';
+import { Layers, Map } from 'lucide-react';
 
 export default function TalukMap() {
   const [showResources, setShowResources] = useState(true);
@@ -19,7 +19,7 @@ export default function TalukMap() {
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">🗺️ Taluk GIS Map</div>
+          <div className="page-title"><Map size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> Taluk GIS Map</div>
           <div className="page-subtitle">Live view of incidents and deployed resources in your Taluk</div>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>

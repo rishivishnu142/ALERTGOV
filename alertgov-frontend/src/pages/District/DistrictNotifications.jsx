@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NOTIFICATIONS } from '../../data/mockData';
-import { Bell, Clock, CheckCircle, Trash2, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { Bell, Clock, CheckCircle, Trash2, AlertTriangle, ShieldAlert, Info } from 'lucide-react';
 
 export default function DistrictNotifications() {
   const [filter, setFilter] = useState('all');
@@ -17,8 +17,8 @@ export default function DistrictNotifications() {
       case 'critical': return <ShieldAlert size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
       case 'warning': return <AlertTriangle size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
       case 'success': return <CheckCircle size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
-      case 'info': return 'ℹ️';
-      default: return '🔔';
+      case 'info': return <Info size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
+      default: return <Bell size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
     }
   };
 
@@ -26,7 +26,7 @@ export default function DistrictNotifications() {
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="page-header">
         <div>
-          <div className="page-title">🔔 District EOC Notifications</div>
+          <div className="page-title"><Bell size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> District EOC Notifications</div>
           <div className="page-subtitle">Alerts, updates, and system messages</div>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>

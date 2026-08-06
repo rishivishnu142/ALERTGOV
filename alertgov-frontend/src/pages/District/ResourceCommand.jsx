@@ -3,7 +3,7 @@ import { RESOURCES } from '../../data/mockData';
 import { useLive, useIncidents } from '../../context/LiveContext';
 import { Card, SeverityBadge, AIPanel, AlertBanner } from '../../components/common/UIComponents';
 import GISMap from '../../components/Map/GISMap';
-import { Truck, Search, Plus, MapPin, Navigation } from 'lucide-react';
+import { Truck, Search, Plus, MapPin, Navigation, Ambulance, Shield, Helicopter } from 'lucide-react';
 import Swal from 'sweetalert2';
 
 export default function ResourceCommand() {
@@ -138,7 +138,7 @@ export default function ResourceCommand() {
               {assigned.length > 0 ? assigned.map(r => (
                 <div key={r.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)' }}>
                   <div style={{ width: 40, height: 40, borderRadius: '8px', background: 'var(--bg-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
-                    {r.type === 'Fire Truck' ? <Truck size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> : r.type === 'Ambulance' ? '🚑' : r.type === 'Police' ? '🚔' : '🚁'}
+                    {r.type === 'Fire Truck' ? <Truck size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> : r.type === 'Ambulance' ? <Ambulance size="1.2em" style={{ verticalAlign: 'middle' }} /> : r.type === 'Police' ? <Shield size="1.2em" style={{ verticalAlign: 'middle' }} /> : <Helicopter size="1.2em" style={{ verticalAlign: 'middle' }} />}
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '13px', fontWeight: 700, display: 'flex', justifyContent: 'space-between' }}>

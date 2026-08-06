@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Bell, Search, MapPin, Calendar, LayoutDashboard, FilePlus, List, UploadCloud, 
@@ -8,6 +9,7 @@ import {
   Route, Users, ChevronDown, AlertTriangle 
 } from 'lucide-react';
 import { INCIDENTS } from '../../data/mockData';
+import { officerDirectory } from '../../data/officerDirectory';
 
 const ROLE_LABELS = {
   village: 'Village EOC',
@@ -17,21 +19,21 @@ const ROLE_LABELS = {
   state: 'State Admin',
 };
 
+const ROLE_LABELS_TA = {
+  village: 'கிராம அவசரகால மையம்',
+  taluk: 'தாலுகா அலுவலகம்',
+  district: 'மாவட்ட அவசரகால மையம்',
+  collector: 'ஆட்சியர் அலுவலகம்',
+  state: 'மாநில நிர்வாகம்',
+};
+
 export default function TopBar() {
   const { user, logout } = useAuth();
+  const { language, changeLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const t = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(t);
-  }, []);
 
   const handleLogout = () => { logout(); navigate('/login'); };
-
-  const timeStr = time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
-  const dateStr = time.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
 
   // Badge counts
   const queueCount = INCIDENTS.filter(i => i.status === 'Taluk Verified' || i.status === 'Waiting for Collector').length;
@@ -39,56 +41,52 @@ export default function TopBar() {
 
   const menuMap = {
     village: [
-      { path: '/village',                  label: 'Dashboard',        icon: <LayoutDashboard size={16} /> },
-      { path: '/village/create-incident',  label: 'Create Incident',  icon: <FilePlus size={16} /> },
-      { path: '/village/active-incidents', label: 'Active Incidents', icon: <List size={16} /> },
-      { path: '/village/upload-media',     label: 'Upload Media',     icon: <UploadCloud size={16} /> },
-
+      { path: '/village',                  label: t('Dashboard', 'டாஷ்போர்டு'),        icon: <LayoutDashboard size={16} /> },
+      { path: '/village/create-incident',  label: t('Create Incident', 'சம்பவத்தை உருவாக்கு'),  icon: <FilePlus size={16} /> },
+      { path: '/village/active-incidents', label: t('Active Incidents', 'செயலில் உள்ள சம்பவங்கள்'), icon: <List size={16} /> },
     ],
     taluk: [
-      { path: '/taluk',                  label: 'Dashboard',              icon: <LayoutDashboard size={16} /> },
-      { path: '/taluk/verification',     label: 'Incident Verification',  icon: <CheckSquare size={16} />, badge: pendingTaluk },
-      { path: '/taluk/active-incidents', label: 'Active Incidents',       icon: <List size={16} /> },
-
-      { path: '/taluk/reports',          label: 'Reports',                icon: <BarChart2 size={16} /> },
-      { path: '/taluk/users',            label: 'Manage Users',           icon: <Users size={16} /> },
+      { path: '/taluk',                  label: t('Dashboard', 'டாஷ்போர்டு'),              icon: <LayoutDashboard size={16} /> },
+      { path: '/taluk/verification',     label: t('Incident Verification', 'சம்பவ சரிபார்ப்பு'),  icon: <CheckSquare size={16} />, badge: pendingTaluk },
+      { path: '/taluk/active-incidents', label: t('Active Incidents', 'செயலில் உள்ள சம்பவங்கள்'),       icon: <List size={16} /> },
+      { path: '/taluk/reports',          label: t('Reports', 'அறிக்கைகள்'),                icon: <BarChart2 size={16} /> },
     ],
     district: [
-      { path: '/district',                   label: 'Dashboard',          icon: <LayoutDashboard size={16} /> },
-      { path: '/district/approval-queue',    label: 'Queue',              icon: <Inbox size={16} />, badge: queueCount },
-      { path: '/district/active-emergencies',label: 'Active',             icon: <ShieldAlert size={16} /> },
-      { path: '/district/resource-command',  label: 'Resources',          icon: <Navigation size={16} /> },
-      { path: '/district/alert-broadcast',   label: 'Broadcasts',         icon: <Radio size={16} /> },
-      { path: '/district/analytics',         label: 'Analytics',          icon: <BarChart2 size={16} /> },
+      { path: '/district',                   label: t('Dashboard', 'டாஷ்போர்டு'),          icon: <LayoutDashboard size={16} /> },
+      { path: '/district/approval-queue',    label: t('Queue', 'வரிசை'),              icon: <Inbox size={16} />, badge: queueCount },
+      { path: '/district/active-emergencies',label: t('Active', 'செயலில்'),             icon: <ShieldAlert size={16} /> },
+      { path: '/district/resource-command',  label: t('Resources', 'வளங்கள்'),          icon: <Navigation size={16} /> },
+      { path: '/district/alert-broadcast',   label: t('Broadcasts', 'ஒளிபரப்புகள்'),         icon: <Radio size={16} /> },
+      { path: '/district/analytics',         label: t('Analytics', 'பகுப்பாய்வு'),          icon: <BarChart2 size={16} /> },
     ],
     collector: [
-      { path: '/collector',                   label: 'Dashboard',           icon: <LayoutDashboard size={16} /> },
-
-      { path: '/collector/broadcast-approval',label: 'Broadcast',           icon: <Radio size={16} /> },
-      { path: '/collector/users',             label: 'Manage Users',        icon: <Users size={16} /> },
-      { path: '/collector/situation-map',     label: 'Map',                 icon: <Map size={16} /> },
-      { path: '/collector/ai-reports',        label: 'AI Report',           icon: <FileText size={16} /> },
-      { path: '/collector/state-advisories',  label: 'State Advisories',    icon: <AlertTriangle size={16} /> },
+      { path: '/collector',                   label: t('Dashboard', 'டாஷ்போர்டு'),           icon: <LayoutDashboard size={16} /> },
+      { path: '/collector/situation-map',     label: t('Map', 'வரைபடம்'),                 icon: <Map size={16} /> },
+      { path: '/collector/ai-reports',        label: t('AI Report', 'செயற்கை நுண்ணறிவு அறிக்கை'),           icon: <FileText size={16} /> },
+      { path: '/collector/broadcast-approval',label: t('Broadcast', 'ஒளிபரப்பு'),           icon: <Radio size={16} /> },
     ],
     state: [
-      { path: '/state',           label: 'Dashboard',          icon: <LayoutDashboard size={16} /> },
-      { path: '/state/districts', label: 'Districts',          icon: <MapPin size={16} /> },
-      { path: '/state/prediction',label: 'AI Prediction',      icon: <Brain size={16} /> },
-      { path: '/state/users',     label: 'Manage Users',       icon: <Users size={16} /> },
+      { path: '/state',           label: t('Dashboard', 'டாஷ்போர்டு'),          icon: <LayoutDashboard size={16} /> },
+      { path: '/state/districts', label: t('Districts', 'மாவட்டங்கள்'),          icon: <MapPin size={16} /> },
+      { path: '/state/prediction',label: t('AI Prediction', 'செயற்கை நுண்ணறிவு கணிப்பு'),      icon: <Brain size={16} /> },
     ],
   };
 
-  const links = menuMap[user?.role] || [];
+  const links = menuMap[user?.role?.toLowerCase()] || [];
   const initials = user?.name?.substring(0, 2).toUpperCase() || '??';
 
   return (
     <div className="topbar">
       {/* Left: Brand */}
-      <div className="topbar-brand">
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYrCtU8k-Z8dC8m0yFrXAll8qUAYJeg6ypB-MGZ2-keA&s=10" alt="TN Logo" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
-        <div className="topbar-brand-text">
-          <div className="topbar-brand-name">AlertGov</div>
-          <div className="topbar-brand-sub">{ROLE_LABELS[user?.role] || 'Dashboard'}</div>
+      <div className="topbar-brand" style={{ flexShrink: 0, paddingRight: '16px' }}>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYrCtU8k-Z8dC8m0yFrXAll8qUAYJeg6ypB-MGZ2-keA&s=10" alt="TN Emblem" style={{ width: '40px', height: 'auto', objectFit: 'contain' }} />
+        <div className="topbar-brand-text" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="topbar-brand-name" style={{ fontSize: '13px', color: 'var(--primary)', fontWeight: 800, textTransform: 'uppercase' }}>
+            {t('Tamil Nadu Disaster Management Authority', 'தமிழ்நாடு பேரிடர் மேலாண்மை ஆணையம்')}
+          </div>
+          <div className="topbar-brand-sub" style={{ fontSize: '10px', fontWeight: 600, color: 'var(--text-secondary)' }}>
+            ALERTGOV AI — {t(ROLE_LABELS[user?.role?.toLowerCase()]?.toUpperCase() || 'DASHBOARD', ROLE_LABELS_TA[user?.role?.toLowerCase()] || 'டாஷ்போர்டு')}
+          </div>
         </div>
       </div>
 
@@ -109,30 +107,49 @@ export default function TopBar() {
       </nav>
 
       {/* Right: User actions & status */}
-      <div className="topbar-actions">
-        {/* Date + Time */}
-        <div className="topbar-time-chip">
-          <span className="date-text">{dateStr}</span>
-          <span className="time-text">{timeStr}</span>
-        </div>
+      <div className="topbar-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
 
-        {/* Bell */}
+        {/* Language Toggle */}
         <button
           className="btn btn-ghost topbar-icon-btn"
-          onClick={() => navigate(`/${user?.role}/notifications`)}
+          onClick={() => changeLanguage(language === 'en' ? 'ta' : 'en')}
+          title={language === 'en' ? 'தமிழில் மாற்றவும்' : 'Switch to English'}
+          style={{ padding: '0 8px', display: 'flex', alignItems: 'center', gap: '4px', border: '1px solid var(--border-color)', borderRadius: '16px', height: '28px' }}
         >
-          <Bell size={18} color="var(--text-secondary)" />
+          <span style={{ fontSize: '11px', fontWeight: 800 }}>{language === 'en' ? 'அ/A' : 'A/அ'}</span>
+        </button>
+
+        {/* Bell / Advisories */}
+        <button
+          className="btn btn-ghost topbar-icon-btn"
+          onClick={() => navigate(user?.role === 'collector' ? '/collector/state-advisories' : `/${user?.role}/notifications`)}
+          title={user?.role === 'collector' ? "State Advisories" : "Notifications"}
+        >
+          {user?.role === 'collector' ? <AlertTriangle size={18} color="var(--text-primary)" /> : <Bell size={18} color="var(--text-primary)" />}
           <span className="topbar-notification-dot" />
         </button>
 
         {/* User Profile */}
-        <div className="topbar-user-profile" onClick={() => navigate(`/${user?.role}/profile`)}>
-          <div className="topbar-avatar">{initials}</div>
-          <div className="topbar-user-info">
-            <span className="topbar-user-name">{user?.name}</span>
-            <span className="topbar-user-id">{user?.id}</span>
+        <div className="topbar-user-profile" onClick={() => navigate(`/${user?.role?.toLowerCase()}/profile`)}>
+          <div className="topbar-avatar">{user?.name ? user.name.substring(0,2).toUpperCase() : (officerDirectory[user?.username]?.title ? 'OF' : (user?.username ? 'OF' : '??'))}</div>
+          <div className="topbar-user-info" style={{ paddingRight: '4px' }}>
+            <span className="topbar-user-name" style={{ fontSize: '13px' }}>{user?.name || (user?.username ? `Officer ${user.username}` : 'Unknown')}</span>
+            <span className="topbar-user-id" style={{ fontSize: '10px' }}>{user?.id || user?.username}</span>
           </div>
-          <button className="btn btn-ghost" style={{ padding: '4px', marginLeft: '4px' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }}>
+        </div>
+          
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', borderLeft: '1px solid #E0E0E0', paddingLeft: '8px' }}>
+          <button 
+            className="btn bg-primary-alpha"
+            style={{ padding: '4px 8px', border: 'none', borderRadius: 'var(--radius-sm)', height: '28px' }}
+            onClick={(e) => { e.stopPropagation(); navigate(`/${user?.role}/users`); }}
+            title={t('Manage Users', 'பயனர்களை நிர்வகி')}
+          >
+            <Users size={14} />
+            <span style={{ fontSize: '12px' }}>{t('Manage Users', 'பயனர்களை நிர்வகி')}</span>
+          </button>
+
+          <button className="btn btn-ghost" style={{ padding: '4px' }} onClick={(e) => { e.stopPropagation(); handleLogout(); }} title="Logout">
             <LogOut size={16} color="var(--text-muted)" />
           </button>
         </div>

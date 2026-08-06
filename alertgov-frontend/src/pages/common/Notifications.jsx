@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { NOTIFICATIONS } from '../../data/mockData';
-import { Bell, Clock, CheckCircle, Trash2, AlertTriangle, ShieldAlert } from 'lucide-react';
+import { Bell, Clock, CheckCircle, Trash2, AlertTriangle, ShieldAlert, Info } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
 
 export default function Notifications() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [filter, setFilter] = useState('all');
   const [notifs, setNotifs] = useState(NOTIFICATIONS);
 
@@ -19,8 +21,8 @@ export default function Notifications() {
       case 'critical': return <ShieldAlert size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
       case 'warning': return <AlertTriangle size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
       case 'success': return <CheckCircle size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
-      case 'info': return 'ℹ️';
-      default: return '🔔';
+      case 'info': return <Info size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
+      default: return <Bell size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} />;
     }
   };
 
@@ -28,12 +30,12 @@ export default function Notifications() {
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="page-header">
         <div>
-          <div className="page-title">🔔 Notifications</div>
-          <div className="page-subtitle">Alerts, updates, and system messages for {user?.title}</div>
+          <div className="page-title"><Bell size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> {t('Notifications', 'அறிவிப்புகள்')}</div>
+          <div className="page-subtitle">{t('Alerts, updates, and system messages for', 'எச்சரிக்கைகள், புதுப்பிப்புகள் மற்றும் கணினி செய்திகள்:')} {user?.title}</div>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button className="btn btn-ghost btn-sm" onClick={() => setNotifs(ns => ns.map(n => ({ ...n, read: true })))}><CheckCircle size={14} /> Mark all read</button>
-          <button className="btn btn-ghost btn-sm text-danger" onClick={() => setNotifs([])}><Trash2 size={14} /> Clear all</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => setNotifs(ns => ns.map(n => ({ ...n, read: true })))}><CheckCircle size={14} /> {t('Mark all read', 'அனைத்தையும் படித்ததாக குறி')}</button>
+          <button className="btn btn-ghost btn-sm text-danger" onClick={() => setNotifs([])}><Trash2 size={14} /> {t('Clear all', 'அனைத்தையும் அழி')}</button>
         </div>
       </div>
 
@@ -47,14 +49,14 @@ export default function Notifications() {
                 style={{ textTransform: 'capitalize' }}
                 onClick={() => setFilter(f)}
               >
-                {f}
+                {t(f, f === 'all' ? 'அனைத்தும்' : f === 'unread' ? 'படிக்காதவை' : 'தீவிரமானவை')}
               </button>
             ))}
           </div>
         </div>
         <div style={{ padding: 0 }}>
           {filtered.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>No notifications found.</div>
+            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>{t('No notifications found.', 'எந்த அறிவிப்புகளும் கிடைக்கவில்லை.')}</div>
           ) : (
             filtered.map(n => (
               <div key={n.id} className={`notif-item ${n.read ? '' : 'unread'}`} style={{ padding: '16px 20px', display: 'flex', gap: '16px', alignItems: 'flex-start', borderBottom: '1px solid var(--border)' }}>
@@ -69,7 +71,7 @@ export default function Notifications() {
                 </div>
                 {!n.read && (
                   <button className="btn btn-ghost btn-sm" onClick={() => setNotifs(ns => ns.map(x => x.id === n.id ? { ...x, read: true } : x))}>
-                    Mark read
+                    {t('Mark read', 'படித்ததாக குறி')}
                   </button>
                 )}
               </div>

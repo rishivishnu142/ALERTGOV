@@ -18,7 +18,7 @@ export default function LoginPage() {
     setError('');
 
     try {
-      await login(officerId, password);
+      await login(officerId.trim(), password.trim());
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);

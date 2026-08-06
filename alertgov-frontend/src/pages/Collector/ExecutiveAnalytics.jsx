@@ -1,14 +1,14 @@
 import { Card } from '../../components/common/UIComponents';
 import { ANALYTICS_DATA } from '../../data/mockData';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
-import { Download } from 'lucide-react';
+import { Download, BarChart2 } from 'lucide-react';
 
 export default function ExecutiveAnalytics() {
   return (
     <div>
       <div className="page-header">
         <div>
-          <div className="page-title">📈 Executive Analytics</div>
+          <div className="page-title"><BarChart2 size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> Executive Analytics</div>
           <div className="page-subtitle">High-level insights into district emergency response</div>
         </div>
         <button className="btn btn-primary btn-sm"><Download size={14} /> Download Exec Report</button>
@@ -24,10 +24,10 @@ export default function ExecutiveAnalytics() {
                     <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-                <Tooltip cursor={{ fill: 'var(--bg-muted)' }} />
+                <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12, fontWeight: 500 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: 'var(--text-muted)', fontSize: 12 }} dx={-10} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.5} />
+                <Tooltip cursor={{ fill: 'rgba(0,0,0,0.02)' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }} />
                 <Area type="monotone" dataKey="avg" stroke="var(--primary)" fillOpacity={1} fill="url(#colorAvg)" />
               </AreaChart>
             </ResponsiveContainer>

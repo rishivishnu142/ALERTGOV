@@ -9,7 +9,7 @@ export default function OfficialOrders() {
     <div style={{ maxWidth: 800, margin: '0 auto' }}>
       <div className="page-header">
         <div>
-          <div className="page-title">📜 Issue Official Order</div>
+          <div className="page-title"><FileText size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> Issue Official Order</div>
           <div className="page-subtitle">Generate signed PDF orders for disaster management</div>
         </div>
       </div>

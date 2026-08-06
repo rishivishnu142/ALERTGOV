@@ -50,7 +50,7 @@ export function LiveProvider({ children }) {
             dept: newMsg.split(' — ')[0],
             message: newMsg.split(' — ')[1],
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            icon: newMsg.startsWith('Fire') ? '🔥' : newMsg.startsWith('Police') ? '👮' : newMsg.startsWith('Medical') ? '🚑' : '🚨'
+            icon: newMsg.startsWith('Fire') ? 'fire' : newMsg.startsWith('Police') ? 'police' : newMsg.startsWith('Medical') ? 'medical' : 'alert'
           });
           if (inc.departmentUpdates.length > 8) inc.departmentUpdates.pop();
           changed = true;

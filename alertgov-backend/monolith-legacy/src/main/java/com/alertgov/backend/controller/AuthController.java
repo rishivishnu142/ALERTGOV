@@ -1,0 +1,381 @@
+package com.alertgov.backend.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+import java.util.HashMap;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login_post(@RequestBody(required = false) Map<String, Object> payload) {
+        Map<String, Object> response = new HashMap<>();
+        
+        String username = payload != null && payload.containsKey("username") ? payload.get("username").toString() : "VEO1001";
+        
+        String role = "village";
+        if (username.startsWith("TAL")) role = "taluk";
+        else if (username.startsWith("DEC")) role = "district";
+        else if (username.startsWith("COL")) role = "collector";
+        else if (username.startsWith("STA")) role = "state";
+
+        Map<String, Object> user = new HashMap<>();
+        user.put("id", username);
+        user.put("name", "Officer " + username);
+        user.put("role", role);
+        user.put("title", role.toUpperCase() + " Officer");
+        
+        if (role.equals("state")) {
+            user.put("state", "Tamil Nadu");
+            user.put("district", "All Districts");
+            user.put("taluk", "All Taluks");
+            user.put("village", "All Villages");
+        } else if (role.equals("collector") || role.equals("district")) {
+            user.put("state", "Tamil Nadu");
+            user.put("district", "Coimbatore");
+            user.put("taluk", "All Taluks");
+            user.put("village", "All Villages");
+        } else {
+            user.put("state", "Tamil Nadu");
+            user.put("district", "Coimbatore");
+        }
+        
+        // Dynamically infer Taluk for VEOs based on their ID
+        String inferredTaluk = "Unknown";
+        if (username.startsWith("VEO-")) {
+            String[] parts = username.split("-");
+            if (parts.length >= 2) {
+                String talukCode = parts[1];
+                if (talukCode.equals("COIMBATORESOUTH")) inferredTaluk = "Coimbatore South Taluk";
+                else if (talukCode.equals("MADUKKARAI")) inferredTaluk = "Madukkarai Taluk";
+                else if (talukCode.equals("PERUR")) inferredTaluk = "Perur Taluk";
+                else if (talukCode.equals("SULUR")) inferredTaluk = "Sulur Taluk";
+                else if (talukCode.equals("COIMBATORENORTH")) inferredTaluk = "Coimbatore North Taluk";
+                else if (talukCode.equals("METTUPALAYAM")) inferredTaluk = "Mettupalayam Taluk";
+                else if (talukCode.equals("ANNUR")) inferredTaluk = "Annur Taluk";
+                else if (talukCode.equals("POLLACHI")) inferredTaluk = "Pollachi Taluk";
+                else if (talukCode.equals("KINATHUKADAVU")) inferredTaluk = "Kinathukadavu Taluk";
+                else if (talukCode.equals("VALPARAI")) inferredTaluk = "Valparai Taluk";
+                else if (talukCode.equals("ANAMALAI")) inferredTaluk = "Anamalai Taluk";
+            }
+        }
+        user.put("taluk", inferredTaluk);
+        
+        if (username.equals("TAL-COIMBATORE-SOUTH")) { user.put("taluk", "Coimbatore South Taluk"); }
+        if (username.equals("VEO-COIMBATORESOUTH-1")) { user.put("village", "Coimbatore Old Village And Old Town"); }
+        if (username.equals("VEO-COIMBATORESOUTH-2")) { user.put("village", "Ramanathapuram"); }
+        if (username.equals("VEO-COIMBATORESOUTH-3")) { user.put("village", "Souripalayam"); }
+        if (username.equals("VEO-COIMBATORESOUTH-4")) { user.put("village", "Uppilipalayam"); }
+        if (username.equals("VEO-COIMBATORESOUTH-5")) { user.put("village", "Singanallur"); }
+        if (username.equals("TAL-MADUKKARAI")) { user.put("taluk", "Madukkarai Taluk"); }
+        if (username.equals("VEO-MADUKKARAI-1")) { user.put("village", "Madukarai"); }
+        if (username.equals("VEO-MADUKKARAI-2")) { user.put("village", "Mavuthampathy"); }
+        if (username.equals("VEO-MADUKKARAI-3")) { user.put("village", "Pichanur"); }
+        if (username.equals("VEO-MADUKKARAI-4")) { user.put("village", "Seerapalayam"); }
+        if (username.equals("VEO-MADUKKARAI-5")) { user.put("village", "Ettimadai"); }
+        if (username.equals("VEO-MADUKKARAI-6")) { user.put("village", "Thirumalayampalayam (s)"); }
+        if (username.equals("VEO-MADUKKARAI-7")) { user.put("village", "Vazhukuparai"); }
+        if (username.equals("VEO-MADUKKARAI-8")) { user.put("village", "Thirumalayampalayam (n)"); }
+        if (username.equals("VEO-MADUKKARAI-9")) { user.put("village", "Malumichampatty"); }
+        if (username.equals("VEO-MADUKKARAI-10")) { user.put("village", "Palathurai"); }
+        if (username.equals("VEO-MADUKKARAI-11")) { user.put("village", "Karunchamigoundenpalayam"); }
+        if (username.equals("VEO-MADUKKARAI-12")) { user.put("village", "Thammagoundanpalayam"); }
+        if (username.equals("VEO-MADUKKARAI-13")) { user.put("village", "Nachipalayam"); }
+        if (username.equals("VEO-MADUKKARAI-14")) { user.put("village", "Arisipalayam"); }
+        if (username.equals("VEO-MADUKKARAI-15")) { user.put("village", "Myleripalayam"); }
+        if (username.equals("VEO-MADUKKARAI-16")) { user.put("village", "Othakalmandapam"); }
+        if (username.equals("VEO-MADUKKARAI-17")) { user.put("village", "Chettypalayam"); }
+        if (username.equals("VEO-MADUKKARAI-18")) { user.put("village", "Oorattukuppai"); }
+        if (username.equals("VEO-MADUKKARAI-19")) { user.put("village", "Kurichy"); }
+        if (username.equals("VEO-MADUKKARAI-20")) { user.put("village", "Vellalur"); }
+        if (username.equals("TAL-PERUR")) { user.put("taluk", "Perur Taluk"); }
+        if (username.equals("VEO-PERUR-1")) { user.put("village", "Ikaraipoluvampatty (n)"); }
+        if (username.equals("VEO-PERUR-2")) { user.put("village", "Madavarayapuram"); }
+        if (username.equals("VEO-PERUR-3")) { user.put("village", "Alanthurai"); }
+        if (username.equals("VEO-PERUR-4")) { user.put("village", "Pooluvampatti"); }
+        if (username.equals("VEO-PERUR-5")) { user.put("village", "Semmedu"); }
+        if (username.equals("VEO-PERUR-6")) { user.put("village", "Thenkarai"); }
+        if (username.equals("VEO-PERUR-7")) { user.put("village", "Madampatty"); }
+        if (username.equals("VEO-PERUR-8")) { user.put("village", "Theethipalayam"); }
+        if (username.equals("VEO-PERUR-9")) { user.put("village", "Perurchettipalaym"); }
+        if (username.equals("VEO-PERUR-10")) { user.put("village", "Narasipuram"); }
+        if (username.equals("VEO-PERUR-11")) { user.put("village", "Vellimalaipattinam"); }
+        if (username.equals("VEO-PERUR-12")) { user.put("village", "Jakirnaikenpalayam"); }
+        if (username.equals("VEO-PERUR-13")) { user.put("village", "Devarayanpuram"); }
+        if (username.equals("VEO-PERUR-14")) { user.put("village", "Thondamuthur"); }
+        if (username.equals("VEO-PERUR-15")) { user.put("village", "Thenamanallur"); }
+        if (username.equals("VEO-PERUR-16")) { user.put("village", "Kalikanaiken Palayam"); }
+        if (username.equals("VEO-PERUR-17")) { user.put("village", "Vadavalli"); }
+        if (username.equals("VEO-PERUR-18")) { user.put("village", "East Chithirai Chavadi"); }
+        if (username.equals("VEO-PERUR-19")) { user.put("village", "West Chithirai Chavadi"); }
+        if (username.equals("VEO-PERUR-20")) { user.put("village", "Vedapatty"); }
+        if (username.equals("VEO-PERUR-21")) { user.put("village", "Perur"); }
+        if (username.equals("VEO-PERUR-22")) { user.put("village", "Sundakamuthur"); }
+        if (username.equals("VEO-PERUR-23")) { user.put("village", "Veera Keralam"); }
+        if (username.equals("VEO-PERUR-24")) { user.put("village", "Komarapalayam"); }
+        if (username.equals("VEO-PERUR-25")) { user.put("village", "Kuniamuthur"); }
+        if (username.equals("TAL-SULUR")) { user.put("taluk", "Sulur Taluk"); }
+        if (username.equals("VEO-SULUR-1")) { user.put("village", "Paduvampalli"); }
+        if (username.equals("VEO-SULUR-2")) { user.put("village", "Kaduvettipalayam"); }
+        if (username.equals("VEO-SULUR-3")) { user.put("village", "Moppiripalayam"); }
+        if (username.equals("VEO-SULUR-4")) { user.put("village", "Kittampalayam"); }
+        if (username.equals("VEO-SULUR-5")) { user.put("village", "Semmandampalayam"); }
+        if (username.equals("VEO-SULUR-6")) { user.put("village", "Karumathampatty"); }
+        if (username.equals("VEO-SULUR-7")) { user.put("village", "Karavazhimadampoor"); }
+        if (username.equals("VEO-SULUR-8")) { user.put("village", "Kaniyur"); }
+        if (username.equals("VEO-SULUR-9")) { user.put("village", "Arasur"); }
+        if (username.equals("VEO-SULUR-10")) { user.put("village", "Neelambur"); }
+        if (username.equals("VEO-SULUR-11")) { user.put("village", "Mylampatty"); }
+        if (username.equals("VEO-SULUR-12")) { user.put("village", "Irugur"); }
+        if (username.equals("VEO-SULUR-13")) { user.put("village", "Rasipalayam"); }
+        if (username.equals("VEO-SULUR-14")) { user.put("village", "Kadampadi"); }
+        if (username.equals("VEO-SULUR-15")) { user.put("village", "Kangayampalayam"); }
+        if (username.equals("VEO-SULUR-16")) { user.put("village", "Sulur"); }
+        if (username.equals("VEO-SULUR-17")) { user.put("village", "Kannampalayam"); }
+        if (username.equals("VEO-SULUR-18")) { user.put("village", "Otterpalayam"); }
+        if (username.equals("VEO-SULUR-19")) { user.put("village", "Pattanam"); }
+        if (username.equals("VEO-SULUR-20")) { user.put("village", "Peedampalli"); }
+        if (username.equals("VEO-SULUR-21")) { user.put("village", "Kallengal"); }
+        if (username.equals("VEO-SULUR-22")) { user.put("village", "Appanaikenpatty"); }
+        if (username.equals("VEO-SULUR-23")) { user.put("village", "Pappampatty"); }
+        if (username.equals("VEO-SULUR-24")) { user.put("village", "Kallapalayam"); }
+        if (username.equals("VEO-SULUR-25")) { user.put("village", "Pachapalayam"); }
+        if (username.equals("VEO-SULUR-26")) { user.put("village", "Bogampatty"); }
+        if (username.equals("VEO-SULUR-27")) { user.put("village", "Idayapalayam"); }
+        if (username.equals("VEO-SULUR-28")) { user.put("village", "Selakkarichel"); }
+        if (username.equals("VEO-SULUR-29")) { user.put("village", "Vadavalli"); }
+        if (username.equals("VEO-SULUR-30")) { user.put("village", "Poorandampalayam"); }
+        if (username.equals("VEO-SULUR-31")) { user.put("village", "Varapatty"); }
+        if (username.equals("VEO-SULUR-32")) { user.put("village", "Vadambacheri"); }
+        if (username.equals("VEO-SULUR-33")) { user.put("village", "Vadavedampatty"); }
+        if (username.equals("VEO-SULUR-34")) { user.put("village", "Kumarapalayam"); }
+        if (username.equals("VEO-SULUR-35")) { user.put("village", "Malaipalayam"); }
+        if (username.equals("VEO-SULUR-36")) { user.put("village", "S.ayyampalayam"); }
+        if (username.equals("VEO-SULUR-37")) { user.put("village", "Kammalapatty"); }
+        if (username.equals("VEO-SULUR-38")) { user.put("village", "Jallipatty"); }
+        if (username.equals("VEO-SULUR-39")) { user.put("village", "Sencheripudur"); }
+        if (username.equals("VEO-SULUR-40")) { user.put("village", "Thalakari"); }
+        if (username.equals("VEO-SULUR-41")) { user.put("village", "J.krisnapuram"); }
+        if (username.equals("TAL-COIMBATORE-NORTH")) { user.put("taluk", "Coimbatore North Taluk"); }
+        if (username.equals("VEO-COIMBATORENORTH-1")) { user.put("village", "Kalapatty (east)"); }
+        if (username.equals("VEO-COIMBATORENORTH-2")) { user.put("village", "Vilankurichy"); }
+        if (username.equals("VEO-COIMBATORENORTH-3")) { user.put("village", "Saravanmpatty"); }
+        if (username.equals("VEO-COIMBATORENORTH-4")) { user.put("village", "Vellakinar"); }
+        if (username.equals("VEO-COIMBATORENORTH-5")) { user.put("village", "Kalapatty (west)"); }
+        if (username.equals("VEO-COIMBATORENORTH-6")) { user.put("village", "Chinnavedampatty"); }
+        if (username.equals("VEO-COIMBATORENORTH-7")) { user.put("village", "Sanganur"); }
+        if (username.equals("VEO-COIMBATORENORTH-8")) { user.put("village", "Ganapathy (e) And (w)"); }
+        if (username.equals("VEO-COIMBATORENORTH-9")) { user.put("village", "Krishnarayapuaram"); }
+        if (username.equals("VEO-COIMBATORENORTH-10")) { user.put("village", "Thelungupalayam"); }
+        if (username.equals("VEO-COIMBATORENORTH-11")) { user.put("village", "Puliyakulam"); }
+        if (username.equals("VEO-COIMBATORENORTH-12")) { user.put("village", "Anupperpalayam"); }
+        if (username.equals("VEO-COIMBATORENORTH-13")) { user.put("village", "Naikenpalayam"); }
+        if (username.equals("VEO-COIMBATORENORTH-14")) { user.put("village", "Gudalur (n) And (s)"); }
+        if (username.equals("VEO-COIMBATORENORTH-15")) { user.put("village", "Periyanaikanpalayam"); }
+        if (username.equals("VEO-COIMBATORENORTH-16")) { user.put("village", "Veerapandi"); }
+        if (username.equals("VEO-COIMBATORENORTH-17")) { user.put("village", "Billichi (e) And (w)"); }
+        if (username.equals("VEO-COIMBATORENORTH-19")) { user.put("village", "Kurudampalayam"); }
+        if (username.equals("VEO-COIMBATORENORTH-20")) { user.put("village", "Thudiyalur"); }
+        if (username.equals("VEO-COIMBATORENORTH-21")) { user.put("village", "Pannimadai"); }
+        if (username.equals("VEO-COIMBATORENORTH-22")) { user.put("village", "Nanjundapuram"); }
+        if (username.equals("VEO-COIMBATORENORTH-23")) { user.put("village", "Chinnathadagam"); }
+        if (username.equals("VEO-COIMBATORENORTH-24")) { user.put("village", "Veerapandi"); }
+        if (username.equals("VEO-COIMBATORENORTH-25")) { user.put("village", "Somayampalayam"); }
+        if (username.equals("VEO-COIMBATORENORTH-26")) { user.put("village", "Goundenpalayam"); }
+        if (username.equals("TAL-METTUPALAYAM")) { user.put("taluk", "Mettupalayam Taluk"); }
+        if (username.equals("VEO-METTUPALAYAM-1")) { user.put("village", "Nellithurai"); }
+        if (username.equals("VEO-METTUPALAYAM-2")) { user.put("village", "Odanthurai"); }
+        if (username.equals("VEO-METTUPALAYAM-3")) { user.put("village", "Thekkampatty"); }
+        if (username.equals("VEO-METTUPALAYAM-4")) { user.put("village", "Sikkadasampalayam"); }
+        if (username.equals("VEO-METTUPALAYAM-5")) { user.put("village", "Sirumugai"); }
+        if (username.equals("VEO-METTUPALAYAM-6")) { user.put("village", "Irumburai"); }
+        if (username.equals("VEO-METTUPALAYAM-7")) { user.put("village", "Chinnakallipatty"); }
+        if (username.equals("VEO-METTUPALAYAM-8")) { user.put("village", "Mooduthurai"); }
+        if (username.equals("VEO-METTUPALAYAM-9")) { user.put("village", "Iluppanatham"); }
+        if (username.equals("VEO-METTUPALAYAM-10")) { user.put("village", "Bellepalayam"); }
+        if (username.equals("VEO-METTUPALAYAM-11")) { user.put("village", "Jadayampalayam"); }
+        if (username.equals("VEO-METTUPALAYAM-12")) { user.put("village", "Kemmaarampalayam"); }
+        if (username.equals("VEO-METTUPALAYAM-13")) { user.put("village", "Tholampalayam"); }
+        if (username.equals("VEO-METTUPALAYAM-14")) { user.put("village", "Velliyankadu"); }
+        if (username.equals("VEO-METTUPALAYAM-15")) { user.put("village", "Kalampalayam"); }
+        if (username.equals("VEO-METTUPALAYAM-16")) { user.put("village", "Marudur"); }
+        if (username.equals("VEO-METTUPALAYAM-17")) { user.put("village", "Karamadai"); }
+        if (username.equals("VEO-METTUPALAYAM-18")) { user.put("village", "Bellathi"); }
+        if (username.equals("VEO-METTUPALAYAM-19")) { user.put("village", "Sikkarampalayam"); }
+        if (username.equals("TAL-ANNUR")) { user.put("taluk", "Annur Taluk"); }
+        if (username.equals("VEO-ANNUR-1")) { user.put("village", "Annur"); }
+        if (username.equals("VEO-ANNUR-2")) { user.put("village", "Pillayapampalayam"); }
+        if (username.equals("VEO-ANNUR-3")) { user.put("village", "Kariyampalayam"); }
+        if (username.equals("VEO-ANNUR-4")) { user.put("village", "Vadavalli"); }
+        if (username.equals("VEO-ANNUR-5")) { user.put("village", "Kuppepalayam"); }
+        if (username.equals("VEO-ANNUR-6")) { user.put("village", "Kattampatty"); }
+        if (username.equals("VEO-ANNUR-7")) { user.put("village", "Kunnathur"); }
+        if (username.equals("VEO-ANNUR-8")) { user.put("village", "Masagoundenpalayam"); }
+        if (username.equals("VEO-ANNUR-9")) { user.put("village", "Pachapalayam"); }
+        if (username.equals("VEO-ANNUR-10")) { user.put("village", "Naranapuram"); }
+        if (username.equals("VEO-ANNUR-11")) { user.put("village", "Karegoundenpalayam"); }
+        if (username.equals("VEO-ANNUR-12")) { user.put("village", "Bogalur"); }
+        if (username.equals("VEO-ANNUR-13")) { user.put("village", "Odderpalayam"); }
+        if (username.equals("VEO-ANNUR-14")) { user.put("village", "Kuppanur"); }
+        if (username.equals("VEO-ANNUR-15")) { user.put("village", "Akkari Sengapally"); }
+        if (username.equals("VEO-ANNUR-16")) { user.put("village", "Kanuvakarai"); }
+        if (username.equals("VEO-ANNUR-17")) { user.put("village", "Aambothi"); }
+        if (username.equals("VEO-ANNUR-18")) { user.put("village", "Vadakkalur"); }
+        if (username.equals("VEO-ANNUR-19")) { user.put("village", "Annur Mettupalayam"); }
+        if (username.equals("VEO-ANNUR-20")) { user.put("village", "Pasoor"); }
+        if (username.equals("VEO-ANNUR-21")) { user.put("village", "Allapalayam"); }
+        if (username.equals("VEO-ANNUR-22")) { user.put("village", "Kanjampally"); }
+        if (username.equals("VEO-ANNUR-23")) { user.put("village", "Vellamadai"); }
+        if (username.equals("VEO-ANNUR-24")) { user.put("village", "Agraharasamakulam"); }
+        if (username.equals("VEO-ANNUR-25")) { user.put("village", "Kondayampalayam"); }
+        if (username.equals("VEO-ANNUR-26")) { user.put("village", "Sarkar Samakulam"); }
+        if (username.equals("VEO-ANNUR-27")) { user.put("village", "Kallipalayam"); }
+        if (username.equals("VEO-ANNUR-28")) { user.put("village", "Vellanaipatty"); }
+        if (username.equals("VEO-ANNUR-29")) { user.put("village", "Keeranatham"); }
+        if (username.equals("VEO-ANNUR-30")) { user.put("village", "Idikarai"); }
+        if (username.equals("TAL-POLLACHI")) { user.put("taluk", "Pollachi Taluk"); }
+        if (username.equals("VEO-POLLACHI-1")) { user.put("village", "Eripatty"); }
+        if (username.equals("VEO-POLLACHI-2")) { user.put("village", "Polygoundampalayam"); }
+        if (username.equals("VEO-POLLACHI-3")) { user.put("village", "Poosaripatty"); }
+        if (username.equals("VEO-POLLACHI-4")) { user.put("village", "Thippampatty"); }
+        if (username.equals("VEO-POLLACHI-5")) { user.put("village", "Chandira Puram"); }
+        if (username.equals("VEO-POLLACHI-6")) { user.put("village", "Chinna Negamam"); }
+        if (username.equals("VEO-POLLACHI-7")) { user.put("village", "Periya Negamam"); }
+        if (username.equals("VEO-POLLACHI-8")) { user.put("village", "Avalappampatty"); }
+        if (username.equals("VEO-POLLACHI-9")) { user.put("village", "Kondegoundenpalayam"); }
+        if (username.equals("VEO-POLLACHI-10")) { user.put("village", "Mulanur"); }
+        if (username.equals("VEO-POLLACHI-11")) { user.put("village", "A. Nagur"); }
+        if (username.equals("VEO-POLLACHI-12")) { user.put("village", "Kollapatty"); }
+        if (username.equals("VEO-POLLACHI-13")) { user.put("village", "Vadakipalayam"); }
+        if (username.equals("VEO-POLLACHI-14")) { user.put("village", "Devampadi"); }
+        if (username.equals("VEO-POLLACHI-15")) { user.put("village", "Thalakkarai"); }
+        if (username.equals("VEO-POLLACHI-16")) { user.put("village", "Muthur"); }
+        if (username.equals("VEO-POLLACHI-17")) { user.put("village", "Bodipalayam"); }
+        if (username.equals("VEO-POLLACHI-18")) { user.put("village", "Kulathur"); }
+        if (username.equals("VEO-POLLACHI-19")) { user.put("village", "Servakaranpalayam"); }
+        if (username.equals("VEO-POLLACHI-20")) { user.put("village", "Rasichettipalayam"); }
+        if (username.equals("VEO-POLLACHI-21")) { user.put("village", "Ayyampalayam"); }
+        if (username.equals("VEO-POLLACHI-22")) { user.put("village", "Nalluthukuzhuli"); }
+        if (username.equals("VEO-POLLACHI-23")) { user.put("village", "Kumarapalayam"); }
+        if (username.equals("VEO-POLLACHI-24")) { user.put("village", "Thimamkuthu"); }
+        if (username.equals("VEO-POLLACHI-25")) { user.put("village", "Poravipalayam"); }
+        if (username.equals("VEO-POLLACHI-26")) { user.put("village", "Servukaranpalayam"); }
+        if (username.equals("VEO-POLLACHI-27")) { user.put("village", "Ramapattanam"); }
+        if (username.equals("VEO-POLLACHI-28")) { user.put("village", "Mannur"); }
+        if (username.equals("VEO-POLLACHI-29")) { user.put("village", "Sandegoundanpalayam"); }
+        if (username.equals("VEO-POLLACHI-30")) { user.put("village", "Kullichettipalayam"); }
+        if (username.equals("VEO-POLLACHI-31")) { user.put("village", "Kavilipalayam"); }
+        if (username.equals("VEO-POLLACHI-32")) { user.put("village", "Sikkarayapuram"); }
+        if (username.equals("VEO-POLLACHI-33")) { user.put("village", "Poosanaickenthali"); }
+        if (username.equals("VEO-POLLACHI-34")) { user.put("village", "Sangampalayam"); }
+        if (username.equals("VEO-POLLACHI-35")) { user.put("village", "Achipatty"); }
+        if (username.equals("VEO-POLLACHI-36")) { user.put("village", "Okkulipalayam"); }
+        if (username.equals("VEO-POLLACHI-37")) { user.put("village", "Kurumbapalayam"); }
+        if (username.equals("VEO-POLLACHI-38")) { user.put("village", "Kullakapalayam"); }
+        if (username.equals("VEO-POLLACHI-39")) { user.put("village", "Thoppampatty"); }
+        if (username.equals("VEO-POLLACHI-40")) { user.put("village", "Rasakkapalayam"); }
+        if (username.equals("VEO-POLLACHI-41")) { user.put("village", "Vellalapalayam"); }
+        if (username.equals("VEO-POLLACHI-42")) { user.put("village", "Anupperpalayam"); }
+        if (username.equals("VEO-POLLACHI-43")) { user.put("village", "Puliyampatty"); }
+        if (username.equals("VEO-POLLACHI-44")) { user.put("village", "Kittasoorampalayam"); }
+        if (username.equals("VEO-POLLACHI-45")) { user.put("village", "T. Kottampatty"); }
+        if (username.equals("VEO-POLLACHI-46")) { user.put("village", "Pollachi"); }
+        if (username.equals("VEO-POLLACHI-47")) { user.put("village", "R. Ponnapuram"); }
+        if (username.equals("VEO-POLLACHI-48")) { user.put("village", "Gomangalam"); }
+        if (username.equals("VEO-POLLACHI-49")) { user.put("village", "Gomangalampudur"); }
+        if (username.equals("VEO-POLLACHI-50")) { user.put("village", "S.malayandipattinam"); }
+        if (username.equals("VEO-POLLACHI-51")) { user.put("village", "Seelakampatti"); }
+        if (username.equals("VEO-POLLACHI-52")) { user.put("village", "Nallampalli"); }
+        if (username.equals("VEO-POLLACHI-53")) { user.put("village", "Solapalayam"); }
+        if (username.equals("VEO-POLLACHI-54")) { user.put("village", "Nattukalpalayam"); }
+        if (username.equals("VEO-POLLACHI-55")) { user.put("village", "Kanjampatti"); }
+        if (username.equals("VEO-POLLACHI-56")) { user.put("village", "Kolarpatti"); }
+        if (username.equals("VEO-POLLACHI-57")) { user.put("village", "Koolanaikenpatti"); }
+        if (username.equals("VEO-POLLACHI-58")) { user.put("village", "Sinjuvadi"); }
+        if (username.equals("VEO-POLLACHI-59")) { user.put("village", "Kallipatty"); }
+        if (username.equals("VEO-POLLACHI-60")) { user.put("village", "Sooleeswaranpatty"); }
+        if (username.equals("VEO-POLLACHI-61")) { user.put("village", "Makkinampatty"); }
+        if (username.equals("VEO-POLLACHI-62")) { user.put("village", "Chinnamapalayam"); }
+        if (username.equals("VEO-POLLACHI-63")) { user.put("village", "Oonjavelampatty"); }
+        if (username.equals("VEO-POLLACHI-64")) { user.put("village", "Zamin Uthukuli"); }
+        if (username.equals("VEO-POLLACHI-65")) { user.put("village", "Zamin Kottamppatty"); }
+        if (username.equals("TAL-KINATHUKADAVU")) { user.put("taluk", "Kinathukadavu Taluk"); }
+        if (username.equals("VEO-KINATHUKADAVU-1")) { user.put("village", "Mettubavi"); }
+        if (username.equals("VEO-KINATHUKADAVU-2")) { user.put("village", "Panapatti"); }
+        if (username.equals("VEO-KINATHUKADAVU-3")) { user.put("village", "Vadachittor"); }
+        if (username.equals("VEO-KINATHUKADAVU-4")) { user.put("village", "Kurunallipalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-5")) { user.put("village", "Periyakalandai"); }
+        if (username.equals("VEO-KINATHUKADAVU-6")) { user.put("village", "Kattampatty"); }
+        if (username.equals("VEO-KINATHUKADAVU-7")) { user.put("village", "Surukalandai"); }
+        if (username.equals("VEO-KINATHUKADAVU-8")) { user.put("village", "Andipalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-9")) { user.put("village", "Kappalankarai"); }
+        if (username.equals("VEO-KINATHUKADAVU-10")) { user.put("village", "Arasampalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-11")) { user.put("village", "Kondampatty"); }
+        if (username.equals("VEO-KINATHUKADAVU-12")) { user.put("village", "Solavampalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-13")) { user.put("village", "Vadapudur"); }
+        if (username.equals("VEO-KINATHUKADAVU-14")) { user.put("village", "Kuthirayalampalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-15")) { user.put("village", "Pottayandipuram"); }
+        if (username.equals("VEO-KINATHUKADAVU-16")) { user.put("village", "Kinthukadavu"); }
+        if (username.equals("VEO-KINATHUKADAVU-17")) { user.put("village", "Sokkanur"); }
+        if (username.equals("VEO-KINATHUKADAVU-18")) { user.put("village", "Kodangipalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-19")) { user.put("village", "Chettiyakkapalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-20")) { user.put("village", "Nallattipalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-21")) { user.put("village", "Kodavadi"); }
+        if (username.equals("VEO-KINATHUKADAVU-22")) { user.put("village", "Muthur"); }
+        if (username.equals("VEO-KINATHUKADAVU-23")) { user.put("village", "Sankarayapuram"); }
+        if (username.equals("VEO-KINATHUKADAVU-24")) { user.put("village", "Govindapuram"); }
+        if (username.equals("VEO-KINATHUKADAVU-25")) { user.put("village", "Devarayapuram"); }
+        if (username.equals("VEO-KINATHUKADAVU-26")) { user.put("village", "Soolakal"); }
+        if (username.equals("VEO-KINATHUKADAVU-27")) { user.put("village", "Mettupalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-28")) { user.put("village", "Kaniyalampalyam"); }
+        if (username.equals("VEO-KINATHUKADAVU-29")) { user.put("village", "Devanampalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-30")) { user.put("village", "Vakuthampalayam"); }
+        if (username.equals("VEO-KINATHUKADAVU-31")) { user.put("village", "Kakkadavu"); }
+        if (username.equals("VEO-KINATHUKADAVU-32")) { user.put("village", "Krishnarayapuram"); }
+        if (username.equals("VEO-KINATHUKADAVU-33")) { user.put("village", "Sozhanur"); }
+        if (username.equals("VEO-KINATHUKADAVU-34")) { user.put("village", "Varadanur"); }
+        if (username.equals("VEO-KINATHUKADAVU-35")) { user.put("village", "Mullipatti"); }
+        if (username.equals("TAL-VALPARAI")) { user.put("taluk", "Valparai Taluk"); }
+        if (username.equals("VEO-VALPARAI-1")) { user.put("village", "Anamalai Kundrugal"); }
+        if (username.equals("TAL-ANAMALAI")) { user.put("taluk", "Anamalai Taluk"); }
+        if (username.equals("VEO-ANAMALAI-1")) { user.put("village", "Odayakulam"); }
+        if (username.equals("VEO-ANAMALAI-2")) { user.put("village", "Anaimalai"); }
+        if (username.equals("VEO-ANAMALAI-3")) { user.put("village", "Vettaikaranputhur"); }
+        if (username.equals("VEO-ANAMALAI-4")) { user.put("village", "Kaliyapuram"); }
+        if (username.equals("VEO-ANAMALAI-5")) { user.put("village", "Thensangampalayam"); }
+        if (username.equals("VEO-ANAMALAI-6")) { user.put("village", "Somanthurai"); }
+        if (username.equals("VEO-ANAMALAI-7")) { user.put("village", "Thensittor"); }
+        if (username.equals("VEO-ANAMALAI-8")) { user.put("village", "Pethanaickenur"); }
+        if (username.equals("VEO-ANAMALAI-9")) { user.put("village", "Vakkampalayam"); }
+        if (username.equals("VEO-ANAMALAI-10")) { user.put("village", "Naickenpalayam"); }
+        if (username.equals("VEO-ANAMALAI-11")) { user.put("village", "Singanallur"); }
+        if (username.equals("VEO-ANAMALAI-12")) { user.put("village", "Ambarampalayam"); }
+        if (username.equals("VEO-ANAMALAI-13")) { user.put("village", "Marchanaickenpalayam"); }
+        if (username.equals("VEO-ANAMALAI-14")) { user.put("village", "Periyapodu"); }
+        if (username.equals("VEO-ANAMALAI-15")) { user.put("village", "Aathupollachi"); }
+        if (username.equals("VEO-ANAMALAI-16")) { user.put("village", "Thalavaipalayam"); }
+        if (username.equals("VEO-ANAMALAI-17")) { user.put("village", "Pazhayur"); }
+        if (username.equals("VEO-ANAMALAI-18")) { user.put("village", "Veeralpatti"); }
+        if (username.equals("VEO-ANAMALAI-19")) { user.put("village", "Thondamuthur"); }
+        if (username.equals("VEO-ANAMALAI-20")) { user.put("village", "Nallur"); }
+        if (username.equals("VEO-ANAMALAI-21")) { user.put("village", "Thenkumarapalayam"); }
+        if (username.equals("VEO-ANAMALAI-22")) { user.put("village", "Samathur"); }
+        if (username.equals("VEO-ANAMALAI-23")) { user.put("village", "S. Ponnapuram"); }
+        if (username.equals("VEO-ANAMALAI-24")) { user.put("village", "Kottur"); }
+        if (username.equals("VEO-ANAMALAI-25")) { user.put("village", "Angalakurichi"); }
+        if (username.equals("VEO-ANAMALAI-26")) { user.put("village", "Kariyamcheittipalayam"); }
+        if (username.equals("VEO-ANAMALAI-27")) { user.put("village", "Thuraiyur"); }
+        if (username.equals("VEO-ANAMALAI-28")) { user.put("village", "Jallipatty"); }
+        if (username.equals("VEO-ANAMALAI-29")) { user.put("village", "Kambalapatty"); }
+        if (username.equals("VEO-ANAMALAI-30")) { user.put("village", "Arthanaripalayam"); }
+        if (username.equals("VEO-ANAMALAI-31")) { user.put("village", "Pilsinampalayam"); }
+
+        response.put("success", true);
+        response.put("token", "mock-jwt-token-12345");
+        response.put("user", user);
+        
+        return ResponseEntity.ok(response);
+    }
+}

@@ -1,7 +1,7 @@
 import { useAuth } from '../../context/AuthContext';
 import { INCIDENTS } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
-import { Download, Sparkles, FileText, CheckCircle2 } from 'lucide-react';
+import { Download, Sparkles, FileText, CheckCircle2, Brain } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { useState } from 'react';
 
@@ -117,7 +117,7 @@ export default function AIReports() {
     <div style={{ maxWidth: 1000, margin: '0 auto' }}>
       <div className="page-header">
         <div>
-          <div className="page-title">🧠 AI Generated Reports</div>
+          <div className="page-title"><Brain size={24} style={{ display: 'inline', marginRight: '8px', verticalAlign: 'text-bottom' }} /> AI Generated Reports</div>
           <div className="page-subtitle">Auto-generated daily situation reports and official press releases</div>
         </div>
       </div>

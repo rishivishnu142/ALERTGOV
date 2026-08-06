@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LiveProvider } from './context/LiveContext';
+import { LanguageProvider } from './context/LanguageContext';
 import AppShell from './components/Layout/AppShell';
 
 // Auth
@@ -25,6 +26,7 @@ import CreateIncident from './pages/Village/CreateIncident';
 import ActiveIncidents from './pages/Village/ActiveIncidents';
 import UpdateIncidentStatus from './pages/Village/UpdateIncidentStatus';
 import UploadMedia from './pages/Village/UploadMedia';
+import ExportPDF from './pages/Village/ExportPDF';
 
 // Taluk Pages
 import TalukDashboard from './pages/Taluk/TalukDashboard';
@@ -67,9 +69,10 @@ import UserManagement from './pages/common/UserManagement';
 const ProtectedRoute = ({ children, allowedRole }) => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
-  if (user.role !== allowedRole) {
+  const role = user.role.toLowerCase();
+  if (role !== allowedRole.toLowerCase()) {
     // Redirect to their actual role dashboard if they try to access another role's route
-    return <Navigate to={`/${user.role}`} replace />;
+    return <Navigate to={`/${role}`} replace />;
   }
   return children;
 };
@@ -79,12 +82,13 @@ const RoleRouter = () => {
   
   if (!user) return <Navigate to="/login" replace />;
   
+  const role = user.role.toLowerCase();
   // Default redirect based on role
-  if (user.role === 'village') return <Navigate to="/village" replace />;
-  if (user.role === 'taluk') return <Navigate to="/taluk" replace />;
-  if (user.role === 'district') return <Navigate to="/district" replace />;
-  if (user.role === 'collector') return <Navigate to="/collector" replace />;
-  if (user.role === 'state') return <Navigate to="/state" replace />;
+  if (role === 'village') return <Navigate to="/village" replace />;
+  if (role === 'taluk') return <Navigate to="/taluk" replace />;
+  if (role === 'district') return <Navigate to="/district" replace />;
+  if (role === 'collector') return <Navigate to="/collector" replace />;
+  if (role === 'state') return <Navigate to="/state" replace />;
   
   return <Navigate to="/login" replace />;
 };
@@ -94,8 +98,9 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <LiveProvider>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
+          <LanguageProvider>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           
           <Route path="/policies" element={<WebsitePolicies />} />
@@ -112,6 +117,7 @@ export default function App() {
             <Route path="active-incidents" element={<ActiveIncidents />} />
             <Route path="update-status" element={<UpdateIncidentStatus />} />
             <Route path="upload-media" element={<UploadMedia />} />
+            <Route path="export-pdf" element={<ExportPDF />} />
             <Route path="notifications" element={<Notifications />} />
             <Route path="profile" element={<Profile />} />
           </Route>
@@ -176,6 +182,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+          </LanguageProvider>
         </LiveProvider>
       </AuthProvider>
     </BrowserRouter>
