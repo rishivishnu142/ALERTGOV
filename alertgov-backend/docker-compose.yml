@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  discovery-server:
+    build:
+      context: ./discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_REGISTERWITHEUREKA=false
+      - EUREKA_CLIENT_FETCHREGISTRY=false
+
+  config-server:
+    build:
+      context: ./config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+
+  auth-service:
+    build:
+      context: ./auth-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  incident-service:
+    build:
+      context: ./incident-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  alert-service:
+    build:
+      context: ./alert-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  approval-service:
+    build:
+      context: ./approval-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  notification-service:
+    build:
+      context: ./notification-service
+    ports:
+      - "8087:8087"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  analytics-service:
+    build:
+      context: ./analytics-service
+    ports:
+      - "8088:8088"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
+
+  ai-service:
+    build:
+      context: ./ai-service
+    ports:
+      - "8089:8089"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@host.docker.internal:1521:XE
+    depends_on:
+      - discovery-server
