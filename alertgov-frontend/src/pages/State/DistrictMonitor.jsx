@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { INCIDENTS, DISTRICTS, USERS } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
 import { ChevronLeft, Users as UsersIcon, AlertTriangle, ShieldAlert, Clock, MapPin, Activity, Map, ChevronDown, ChevronRight, BookOpen, UserCircle } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function DistrictMonitor() {
+  const { incidents: INCIDENTS, districts: DISTRICTS } = useLiveContextData();
+
   const { district } = useParams();
   const navigate = useNavigate();
   const [expandedTaluks, setExpandedTaluks] = useState({});

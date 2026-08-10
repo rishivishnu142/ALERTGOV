@@ -1,0 +1,178 @@
+version: '3.8'
+
+services:
+  oracle-db:
+    image: gvenzl/oracle-xe:slim-faststart
+    container_name: oracle-db
+    ports:
+      - "1522:1521"
+    environment:
+      - ORACLE_PASSWORD=admin
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:latest
+    container_name: local-mongo
+    ports:
+      - "27017:27017"
+
+  discovery-server:
+    build:
+      context: ./alertgov-backend/discovery-server
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_REGISTERWITHEUREKA=false
+      - EUREKA_CLIENT_FETCHREGISTRY=false
+
+  config-server:
+    build:
+      context: ./alertgov-backend/config-server
+    ports:
+      - "8888:8888"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+
+  api-gateway:
+    build:
+      context: ./alertgov-backend/api-gateway
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+    depends_on:
+      - discovery-server
+
+  auth-service:
+    build:
+      context: ./alertgov-backend/auth-service
+    ports:
+      - "8082:8082"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+    depends_on:
+      - discovery-server
+      - oracle-db
+
+  user-service:
+    build:
+      context: ./alertgov-backend/user-service
+    ports:
+      - "8083:8083"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+    depends_on:
+      - discovery-server
+      - oracle-db
+
+  incident-service:
+    build:
+      context: ./alertgov-backend/incident-service
+    ports:
+      - "8084:8084"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/alertgov_media
+    depends_on:
+      - discovery-server
+      - mongo
+
+  alert-service:
+    build:
+      context: ./alertgov-backend/alert-service
+    ports:
+      - "8085:8085"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+    depends_on:
+      - discovery-server
+      - oracle-db
+
+  approval-service:
+    build:
+      context: ./alertgov-backend/approval-service
+    ports:
+      - "8086:8086"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+    depends_on:
+      - discovery-server
+      - oracle-db
+
+  notification-service:
+    build:
+      context: ./alertgov-backend/notification-service
+    ports:
+      - "8087:8087"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+    depends_on:
+      - discovery-server
+      - oracle-db
+
+  analytics-service:
+    build:
+      context: ./alertgov-backend/analytics-service
+    ports:
+      - "8088:8088"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+    depends_on:
+      - discovery-server
+      - oracle-db
+
+  ai-service:
+    build:
+      context: ./alertgov-backend/ai-service
+    ports:
+      - "8089:8089"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
+      - PYTHON_AI_SERVICE_URL=http://alertgov-ai:8000
+    depends_on:
+      - discovery-server
+      - oracle-db
+      - alertgov-ai
+
+  alertgov-ai:
+    build:
+      context: ./alertgov-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_URL=http://ollama:11434/api/generate
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+
+  init-ollama:
+    image: ollama/ollama
+    container_name: init-ollama
+    depends_on:
+      - ollama
+    command: >
+      sh -c "sleep 10 && ollama pull llama3"
+
+  frontend:
+    build:
+      context: ./alertgov-frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:8081

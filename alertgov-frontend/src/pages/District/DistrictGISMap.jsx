@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import GISMap from '../../components/Map/GISMap';
-import { RESOURCES } from '../../data/mockData';
 import { useIncidents } from '../../context/LiveContext';
 import { Card } from '../../components/common/UIComponents';
 import { Layers, Map } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function DistrictGISMap() {
+  const { resources: RESOURCES } = useLiveContextData();
+
   const [showResources, setShowResources] = useState(true);
   const [showRadius, setShowRadius] = useState(true);
   const incidents = useIncidents();

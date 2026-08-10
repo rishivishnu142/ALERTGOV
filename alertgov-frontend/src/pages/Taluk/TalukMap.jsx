@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import GISMap from '../../components/Map/GISMap';
-import { INCIDENTS, RESOURCES } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
 import { Layers, Map } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function TalukMap() {
+  const { incidents: INCIDENTS, resources: RESOURCES } = useLiveContextData();
+
   const [showResources, setShowResources] = useState(true);
 
   // Flatten resources for the map

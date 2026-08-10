@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { RESOURCES } from '../../data/mockData';
 import { useLive, useIncidents } from '../../context/LiveContext';
 import { Card, SeverityBadge, AIPanel, AlertBanner } from '../../components/common/UIComponents';
 import GISMap from '../../components/Map/GISMap';
 import { Truck, Search, Plus, MapPin, Navigation, Ambulance, Shield, Helicopter } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function ResourceCommand() {
+  const { resources: RESOURCES } = useLiveContextData();
+
   const myIncidents = useIncidents();
   const [selectedInc, setSelectedInc] = useState(null);
   const [renderTick, setRenderTick] = useState(0);

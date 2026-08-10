@@ -2,12 +2,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { 
+import { useLiveContextData } from '../../context/LiveContext';
   LayoutDashboard, FilePlus, List, UploadCloud, RefreshCw,
   Map, BarChart2, ShieldAlert, FileText, CheckSquare,
   Navigation, Radio, Brain, LogOut, Bell, Shield,
   Inbox, Satellite, AlertCircle, ClipboardList, Route, Users, AlertTriangle
 } from 'lucide-react';
-import { INCIDENTS } from '../../data/mockData';
 
 const ROLE_LABELS = {
   village: 'Village EOC',
@@ -26,6 +26,8 @@ const ROLE_LABELS_TA = {
 };
 
 export default function Sidebar() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const { user, logout } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();

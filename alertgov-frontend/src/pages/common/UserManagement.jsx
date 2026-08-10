@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { USERS, DISTRICTS } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
 import { Users, Plus, Shield, Ban, Trash2, CheckCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useLiveContextData } from '../../context/LiveContext';
 
 // Ensure all users have a status
 USERS.forEach(u => {
@@ -18,6 +18,8 @@ const ROLE_LABELS = {
 };
 
 export default function UserManagement() {
+  const { districts: DISTRICTS } = useLiveContextData();
+
   const { user } = useAuth();
   const [tick, setTick] = useState(0); // For re-renders
   const [showForm, setShowForm] = useState(false);

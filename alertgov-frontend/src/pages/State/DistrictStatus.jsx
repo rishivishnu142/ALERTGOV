@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../components/common/UIComponents';
 import { MapPin, Search } from 'lucide-react';
-import { DISTRICTS } from '../../data/mockData';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function DistrictStatus() {
+  const { districts: DISTRICTS } = useLiveContextData();
+
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 

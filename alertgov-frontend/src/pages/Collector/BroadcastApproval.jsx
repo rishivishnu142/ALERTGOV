@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { INCIDENTS } from '../../data/mockData';
 import { Card, AIPanel } from '../../components/common/UIComponents';
 import GISMap from '../../components/Map/GISMap';
 import { CheckCircle, XCircle, Megaphone, Smartphone, Radio, AlertTriangle, ShieldCheck, Activity, Loader, ChevronRight } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function BroadcastApproval() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedId = searchParams.get('id');

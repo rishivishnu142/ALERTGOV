@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { NOTIFICATIONS } from '../../data/mockData';
 import { Bell, Clock, CheckCircle, Trash2, AlertTriangle, ShieldAlert, Info } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function Notifications() {
+  const { notifications: NOTIFICATIONS } = useLiveContextData();
+
   const { user } = useAuth();
   const { t } = useLanguage();
   const [filter, setFilter] = useState('all');

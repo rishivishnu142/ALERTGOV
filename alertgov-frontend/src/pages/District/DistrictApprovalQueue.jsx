@@ -16,14 +16,37 @@ export default function DistrictApprovalQueue() {
   const inc = queue.find(i => i.id === selectedId) || queue[0];
   const selectedIdx = queue.findIndex(i => i.id === inc?.id);
 
-  const handleAction = (action) => {
+  const handleAction = async (action) => {
     if (action === 'coordinate') {
       navigate('/district/resource-command');
     } else if (action === 'escalate') {
-      Swal.fire(t('Escalated', 'மேல்முறையீடு செய்யப்பட்டது'), t('Drafted Broadcast & Resources. Forwarded to Collector for Final Approval.', 'ஒளிபரப்பு மற்றும் வளங்கள் வரையப்பட்டன. இறுதி ஒப்புதலுக்காக ஆட்சியருக்கு அனுப்பப்பட்டது.'), 'success').then(() => {
-        if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
-        else navigate('/district');
-      });
+      try {
+        if (inc && inc.id && !inc.id.includes('NEW')) {
+          const { IncidentService } = await import('../../api');
+          await IncidentService.updateIncidentStatus(inc.id, 'Waiting for Collector', 'collector');
+        }
+        Swal.fire(t('Escalated', 'மேல்முறையீடு செய்யப்பட்டது'), t('Drafted Broadcast & Resources. Forwarded to Collector for Final Approval.', 'ஒளிபரப்பு மற்றும் வளங்கள் வரையப்பட்டன. இறுதி ஒப்புதலுக்காக ஆட்சியருக்கு அனுப்பப்பட்டது.'), 'success').then(() => {
+          if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
+          else navigate('/district');
+        });
+      } catch (e) {
+        console.error(e);
+        Swal.fire('Error', 'Failed to update status on server.', 'error');
+      }
+    } else if (action === 'approve_direct') {
+      try {
+        if (inc && inc.id && !inc.id.includes('NEW')) {
+          const { IncidentService } = await import('../../api');
+          await IncidentService.updateIncidentStatus(inc.id, 'District Coordinated', 'district');
+        }
+        Swal.fire(t('Deployed!', 'பயன்படுத்தப்பட்டது!'), t('Broadcast & Resources Deployed!', 'ஒளிபரப்பு மற்றும் வளங்கள் பயன்படுத்தப்பட்டன!'), 'success').then(() => {
+          if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
+          else navigate('/district');
+        });
+      } catch (e) {
+        console.error(e);
+        Swal.fire('Error', 'Failed to update status on server.', 'error');
+      }
     }
   };
 
@@ -93,9 +116,13 @@ export default function DistrictApprovalQueue() {
                   {isSevere ? t('Collector Approval Required', 'ஆட்சியரின் ஒப்புதல் தேவை') : t('District Level Approval Permitted', 'மாவட்ட அளவிலான ஒப்புதல் அனுமதிக்கப்படுகிறது')}
                 </div>
                 <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  {isSevere
-                    ? t("Due to high severity, chemical proximity, and high population risk, this incident cannot be broadcasted without the District Collector's executive approval. Prepare the resource plan and draft broadcast, then forward.", "அதிக தீவிரம், இரசாயன அருகாமை மற்றும் அதிக மக்கள் தொகை ஆபத்து காரணமாக, மாவட்ட ஆட்சியரின் நிர்வாக ஒப்புதல் இல்லாமல் இந்த சம்பவத்தை ஒளிபரப்ப முடியாது. வளத் திட்டம் மற்றும் ஒளிபரப்பு வரைவை தயார் செய்து, பின்னர் அனுப்பவும்.")
-                    : t("Low severity incident. District EOC is authorized to approve cell broadcasts and assign resources directly without Collector escalation.", "குறைந்த தீவிர சம்பவம். ஆட்சியருக்கு அனுப்பாமல் நேரடியாக செல் ஒளிபரப்புகளை அங்கீகரிக்கவும் வளங்களை ஒதுக்கவும் மாவட்ட அவசரகால மையத்திற்கு அதிகாரம் உள்ளது.")}
+                  {inc.aiRecommendation ? (
+                    inc.aiRecommendation
+                  ) : (
+                    isSevere
+                      ? t("Due to high severity, chemical proximity, and high population risk, this incident cannot be broadcasted without the District Collector's executive approval. Prepare the resource plan and draft broadcast, then forward.", "அதிக தீவிரம், இரசாயன அருகாமை மற்றும் அதிக மக்கள் தொகை ஆபத்து காரணமாக, மாவட்ட ஆட்சியரின் நிர்வாக ஒப்புதல் இல்லாமல் இந்த சம்பவத்தை ஒளிபரப்ப முடியாது. வளத் திட்டம் மற்றும் ஒளிபரப்பு வரைவை தயார் செய்து, பின்னர் அனுப்பவும்.")
+                      : t("Low severity incident. District EOC is authorized to approve cell broadcasts and assign resources directly without Collector escalation.", "குறைந்த தீவிர சம்பவம். ஆட்சியருக்கு அனுப்பாமல் நேரடியாக செல் ஒளிபரப்புகளை அங்கீகரிக்கவும் வளங்களை ஒதுக்கவும் மாவட்ட அவசரகால மையத்திற்கு அதிகாரம் உள்ளது.")
+                  )}
                 </p>
               </div>
             </div>
@@ -122,7 +149,7 @@ export default function DistrictApprovalQueue() {
                   <ShieldAlert size={16} /> {t('Forward to Collector', 'ஆட்சியருக்கு அனுப்பவும்')}
                 </button>
               ) : (
-                <button className="btn btn-success" style={{ justifyContent: 'center' }} onClick={() => Swal.fire(t('Deployed!', 'பயன்படுத்தப்பட்டது!'), t('Broadcast & Resources Deployed!', 'ஒளிபரப்பு மற்றும் வளங்கள் பயன்படுத்தப்பட்டன!'), 'success')}>
+                <button className="btn btn-success" style={{ justifyContent: 'center' }} onClick={() => handleAction('approve_direct')}>
                   <CheckCircle size={16} /> {t('Approve & Deploy Directly', 'நேரடியாக ஒப்புதல் அளித்து பயன்படுத்தவும்')}
                 </button>
               )}

@@ -1,10 +1,10 @@
 
 import { useAuth } from '../../context/AuthContext';
 import { useLive, useIncidents } from '../../context/LiveContext';
-import { RESOURCES, ANALYTICS_DATA } from '../../data/mockData';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { ShieldAlert, Clock, Truck, AlertTriangle, Users, ArrowRight, Activity, MapPin, CheckCircle, ChevronRight, Zap, Cpu, Radio, FileText, Inbox, ClipboardList, Flame } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -43,6 +43,8 @@ const SevBadge = ({ severity }) => {
 };
 
 export default function DistrictDashboard() {
+  const { resources: RESOURCES, analytics: ANALYTICS_DATA } = useLiveContextData();
+
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { INCIDENTS } from '../../data/mockData';
 import { FilePlus, Clock, Radio, ShieldAlert, AlertTriangle, Eye, MapPin, CloudRain, Thermometer, Wind, XCircle, CloudLightning, FileText, CloudSun, UploadCloud } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLiveContextData } from '../../context/LiveContext';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -21,6 +21,8 @@ const GradientCard = ({ gradient, label, value, sub }) => {
 };
 
 export default function VillageDashboard() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const { user } = useAuth();
   const { t, language } = useLanguage();
   const navigate = useNavigate();

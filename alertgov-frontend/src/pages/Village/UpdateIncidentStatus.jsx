@@ -1,10 +1,12 @@
 import { useLocation } from 'react-router-dom';
-import { INCIDENTS } from '../../data/mockData';
 import { SeverityBadge, StatusBadge, Timeline, EscalationTracker } from '../../components/common/UIComponents';
 import { Eye, Calendar, Sparkles } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function UpdateIncidentStatus() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const location = useLocation();
   const { t } = useLanguage();
   const selectedId = location.state?.incidentId || 'INC-2024-001';

@@ -1,8 +1,8 @@
 import { useAuth } from '../../context/AuthContext';
-import { INCIDENTS, DISTRICTS } from '../../data/mockData';
 import { ShieldAlert, Map, BarChart2, Brain, Inbox, Activity, ChevronRight, AlertTriangle, MapPin, Users } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import GISMap from '../../components/Map/GISMap';
+import { useLiveContextData } from '../../context/LiveContext';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -22,6 +22,8 @@ const GradientCard = ({ gradient, label, value, sub }) => {
 const districtColors = { Green: 'var(--severity-low)', Yellow: 'var(--severity-medium)', Red: 'var(--severity-severe)' };
 
 export default function StateDashboard() {
+  const { incidents: INCIDENTS, districts: DISTRICTS } = useLiveContextData();
+
   const { user } = useAuth();
   const navigate = useNavigate();
 

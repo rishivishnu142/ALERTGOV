@@ -4,18 +4,20 @@ from pydantic import BaseModel
 import requests
 import json
 
+import os
+
 app = FastAPI(title="AlertGov AI Microservice", description="FastAPI Backend for Ollama AI Integration")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:8081", "http://localhost:8082"],
+    allow_origins=["http://localhost:5173", "http://localhost:8081", "http://localhost:8082", "http://localhost", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Ollama's default local API endpoint
-OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 # Default Model (the user needs to pull this via 'ollama run llama3')
 MODEL_NAME = "llama3"
 

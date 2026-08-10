@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { INCIDENTS } from '../../data/mockData';
 import { SeverityBadge, StatusBadge, CategoryBadge } from '../../components/common/UIComponents';
 import { Search, Filter, MapPin, Clock, Eye, ClipboardList, Download, FileText } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function ActiveIncidents() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');
   const navigate = useNavigate();

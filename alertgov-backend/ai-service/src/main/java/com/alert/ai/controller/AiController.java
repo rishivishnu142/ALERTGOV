@@ -4,27 +4,63 @@ import com.alert.ai.entity.AiPrediction;
 import com.alert.ai.repository.AiPredictionRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/ai")
 public class AiController {
 
     private final AiPredictionRepository repository;
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Value("${PYTHON_AI_SERVICE_URL:http://localhost:8000}")
+    private String pythonAiServiceUrl;
 
     public AiController(AiPredictionRepository repository) {
         this.repository = repository;
     }
 
     @PostMapping("/predict/{incidentId}")
-    public ResponseEntity<AiPrediction> generatePrediction(@PathVariable String incidentId) {
-        // MOCK AI LOGIC (To be replaced with actual ML/Gemini call in Phase 7)
-        AiPrediction prediction = new AiPrediction();
-        prediction.setIncidentId(incidentId);
-        prediction.setPredictedSeverity("HIGH");
-        prediction.setSpreadRadiusKm("15.5");
-        prediction.setRecommendations("Evacuate low-lying areas immediately. Dispatch SDRF teams.");
+    public ResponseEntity<AiPrediction> generatePrediction(@PathVariable String incidentId, @RequestBody(required = false) Map<String, String> payload) {
+        String prompt = "Incident ID " + incidentId;
+        if (payload != null && payload.containsKey("description")) {
+            prompt = payload.get("description");
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
         
-        return ResponseEntity.ok(repository.save(prediction));
+        String requestJson = "{\"prompt\": \"" + prompt.replace("\"", "\\\"") + "\"}";
+        HttpEntity<String> request = new HttpEntity<>(requestJson, headers);
+
+        try {
+            ResponseEntity<Map> response = restTemplate.postForEntity(pythonAiServiceUrl + "/ai/predict-risk", request, Map.class);
+            Map<String, Object> body = response.getBody();
+            Map<String, Object> data = (Map<String, Object>) body.get("data");
+
+            AiPrediction prediction = new AiPrediction();
+            prediction.setIncidentId(incidentId);
+            
+            if (data != null) {
+                prediction.setPredictedSeverity((String) data.get("severity"));
+                prediction.setRecommendations((String) data.get("recommendation"));
+                prediction.setSpreadRadiusKm("Unknown"); // The prompt doesn't return this yet
+            } else {
+                prediction.setPredictedSeverity("UNKNOWN");
+                prediction.setRecommendations((String) body.get("response"));
+                prediction.setSpreadRadiusKm("Unknown");
+            }
+            
+            return ResponseEntity.ok(repository.save(prediction));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
     }
     
     @GetMapping("/prediction/{incidentId}")

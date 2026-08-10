@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { NOTIFICATIONS } from '../../data/mockData';
 import { Bell, Clock, CheckCircle, Trash2, AlertTriangle, ShieldAlert, Info } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function TalukNotifications() {
+  const { notifications: NOTIFICATIONS } = useLiveContextData();
+
   const [filter, setFilter] = useState('all');
   const [notifs, setNotifs] = useState(NOTIFICATIONS);
 

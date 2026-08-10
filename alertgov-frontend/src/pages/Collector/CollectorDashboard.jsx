@@ -46,8 +46,8 @@ export default function CollectorDashboard() {
 
   const criticalIncidents = incidents.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity) && i.status !== 'Resolved');
   const broadcastPending = incidents.filter(i => i.status === 'Waiting for Collector').length;
-  const evacuations = 1;
-  const peopleAtRisk = 12400;
+  const evacuations = criticalIncidents.length;
+  const peopleAtRisk = criticalIncidents.length * 1240;
 
   const handleGeneratePdf = (inc) => {
     const today = new Date().toLocaleDateString('en-GB');

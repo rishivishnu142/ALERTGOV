@@ -28,6 +28,9 @@ public class IncidentReport {
     
     private List<String> mediaIds = new ArrayList<>();
     private List<String> updates = new ArrayList<>();
+    
+    private String aiSummary;
+    private String aiRecommendation;
 
     public IncidentReport() {}
 
@@ -72,4 +75,10 @@ public class IncidentReport {
     
     public List<String> getUpdates() { return updates; }
     public void setUpdates(List<String> updates) { this.updates = updates; }
+    
+    public String getAiSummary() { return aiSummary; }
+    public void setAiSummary(String aiSummary) { this.aiSummary = aiSummary; }
+    
+    public String getAiRecommendation() { return aiRecommendation; }
+    public void setAiRecommendation(String aiRecommendation) { this.aiRecommendation = aiRecommendation; }
 }

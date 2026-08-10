@@ -1,10 +1,12 @@
 import { Card } from '../../components/common/UIComponents';
-import { ANALYTICS_DATA } from '../../data/mockData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Download, BarChart2 } from 'lucide-react';
 import Swal from 'sweetalert2';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function TalukReports() {
+  const { analytics: ANALYTICS_DATA } = useLiveContextData();
+
   const handleExport = () => {
     Swal.fire({
       title: 'Export PDF Report',

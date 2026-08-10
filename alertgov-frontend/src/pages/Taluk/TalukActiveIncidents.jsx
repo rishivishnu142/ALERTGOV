@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { INCIDENTS } from '../../data/mockData';
 import { SeverityBadge, StatusBadge, CategoryBadge, Timeline, Modal, AIPanel } from '../../components/common/UIComponents';
 import { Search, Eye, MapPin, Clock, ClipboardList } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function TalukActiveIncidents() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('All');

@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { INCIDENTS } from '../../data/mockData';
 import { Upload as UploadIcon, Image, FileText, Video, Mic, CheckCircle } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function UploadMedia() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const location = useLocation();
   const { t } = useLanguage();
   const [selectedId, setSelectedId] = useState(location.state?.incidentId || 'INC-2024-001');

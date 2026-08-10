@@ -1,9 +1,11 @@
 import { Card } from '../../components/common/UIComponents';
-import { ANALYTICS_DATA } from '../../data/mockData';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { Download, BarChart2 } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function ExecutiveAnalytics() {
+  const { analytics: ANALYTICS_DATA } = useLiveContextData();
+
   return (
     <div>
       <div className="page-header">

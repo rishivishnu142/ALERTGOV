@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { INCIDENTS } from '../../data/mockData';
 import { Download, ArrowLeft, FileText, Image as ImageIcon, MapPin } from 'lucide-react';
 import { Modal, SeverityBadge, CategoryBadge } from '../../components/common/UIComponents';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function ExportPDF() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const navigate = useNavigate();
   const [showLangModal, setShowLangModal] = useState(false);
   const [language, setLanguage] = useState('en'); // 'en' or 'ta'

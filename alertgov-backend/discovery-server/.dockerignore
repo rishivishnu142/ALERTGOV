@@ -1,0 +1,7 @@
+target/
+!.mvn/
+!target/*.jar
+*.zip
+.git
+.idea
+.metadata

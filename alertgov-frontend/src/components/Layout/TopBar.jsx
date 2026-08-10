@@ -8,8 +8,8 @@ import {
   Radio, Brain, LogOut, Shield, Inbox, Satellite, AlertCircle, ClipboardList, 
   Route, Users, ChevronDown, AlertTriangle 
 } from 'lucide-react';
-import { INCIDENTS } from '../../data/mockData';
 import { officerDirectory } from '../../data/officerDirectory';
+import { useLiveContextData } from '../../context/LiveContext';
 
 const ROLE_LABELS = {
   village: 'Village EOC',
@@ -28,6 +28,8 @@ const ROLE_LABELS_TA = {
 };
 
 export default function TopBar() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const { user, logout } = useAuth();
   const { language, changeLanguage, t } = useLanguage();
   const navigate = useNavigate();

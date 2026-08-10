@@ -1,11 +1,13 @@
 import { useAuth } from '../../context/AuthContext';
-import { INCIDENTS } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
 import { Download, Sparkles, FileText, CheckCircle2, Brain } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { useState } from 'react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function AIReports() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const { user } = useAuth();
   const [isGenerated, setIsGenerated] = useState(false);
 

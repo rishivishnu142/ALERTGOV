@@ -1,9 +1,11 @@
 import GISMap from '../../components/Map/GISMap';
-import { INCIDENTS } from '../../data/mockData';
 import { Card } from '../../components/common/UIComponents';
 import { Map } from 'lucide-react';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function DistrictSituationMap() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   return (
     <div>
       <div className="page-header">

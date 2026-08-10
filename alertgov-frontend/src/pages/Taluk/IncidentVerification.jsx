@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { INCIDENTS } from '../../data/mockData';
 import { SeverityBadge, AIPanel, Card, AlertBanner } from '../../components/common/UIComponents';
 import GISMap from '../../components/Map/GISMap';
 import { CheckCircle, XCircle, AlertTriangle, ShieldAlert, Phone, MapPin, Search, Image, FileImage, Camera, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import Swal from 'sweetalert2';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function IncidentVerification() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [queue, setQueue] = useState([]);
@@ -41,20 +43,39 @@ export default function IncidentVerification() {
 
   const inc = queue[selectedIdx];
 
-  const handleVerify = (action) => {
+  const handleVerify = async (action) => {
     let title = '', text = '', icon = 'success';
+    let newStatus = '';
+    let newLevel = '';
+
     if (action === 'approve') {
       title = t('Verified', 'சரிபார்க்கப்பட்டது'); text = t('Incident Verified. Forwarded to District EOC automatically.', 'சம்பவம் சரிபார்க்கப்பட்டது. மாவட்ட அவசரகால மையத்திற்கு தானாகவே அனுப்பப்பட்டது.');
+      newStatus = 'Waiting for Collector';
+      newLevel = 'district';
     } else if (action === 'reject') {
       title = t('Rejected', 'நிராகரிக்கப்பட்டது'); text = t('Incident Rejected. Marked as False Alarm.', 'சம்பவம் நிராகரிக்கப்பட்டது. தவறான அலாரமாக குறிக்கப்பட்டுள்ளது.'); icon = 'error';
+      newStatus = 'Resolved';
+      newLevel = 'taluk';
     } else {
       title = t('Escalated', 'மேல்முறையீடு செய்யப்பட்டது'); text = t('Escalated Urgently to Collector.', 'ஆட்சியருக்கு அவசரமாக மேல்முறையீடு செய்யப்பட்டது.'); icon = 'warning';
+      newStatus = 'Waiting for Collector';
+      newLevel = 'collector';
     }
 
-    Swal.fire(title, text, icon).then(() => {
-      if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
-      else navigate('/taluk');
-    });
+    try {
+      if (inc && inc.id && !inc.id.includes('NEW')) {
+         const { IncidentService } = await import('../../api');
+         await IncidentService.updateIncidentStatus(inc.id, newStatus, newLevel);
+      }
+      
+      Swal.fire(title, text, icon).then(() => {
+        if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
+        else navigate('/taluk');
+      });
+    } catch (e) {
+      console.error(e);
+      Swal.fire('Error', 'Failed to update status on server.', 'error');
+    }
   };
 
   if (!inc) {

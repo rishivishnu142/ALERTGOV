@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { INCIDENTS } from '../../data/mockData';
 import { Card, SeverityBadge, StatusBadge, AIPanel, CategoryBadge } from '../../components/common/UIComponents';
 import { CheckCircle, AlertTriangle, ShieldAlert, FileText, Megaphone, MapPin, Navigation, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useLiveContextData } from '../../context/LiveContext';
 
 export default function CriticalIncidents() {
+  const { incidents: INCIDENTS } = useLiveContextData();
+
   const navigate = useNavigate();
   // Filter for incidents that reached Collector
   const queue = INCIDENTS.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity) && i.status === 'Waiting for Collector');
