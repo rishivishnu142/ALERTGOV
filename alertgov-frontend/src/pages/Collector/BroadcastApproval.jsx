@@ -16,7 +16,7 @@ export default function BroadcastApproval() {
   const [tick, setTick] = useState(0);
   
   // Find all incidents in the broadcast queue
-  const queue = INCIDENTS.filter(i => ['Pending Dispatch', 'Dispatching', 'Live'].includes(i.broadcastStatus));
+  const queue = INCIDENTS.filter(i => ['Approved for Broadcast', 'Dispatching', 'Live Broadcast'].includes(i.status));
   
   // If no selectedId but queue has items, select the first one
   useEffect(() => {
@@ -42,19 +42,29 @@ export default function BroadcastApproval() {
 
   // Update script if incident changes
   useEffect(() => {
-    setScript(draft.radioScript);
+    if (!inc) return;
+    const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    const locStr = inc.locationName || `${inc.taluk || ''} ${inc.district || ''}`.trim();
+    const radius = inc.affectedRadius || 5;
+    
+    setScript(`[ENGLISH]
+EMERGENCY ALERT: ${inc.title} at ${locStr}. Residents within ${radius}km radius must evacuate immediately. Emergency response teams are on-site. Stay tuned for updates.
+
+[தமிழ் - TAMIL]
+அவசர அறிவிப்பு: ${locStr} பகுதியில் ${inc.title} ஏற்பட்டுள்ளது. ${radius} கிலோமீட்டர் சுற்றளவில் உள்ள மக்கள் உடனடியாக பாதுகாப்பான இடத்திற்கு செல்லவும். மீட்பு குழுவினர் சம்பவ இடத்தில் உள்ளனர்.`);
   }, [inc]);
 
-  const startDispatch = () => {
+  const startDispatch = async () => {
     if (inc) {
-      inc.broadcastStatus = 'Dispatching';
+      const { IncidentService } = await import('../../api');
+      await IncidentService.updateIncidentStatus(inc.id, 'Dispatching', 'collector');
       setDispatchStep(0);
       setTick(t => t + 1);
     }
   };
 
   useEffect(() => {
-    if (inc?.broadcastStatus === 'Dispatching') {
+    if (inc?.status === 'Dispatching') {
       const steps = [
         { delay: 1000 }, // Connecting to DoT
         { delay: 1500 }, // Authorizing
@@ -67,8 +77,9 @@ export default function BroadcastApproval() {
           setDispatchStep(prev => prev + 1);
         }, steps[dispatchStep].delay);
       } else {
-        timeout = setTimeout(() => {
-          inc.broadcastStatus = 'Live';
+        timeout = setTimeout(async () => {
+          const { IncidentService } = await import('../../api');
+          await IncidentService.updateIncidentStatus(inc.id, 'Live Broadcast', 'collector');
           setTick(t => t + 1);
         }, 500);
       }
@@ -90,7 +101,7 @@ export default function BroadcastApproval() {
   const renderDetail = () => {
     if (!inc) return <div>Select an incident</div>;
 
-    if (inc.broadcastStatus === 'Dispatching') {
+    if (inc.status === 'Dispatching') {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '60vh' }}>
           <Card style={{ width: '400px', padding: '24px' }}>
@@ -115,7 +126,7 @@ export default function BroadcastApproval() {
       );
     }
 
-    if (inc.broadcastStatus === 'Live') {
+    if (inc.status === 'Live Broadcast') {
       return (
         <div className="animate-in">
           <div className="live-broadcasting-banner" style={{ marginBottom: '24px' }}>
@@ -143,7 +154,7 @@ export default function BroadcastApproval() {
           <Card title="Live Coverage Map">
              <div style={{ padding: 0 }}>
                <GISMap 
-                 center={[inc.location.lat, inc.location.lng]} 
+                 center={[inc.location?.lat || 11.0168, inc.location?.lng || 76.9558]} 
                  zoom={12} 
                  height={400} 
                  incidents={[inc]} 
@@ -187,7 +198,7 @@ export default function BroadcastApproval() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <Card title="Review Broadcast Content">
-              <textarea className="form-textarea" rows={6} value={script} onChange={e => setScript(e.target.value)} style={{ fontSize: '14px', lineHeight: 1.6 }} />
+              <textarea className="form-textarea" rows={6} value={script} onChange={e => setScript(e.target.value)} style={{ fontSize: '14px', lineHeight: 1.6, height: '240px', width: '100%' }} />
             </Card>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--bg-surface)', padding: '16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
@@ -205,7 +216,7 @@ export default function BroadcastApproval() {
         
         <Card title="Target Area" style={{ marginTop: '16px' }}>
           <div style={{ padding: 0 }}>
-            <GISMap center={[inc.location.lat, inc.location.lng]} zoom={12} height={240} incidents={[inc]} showRadius={true} radiusKm={draft.radius} />
+            <GISMap center={[inc.location?.lat || 11.0168, inc.location?.lng || 76.9558]} zoom={12} height={240} incidents={[inc]} showRadius={true} radiusKm={draft.radius} />
           </div>
         </Card>
       </div>

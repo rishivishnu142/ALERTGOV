@@ -1,7 +1,9 @@
 package com.alert.incident.controller;
 
 import com.alert.incident.entity.IncidentReport;
-import com.alert.incident.repository.IncidentReportRepository;
+import com.alert.incident.entity.IncidentMedia;
+import com.alert.incident.repository.jpa.IncidentReportRepository;
+import com.alert.incident.repository.mongo.IncidentMediaRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,21 +19,37 @@ import org.springframework.http.ResponseEntity;
 public class IncidentController {
 
     private final IncidentReportRepository repository;
+    private final IncidentMediaRepository mediaRepository;
     private final RestTemplate restTemplate;
 
-    public IncidentController(IncidentReportRepository repository, RestTemplate restTemplate) {
+    public IncidentController(IncidentReportRepository repository, IncidentMediaRepository mediaRepository, RestTemplate restTemplate) {
         this.repository = repository;
+        this.mediaRepository = mediaRepository;
         this.restTemplate = restTemplate;
     }
 
     @PostMapping
     public ResponseEntity<IncidentReport> reportIncident(@RequestBody IncidentReport report) {
+        String base64Image = report.getPhotoBase64();
+        report.setPhotoBase64(null); // Don't persist to Oracle
+
         report.setDate(LocalDateTime.now());
         if (report.getStatus() == null || report.getStatus().isEmpty()) {
             report.setStatus("Active");
         }
         
         IncidentReport saved = repository.save(report);
+
+        if (base64Image != null && !base64Image.isEmpty()) {
+            IncidentMedia media = new IncidentMedia();
+            media.setIncidentId(saved.getId());
+            media.setContentType("image/jpeg"); // Defaulting for base64 uploads
+            media.setData(base64Image.getBytes());
+            media.setUploadedAt(LocalDateTime.now());
+            IncidentMedia savedMedia = mediaRepository.save(media);
+            saved.getMediaIds().add(savedMedia.getId());
+            repository.save(saved);
+        }
         
         // Asynchronously call AI Service
         new Thread(() -> {
@@ -63,11 +81,31 @@ public class IncidentController {
         return ResponseEntity.ok(repository.findAll());
     }
     
+    @GetMapping("/taluk/{taluk}")
+    public ResponseEntity<List<IncidentReport>> getIncidentsByTaluk(@PathVariable String taluk) {
+        return ResponseEntity.ok(repository.findByTaluk(taluk));
+    }
+    
     @GetMapping("/{id}")
     public ResponseEntity<IncidentReport> getIncident(@PathVariable String id) {
         return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/image")
+    public ResponseEntity<Map<String, String>> getIncidentImage(@PathVariable String id) {
+        return repository.findById(id).flatMap(incident -> {
+            if (incident.getMediaIds() != null && !incident.getMediaIds().isEmpty()) {
+                String mediaId = incident.getMediaIds().get(0);
+                return mediaRepository.findById(mediaId).map(media -> {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("photoBase64", new String(media.getData()));
+                    return ResponseEntity.ok(response);
+                });
+            }
+            return java.util.Optional.empty();
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}/status")
@@ -96,7 +134,7 @@ public class IncidentController {
         long total = all.size();
         long resolved = all.stream().filter(i -> "Resolved".equalsIgnoreCase(i.getStatus())).count();
         long active = total - resolved;
-        long critical = all.stream().filter(i -> "Severe".equalsIgnoreCase(i.getSeverity()) || "Extremely Severe".equalsIgnoreCase(i.getSeverity())).count();
+        long critical = all.stream().filter(i -> "High".equalsIgnoreCase(i.getSeverity()) || "Severe".equalsIgnoreCase(i.getSeverity()) || "Extremely Severe".equalsIgnoreCase(i.getSeverity())).count();
         
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalIncidents", total);

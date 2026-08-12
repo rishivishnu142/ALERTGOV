@@ -65,7 +65,7 @@ export default function PrintReport() {
             </div>
             <div style={{ textAlign: 'center' }}>
               <p>Yours faithfully,</p>
-              <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/John_Hancock_signature.svg" alt="Signature" style={{ width: '100px', margin: '10px 0' }} />
+              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/John_Hancock_signature.svg/320px-John_Hancock_signature.svg.png" alt="Signature" style={{ width: '100px', margin: '10px 0' }} />
               <p>Taluk Officer.</p>
             </div>
           </div>
@@ -86,6 +86,7 @@ export default function PrintReport() {
               <tr><td><strong>GPS Coordinates</strong></td><td>: {incidentData?.lat || '10.9102'}, {incidentData?.lng || '76.9558'}</td></tr>
               <tr><td><strong>Severity</strong></td><td>: {incidentData?.severity || 'High'}</td></tr>
               <tr><td><strong>Reported By</strong></td><td>: {veo}</td></tr>
+              <tr><td><strong>Taluk Status</strong></td><td>: <span style={{ fontWeight: 600, color: incidentData?.status === 'Resolved' ? 'red' : incidentData?.status === 'Waiting for Collector' ? 'green' : 'orange' }}>{incidentData?.status === 'Resolved' ? 'REJECTED (False Alarm)' : incidentData?.status === 'Waiting for Collector' ? 'VERIFIED (Sent to Collector)' : 'PENDING'}</span></td></tr>
             </tbody>
           </table>
 
@@ -116,6 +117,10 @@ export default function PrintReport() {
               <tr><td><strong>AI Risk Level</strong></td><td>: {incidentData?.severity || 'High'}</td></tr>
             </tbody>
           </table>
+          <p style={{ fontSize: '11px', lineHeight: '1.6', textAlign: 'justify', color: '#16A34A', background: '#f0fdf4', padding: '10px', borderRadius: '4px', border: '1px solid #bbf7d0' }}>
+            <strong>AI Generated Summary:</strong><br/>
+            {incidentData?.aiSummary || 'The AI system has analyzed the incident and determined that it requires immediate attention.'}
+          </p>
 
           <h4 className="section-title" style={{ marginTop: '20px' }}>6. PHOTOGRAPHIC EVIDENCE</h4>
           <table className="info-table" style={{ border: 'none', marginBottom: '10px' }}>
@@ -126,11 +131,7 @@ export default function PrintReport() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ textAlign: 'center' }}>
-              {incidentData?.photoBase64 ? (
-                <img src={incidentData.photoBase64} alt="Evidence" style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', border: '1px solid #94a3b8' }} />
-              ) : (
-                <div style={{ width: '100%', height: '120px', background: '#f3f4f6', border: '1px dashed #94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b', fontSize: '12px' }}>[ No Evidence Provided ]</div>
-              )}
+              <img src={incidentData?.photoBase64 || (incidentData?.category === 'Fire' ? 'https://images.unsplash.com/photo-1599939571322-792a326cb68f?w=400&q=80' : incidentData?.category === 'Flood' ? 'https://images.unsplash.com/photo-1547683905-f686c993aae5?w=400&q=80' : 'https://images.unsplash.com/photo-1601584988711-2eb9a444aef4?w=400&q=80')} alt="Evidence" style={{ width: '100%', maxHeight: '180px', objectFit: 'cover', border: '1px solid #94a3b8' }} />
               <div style={{ fontSize: '9px', marginTop: '4px' }}>Photo 1: Live Capture from Village EOC</div>
             </div>
           </div>
@@ -154,9 +155,9 @@ export default function PrintReport() {
           <div style={{ flex: 2, padding: '0 20px', borderRight: '1px solid #000' }}>
             <h4 style={{ fontSize: '11px', textAlign: 'center', margin: '0 0 20px 0' }}>Remarks of Collector</h4>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', fontSize: '11px', marginBottom: '20px' }}>
-              <label><input type="checkbox" /> Approved</label>
-              <label><input type="checkbox" /> Need Clarification</label>
-              <label><input type="checkbox" /> Rejected</label>
+              <label><input type="checkbox" checked={incidentData?.status === 'Waiting for Collector'} readOnly /> Approved</label>
+              <label><input type="checkbox" checked={incidentData?.status === 'Waiting for Taluk'} readOnly /> Need Clarification</label>
+              <label><input type="checkbox" checked={incidentData?.status === 'Resolved'} readOnly /> Rejected</label>
             </div>
             <div style={{ fontSize: '11px' }}>
               <p>Remarks: ___________________________________________________________</p>

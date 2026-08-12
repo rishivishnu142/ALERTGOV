@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { IncidentService } from '../../api';
 import { CheckSquare, AlertTriangle, ArrowRight, Clock, Shield, MapPin, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AIBriefBanner } from '../../components/common/UIComponents';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -65,6 +66,17 @@ export default function TalukDashboard() {
           </button>
         </div>
       </div>
+
+      <AIBriefBanner 
+        type="taluk" 
+        location={user?.taluk || 'Taluk'} 
+        activeCount={pending.length + verified.length} 
+        criticalCount={critical.length}
+        tags={[
+          <><AlertTriangle size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {critical.length} {t('Critical Pending', 'முக்கிய நிலுவையில் உள்ளது')}</>,
+          <><Clock size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {pending.length} {t('To Verify', 'சரிபார்க்க')}</>
+        ]}
+      />
 
       {/* Gradient Stats */}
       <div className="stat-grid" style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}>

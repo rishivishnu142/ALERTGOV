@@ -14,34 +14,33 @@ export default function IncidentVerification() {
   const { t } = useLanguage();
   const [queue, setQueue] = useState([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [currentImage, setCurrentImage] = useState(null);
 
   useEffect(() => {
     let baseQueue = INCIDENTS.filter(i => i.status === 'Waiting for Taluk');
-    const stored = localStorage.getItem('latestIncident');
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        const newInc = {
-          id: 'INC-2026-NEW',
-          type: data.category || 'Other',
-          severity: data.severity || 'High',
-          status: 'Waiting for Taluk',
-          title: `${data.category || 'Emergency'} Incident`,
-          location: { name: 'Village Local', lat: data.lat || 10.9102, lng: data.lng || 76.9558 },
-          description: data.description,
-          reportedBy: 'Village EOC (Mettupalayam)',
-          reportedAt: data.timestamp || new Date().toISOString(),
-          media: data.photoBase64 ? [{ type: 'photo', name: 'evidence.jpg', url: data.photoBase64 }] : []
-        };
-        baseQueue = [newInc, ...baseQueue];
-      } catch (e) {
-        console.error('Error parsing stored incident:', e);
-      }
-    }
+
     setQueue(baseQueue);
-  }, []);
+  }, [INCIDENTS]);
 
   const inc = queue[selectedIdx];
+
+  useEffect(() => {
+    if (inc && inc.id && !inc.id.includes('NEW')) {
+      import('../../api').then(({ IncidentService }) => {
+        IncidentService.getIncidentImage(inc.id).then(res => {
+          if (res && res.photoBase64) {
+            setCurrentImage(res.photoBase64);
+          } else {
+            setCurrentImage(null);
+          }
+        });
+      });
+    } else if (inc && inc.photoBase64) {
+      setCurrentImage(inc.photoBase64);
+    } else {
+      setCurrentImage(null);
+    }
+  }, [inc]);
 
   const handleVerify = async (action) => {
     let title = '', text = '', icon = 'success';
@@ -50,7 +49,7 @@ export default function IncidentVerification() {
 
     if (action === 'approve') {
       title = t('Verified', 'சரிபார்க்கப்பட்டது'); text = t('Incident Verified. Forwarded to District EOC automatically.', 'சம்பவம் சரிபார்க்கப்பட்டது. மாவட்ட அவசரகால மையத்திற்கு தானாகவே அனுப்பப்பட்டது.');
-      newStatus = 'Waiting for Collector';
+      newStatus = 'Taluk Verified';
       newLevel = 'district';
     } else if (action === 'reject') {
       title = t('Rejected', 'நிராகரிக்கப்பட்டது'); text = t('Incident Rejected. Marked as False Alarm.', 'சம்பவம் நிராகரிக்கப்பட்டது. தவறான அலாரமாக குறிக்கப்பட்டுள்ளது.'); icon = 'error';
@@ -69,8 +68,12 @@ export default function IncidentVerification() {
       }
       
       Swal.fire(title, text, icon).then(() => {
-        if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
-        else navigate('/taluk');
+        setQueue(prev => {
+          const nextQueue = prev.filter(item => item.id !== inc.id);
+          if (nextQueue.length === 0) navigate('/taluk');
+          return nextQueue;
+        });
+        setSelectedIdx(0);
       });
     } catch (e) {
       console.error(e);
@@ -113,7 +116,7 @@ export default function IncidentVerification() {
                 <div style={{ display: 'flex', gap: '12px', fontSize: '12px', color: 'var(--text-muted)' }}>
                   <span className="font-mono text-primary">{inc.id}</span>
                   <span>·</span>
-                  <span><MapPin size={11} style={{ display: 'inline' }} /> {inc.location.address}</span>
+                  <span><MapPin size={11} style={{ display: 'inline' }} /> {inc.location?.address || inc.village || 'Unknown Location'}</span>
                 </div>
               </div>
               <SeverityBadge severity={inc.severity} />
@@ -136,7 +139,7 @@ export default function IncidentVerification() {
               </div>
               <div>
                 <div className="section-title" style={{ fontSize: '12px' }}>{t('Time Reported', 'அறிக்கை செய்யப்பட்ட நேரம்')}</div>
-                <div style={{ fontSize: '13px', fontWeight: 600 }}>{new Date(inc.reportedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                <div style={{ fontSize: '13px', fontWeight: 600 }}>{new Date((inc.reportedAt || inc.date || new Date())).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
               </div>
               <div>
                 <div className="section-title" style={{ fontSize: '12px' }}>{t('Contact VAO', 'கிராம நிர்வாக அலுவலரை தொடர்பு கொள்ள')}</div>
@@ -148,16 +151,16 @@ export default function IncidentVerification() {
           {/* Map */}
           <Card title={<><MapPin size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Incident Map & Infrastructure', 'சம்பவ வரைபடம் & உள்கட்டமைப்பு')}</>}>
             <div style={{ padding: 0 }}>
-              <GISMap center={[inc.location.lat, inc.location.lng]} zoom={14} height={300} incidents={[inc]} />
+              <GISMap center={[inc.location?.lat || 11.0168, inc.location?.lng || 76.9558]} zoom={14} height={300} incidents={[inc]} />
             </div>
           </Card>
 
           {/* VEO Attached Media */}
-          <Card title={<><Camera size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Attached Evidence (from VEO)', 'இணைக்கப்பட்ட சான்றுகள் (விஏஓ-விடமிருந்து)')}</>}>
+          <Card title={<><Camera size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Attached Evidence (from VEO)', 'இணைக்கப்பட்ட சான்றுகள் (VEO-விடமிருந்து)')}</>}>
             <div style={{ padding: '0 0 4px 0' }}>
-              {inc.media && inc.media.length > 0 ? (
+              {currentImage || (inc.media && inc.media.length > 0) ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 12, padding: '12px 0 4px' }}>
-                  {inc.media.map((m, i) => (
+                  {(inc.media && inc.media.length > 0 ? inc.media : [{ type: 'photo', url: currentImage, caption: 'VEO Uploaded Photo', uploadedAt: new Date().toISOString() }]).map((m, i) => (
                     <div key={i} style={{
                       border: '1px solid var(--border)',
                       borderRadius: 'var(--radius-sm)',
@@ -167,15 +170,15 @@ export default function IncidentVerification() {
                       {/* Thumbnail */}
                       <div style={{
                         height: 110,
-                        background: m.url
-                          ? `url(${m.url}) center/cover no-repeat`
+                        background: (m.url || currentImage)
+                          ? `url(${m.url || currentImage}) center/cover no-repeat`
                           : 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         position: 'relative'
                       }}>
-                        {!m.url && (
+                        {!(m.url || currentImage) && (
                           <div style={{ textAlign: 'center', color: '#94a3b8' }}>
                             {m.type === 'video'
                               ? <Camera size={28} style={{ marginBottom: 4 }} />

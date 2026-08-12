@@ -1,17 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useIncidents } from '../../context/LiveContext';
+import { useIncidents, useLiveContextData } from '../../context/LiveContext';
 import { Card, AIPanel, AlertBanner } from '../../components/common/UIComponents';
 import GISMap from '../../components/Map/GISMap';
-import { Radio, Smartphone, AlertTriangle, ShieldAlert, Sparkles, Send, FileText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Radio, Smartphone, AlertTriangle, ShieldAlert, Sparkles, Send, FileText, CheckCircle } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 export default function AlertBroadcast() {
   const navigate = useNavigate();
-  const incidents = useIncidents();
-  const [selectedInc, setSelectedInc] = useState(incidents[0]?.id);
+  const [searchParams] = useSearchParams();
+  const allIncidents = useIncidents();
+  const { refreshData } = useLiveContextData();
+  
+  const initialIncId = searchParams.get('incId');
+  const isFlow = searchParams.get('flow') === 'true';
+
+  const incidents = isFlow ? allIncidents.filter(i => i.id === initialIncId) : allIncidents;
+  const [selectedInc, setSelectedInc] = useState(initialIncId || incidents[0]?.id);
   const inc = incidents.find(i => i.id === selectedInc) || incidents[0];
   const isSevere = ['High', 'Severe', 'Extremely Severe'].includes(inc?.severity || '');
+  const isReadOnly = inc?.status !== 'Taluk Verified';
 
   const [radius, setRadius] = useState(inc?.affectedRadius || 5);
   const [type, setType] = useState('Evacuation');
@@ -120,11 +128,23 @@ export default function AlertBroadcast() {
     setLanguages(prev => prev.includes(l) ? prev.filter(x => x !== l) : [...prev, l]);
   };
 
-  const handleAction = () => {
-    if (isSevere) {
-      Swal.fire('Draft Saved', 'Forwarding to Collector for final approval.', 'success').then(() => navigate('/district'));
-    } else {
-      Swal.fire('Dispatched', 'Broadcast Approved and Dispatched directly by District EOC.', 'success');
+  const handleAction = async () => {
+    try {
+      const { IncidentService } = await import('../../api');
+      if (isSevere) {
+        if (inc && inc.id && !inc.id.includes('NEW')) {
+          await IncidentService.updateIncidentStatus(inc.id, 'Waiting for Collector', 'collector');
+        }
+        Swal.fire('Draft Forwarded', 'Draft forwarded to Collector for final approval.', 'success').then(() => { refreshData(); navigate('/district'); });
+      } else {
+        if (inc && inc.id && !inc.id.includes('NEW')) {
+          await IncidentService.updateIncidentStatus(inc.id, 'District Coordinated', 'district');
+        }
+        Swal.fire('Dispatched', 'Broadcast Approved and Dispatched directly by District EOC.', 'success').then(() => { refreshData(); navigate('/district'); });
+      }
+    } catch (e) {
+      console.error(e);
+      Swal.fire('Error', 'Failed to process broadcast action.', 'error');
     }
   };
 
@@ -140,7 +160,7 @@ export default function AlertBroadcast() {
       <div className="grid-3">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Card title="1. Select Incident">
-            <select className="form-select" value={selectedInc} onChange={e => setSelectedInc(e.target.value)}>
+            <select className="form-select" value={selectedInc || ''} onChange={e => setSelectedInc(e.target.value)} disabled={isFlow}>
               {incidents.map(i => <option key={i.id} value={i.id}>{i.id} — {i.title}</option>)}
             </select>
           </Card>
@@ -148,7 +168,7 @@ export default function AlertBroadcast() {
           <Card title="2. Broadcast Parameters">
             <div className="form-group">
               <label className="form-label">Alert Type</label>
-              <select className="form-select" value={type} onChange={e => setType(e.target.value)}>
+              <select className="form-select" value={type} onChange={e => setType(e.target.value)} disabled={isReadOnly}>
                 <option>Information</option>
                 <option>Warning</option>
                 <option>Emergency</option>
@@ -158,7 +178,7 @@ export default function AlertBroadcast() {
             
             <div className="form-group">
               <label className="form-label">Target Radius (KM)</label>
-              <input type="range" min="1" max="20" value={radius} onChange={e => setRadius(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--primary)' }} />
+              <input type="range" min="1" max="20" value={radius} onChange={e => setRadius(Number(e.target.value))} style={{ width: '100%', accentColor: 'var(--primary)' }} disabled={isReadOnly} />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
                 <span>1km</span>
                 <span style={{ fontWeight: 700, color: 'var(--primary)', fontSize: '13px' }}>{radius} km</span>
@@ -172,7 +192,8 @@ export default function AlertBroadcast() {
                 {['Tamil', 'English', 'Malayalam', 'Hindi'].map(l => (
                   <button key={l} type="button" 
                     className={`btn btn-sm ${languages.includes(l) ? 'btn-primary' : 'btn-ghost'}`}
-                    onClick={() => toggleLang(l)}>
+                    onClick={() => !isReadOnly && toggleLang(l)}
+                    disabled={isReadOnly}>
                     {l}
                   </button>
                 ))}
@@ -189,22 +210,22 @@ export default function AlertBroadcast() {
         <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Card>
             <div style={{ padding: 0 }}>
-              <GISMap center={[inc.location.lat, inc.location.lng]} zoom={13} height={300} incidents={[inc]} showRadius={true} radiusKm={radius} />
+              <GISMap center={[inc?.location?.lat || 11.0168, inc?.location?.lng || 76.9558]} zoom={13} height={300} incidents={inc ? [inc] : []} showRadius={true} radiusKm={radius} />
             </div>
           </Card>
 
           <Card title="3. Cell Broadcast Message">
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-              <button className="btn btn-ghost btn-sm text-primary"><Sparkles size={14}/> Regenerate with AI</button>
+              <button className="btn btn-ghost btn-sm text-primary" disabled={isReadOnly}><Sparkles size={14}/> Regenerate with AI</button>
             </div>
-            <textarea className="form-textarea" rows={4} value={cellScript} onChange={e => setCellScript(e.target.value)} style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', lineHeight: 1.6 }} />
+            <textarea className="form-textarea" rows={4} value={cellScript} onChange={e => setCellScript(e.target.value)} disabled={isReadOnly} style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', lineHeight: 1.6 }} />
           </Card>
 
           <Card title="4. Radio Script (Elaborate)">
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-              <button className="btn btn-ghost btn-sm text-primary"><Sparkles size={14}/> Regenerate with AI</button>
+              <button className="btn btn-ghost btn-sm text-primary" disabled={isReadOnly}><Sparkles size={14}/> Regenerate with AI</button>
             </div>
-            <textarea className="form-textarea" rows={7} value={radioScript} onChange={e => setRadioScript(e.target.value)} style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', lineHeight: 1.6, marginBottom: '12px' }} />
+            <textarea className="form-textarea" rows={7} value={radioScript} onChange={e => setRadioScript(e.target.value)} disabled={isReadOnly} style={{ fontFamily: 'var(--font-sans)', fontSize: '14px', lineHeight: 1.6, marginBottom: '12px' }} />
             
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                <button 
@@ -226,13 +247,19 @@ export default function AlertBroadcast() {
               <div className="text-muted text-sm">Direct approval authorized.</div>
             )}
 
-            <button className={`btn btn-lg ${isSevere ? 'btn-warning' : 'btn-success'}`} onClick={handleAction}>
-              {isSevere ? (
-                <><Send size={16} /> Draft & Forward to Collector</>
-              ) : (
-                <><Radio size={16} /> Approve & Broadcast Now</>
-              )}
-            </button>
+            {!isReadOnly ? (
+              <button className={`btn btn-lg ${isSevere ? 'btn-warning' : 'btn-success'}`} onClick={handleAction}>
+                {isSevere ? (
+                  <><Send size={16} /> Submit Draft & Wait for Approval</>
+                ) : (
+                  <><Radio size={16} /> Approve & Broadcast Now</>
+                )}
+              </button>
+            ) : (
+              <div className="btn btn-lg btn-ghost" style={{ color: 'var(--text-muted)', cursor: 'default' }}>
+                <CheckCircle size={16} /> Broadcast Locked (Status: {inc?.status})
+              </div>
+            )}
           </div>
         </div>
       </div>

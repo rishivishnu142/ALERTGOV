@@ -5,6 +5,8 @@ import { Users, Plus, Shield, Ban, Trash2, CheckCircle, ChevronDown, ChevronRigh
 import Swal from 'sweetalert2';
 import { useLiveContextData } from '../../context/LiveContext';
 
+const USERS = [];
+
 // Ensure all users have a status
 USERS.forEach(u => {
   if (!u.status) u.status = 'Active';

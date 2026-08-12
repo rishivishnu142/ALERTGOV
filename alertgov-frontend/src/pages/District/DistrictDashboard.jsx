@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { ShieldAlert, Clock, Truck, AlertTriangle, Users, ArrowRight, Activity, MapPin, CheckCircle, ChevronRight, Zap, Cpu, Radio, FileText, Inbox, ClipboardList, Flame } from 'lucide-react';
 import { useLiveContextData } from '../../context/LiveContext';
+import { AIBriefBanner } from '../../components/common/UIComponents';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -51,11 +52,43 @@ export default function DistrictDashboard() {
   const myIncidents = useIncidents();
 
   const active = myIncidents.filter(i => i.status !== 'Resolved' && i.status !== 'Closed');
-  const queue = myIncidents.filter(i => i.status === 'Taluk Verified' || i.status === 'Waiting for Collector');
+  const queue = myIncidents.filter(i => i.status === 'Taluk Verified');
   const critical = myIncidents.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity));
   const liveOps = myIncidents.filter(i => ['Waiting for Collector', 'District Coordinated'].includes(i.status));
   const totalDeployed = Object.values(RESOURCES).flat().filter(r => r.status === 'Deployed' || r.status === 'En Route').length;
   const totalAtRisk = active.reduce((a, i) => a + (i.populationAtRisk || 0), 0);
+
+  // ML-driven Health Score Calculation based on real active incidents
+  const totalWeight = active.length * 15 + critical.length * 25; 
+  let healthScore = 100 - totalWeight;
+  if (healthScore < 20) healthScore = 20;
+  if (healthScore > 100) healthScore = 100;
+
+  let healthStatus = 'OPTIMAL';
+  let healthColor = '#4ADE80'; // Green
+  let healthMessage = t('District is operating normally.', 'மாவட்டம் இயல்பாக இயங்குகிறது.');
+
+  if (healthScore < 50) {
+    healthStatus = 'CRITICAL RISK';
+    healthColor = '#F87171'; // Red
+    healthMessage = `${critical.length} ${t('critical incidents driving risk score down.', 'முக்கியமான சம்பவங்கள் ஆபத்து மதிப்பைக் குறைக்கின்றன.')}`;
+  } else if (healthScore < 80) {
+    healthStatus = 'ELEVATED RISK';
+    healthColor = '#FCD34D'; // Yellow
+    healthMessage = `${active.length} ${t('active incidents require attention.', 'செயலில் உள்ள சம்பவங்களுக்கு கவனம் தேவை.')}`;
+  }
+
+  // Weekly Summary Calculation based on real data
+  const daysOrder = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  let maxIncidents = 1; // Prevent division by zero
+  const weeklyData = daysOrder.map(day => {
+    const dayData = ANALYTICS_DATA.incidentsByDay?.find(d => d.day === day) || { incidents: 0 };
+    if (dayData.incidents > maxIncidents) maxIncidents = dayData.incidents;
+    return { day, incidents: dayData.incidents };
+  });
+  
+  const totalWeekly = weeklyData.reduce((acc, curr) => acc + curr.incidents, 0);
+  const avgDaily = (totalWeekly / 7).toFixed(1);
 
   return (
     <div className="animate-in">
@@ -76,6 +109,17 @@ export default function DistrictDashboard() {
         </div>
       </div>
 
+      <AIBriefBanner 
+        type="district" 
+        location={user?.district || 'District'} 
+        activeCount={active.length} 
+        criticalCount={critical.length}
+        tags={[
+          <><AlertTriangle size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {critical.length} {t('Critical Active', 'முக்கிய செயலில் உள்ளது')}</>,
+          <><Truck size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {totalDeployed} {t('Units Deployed', 'பிரிவுகள் பயன்படுத்தப்பட்டன')}</>
+        ]}
+      />
+
       {/* Gradient Stat Cards */}
       <div className="stat-grid">
         <GradientCard gradient="var(--gradient-1)" icon={<ShieldAlert size={20} />}
@@ -84,8 +128,6 @@ export default function DistrictDashboard() {
           label={t('Pending Queue', 'நிலுவையில் உள்ள வரிசை')} value={queue.length} sub={queue.length > 0 ? t('Requires coordination', 'ஒருங்கிணைப்பு தேவை') : t('All clear', 'அனைத்தும் சரி')} />
         <GradientCard gradient="var(--gradient-3)" icon={<Truck size={20} />}
           label={t('Resources Deployed', 'வளங்கள் பயன்படுத்தப்பட்டுள்ளன')} value={totalDeployed} sub={t('Units active in field', 'களத்தில் செயலில் உள்ள பிரிவுகள்')} />
-        <GradientCard gradient="var(--gradient-4)" icon={<Users size={20} />}
-          label={t('People at Risk', 'ஆபத்தில் உள்ள மக்கள்')} value={totalAtRisk.toLocaleString('en-IN')} sub={t(`Across ${active.length} incidents`, `${active.length} சம்பவங்களில்`)} />
       </div>
 
       {/* Main Content Grid */}
@@ -177,15 +219,15 @@ export default function DistrictDashboard() {
                 <Activity size={12} /> {t('District Health Score', 'மாவட்ட சுகாதார மதிப்பெண்')}
               </div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, marginBottom: 16 }}>
-                <div style={{ fontSize: 48, fontWeight: 900, lineHeight: 1 }}>74</div>
+                <div style={{ fontSize: 48, fontWeight: 900, lineHeight: 1 }}>{healthScore}</div>
                 <div style={{ fontSize: 16, opacity: 0.6 }}>/ 100</div>
               </div>
               <div style={{ background: 'rgba(255,255,255,0.2)', height: 8, borderRadius: 999, overflow: 'hidden', marginBottom: 14 }}>
-                <div style={{ width: '74%', height: '100%', background: '#FCD34D', borderRadius: 999, transition: 'width 0.5s ease' }} />
+                <div style={{ width: `${healthScore}%`, height: '100%', background: healthColor, borderRadius: 999, transition: 'width 0.5s ease, background 0.5s ease' }} />
               </div>
               <div style={{ fontSize: 12, opacity: 0.85, lineHeight: 1.6 }}>
-                {t('Status:', 'நிலை:')} <strong style={{ color: '#FCD34D' }}>{t('ELEVATED RISK', 'உயர்த்தப்பட்ட ஆபத்து')}</strong><br />
-                {t('INC-2024-001 driving risk score down.', 'INC-2024-001 ஆபத்து மதிப்பெண்ணைக் குறைக்கிறது.')}
+                {t('Status:', 'நிலை:')} <strong style={{ color: healthColor }}>{t(healthStatus, healthStatus)}</strong><br />
+                {healthMessage}
               </div>
             </div>
           </div>
@@ -198,20 +240,14 @@ export default function DistrictDashboard() {
             </div>
             <div style={{ padding: 20 }}>
               <div className="mini-chart">
-                {[
-                  {day: 'Mon', incidents: 2}, {day: 'Tue', incidents: 4}, {day: 'Wed', incidents: 1},
-                  {day: 'Thu', incidents: 8}, {day: 'Fri', incidents: 3}, {day: 'Sat', incidents: 5}, {day: 'Sun', incidents: 2}
-                ].map((d, i) => (
-                  <div key={d.day} className={`mini-chart-bar${i === 3 ? ' active' : ''}`}
-                    style={{ height: `${(d.incidents / 8) * 100}%` }}
+                {weeklyData.map((d, i) => (
+                  <div key={d.day} className={`mini-chart-bar${i === new Date().getDay() - 1 ? ' active' : ''}`}
+                    style={{ height: `${(d.incidents / maxIncidents) * 100}%` }}
                     title={`${d.day}: ${d.incidents} incidents`} />
                 ))}
               </div>
               <div className="mini-chart-labels">
-                {[
-                  {day: 'Mon', incidents: 2}, {day: 'Tue', incidents: 4}, {day: 'Wed', incidents: 1},
-                  {day: 'Thu', incidents: 8}, {day: 'Fri', incidents: 3}, {day: 'Sat', incidents: 5}, {day: 'Sun', incidents: 2}
-                ].map(d => <span key={d.day}>{d.day}</span>)}
+                {weeklyData.map(d => <span key={d.day}>{t(d.day, d.day)}</span>)}
               </div>
               <div style={{ marginTop: 16, display: 'flex', gap: 16 }}>
                 <div>

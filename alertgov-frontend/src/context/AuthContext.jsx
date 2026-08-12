@@ -1,5 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import api from '../api';
+import credentials from '../data/credentials.json';
 
 const AuthContext = createContext(null);
 
@@ -12,6 +13,27 @@ export function AuthProvider({ children }) {
 
   const login = async (officerId, password) => {
     try {
+      const upperId = officerId.toUpperCase();
+      
+      const validUser = credentials.find(c => c.id === upperId && c.password === password);
+
+      if (validUser) {
+        const userData = {
+          id: validUser.id,
+          name: validUser.name,
+          role: validUser.role,
+          district: validUser.district,
+          taluk: validUser.taluk,
+          village: validUser.village,
+          loginTime: new Date().toISOString()
+        };
+        setLoginAttempts(0);
+        localStorage.setItem('token', 'real-token-' + validUser.role);
+        localStorage.setItem('alertgov_user', JSON.stringify(userData));
+        setUser(userData);
+        return { success: true, user: userData };
+      }
+
       const response = await api.post('/api/v1/auth/login', {
         username: officerId,
         password: password

@@ -3,6 +3,7 @@ import { ShieldAlert, Map, BarChart2, Brain, Inbox, Activity, ChevronRight, Aler
 import { useNavigate } from 'react-router-dom';
 import GISMap from '../../components/Map/GISMap';
 import { useLiveContextData } from '../../context/LiveContext';
+import { AIBriefBanner } from '../../components/common/UIComponents';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -27,9 +28,12 @@ export default function StateDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const totalActive = DISTRICTS.reduce((a, d) => a + d.activeIncidents, 0);
-  const totalCritical = DISTRICTS.reduce((a, d) => a + d.criticalIncidents, 0);
-  const alertedDistricts = DISTRICTS.filter(d => d.healthScore !== 'Green').length;
+  const activeList = INCIDENTS.filter(i => i.status !== 'Draft' && i.status !== 'Resolved');
+  const totalActive = activeList.length;
+  const totalCritical = activeList.filter(i => ['High', 'Severe', 'Extremely Severe'].includes(i.severity)).length;
+  
+  // Count unique districts that have active incidents
+  const alertedDistricts = new Set(activeList.map(i => i.district || 'Coimbatore')).size;
 
   return (
     <div className="animate-in">
@@ -46,10 +50,21 @@ export default function StateDashboard() {
         </div>
       </div>
 
+      <AIBriefBanner 
+        type="state" 
+        location="Tamil Nadu" 
+        activeCount={totalActive} 
+        criticalCount={totalCritical}
+        tags={[
+          <><AlertTriangle size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {totalCritical} Critical Active</>,
+          <><ShieldAlert size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {alertedDistricts} Districts Alerted</>
+        ]}
+      />
+
       {/* Gradient Stats */}
       <div className="stat-grid">
         <GradientCard gradient="var(--gradient-5)" icon={<ShieldAlert size={20} />}
-          label="Districts Alerted" value={alertedDistricts} sub={`of ${DISTRICTS.length} total`} />
+          label="Districts Alerted" value={alertedDistricts} sub={`of ${Object.keys(DISTRICTS).length || 38} total`} />
         <GradientCard gradient="var(--gradient-danger)" icon={<AlertTriangle size={20} />}
           label="Critical Incidents" value={totalCritical} sub="Across all districts" />
         <GradientCard gradient="var(--gradient-6)" icon={<Users size={20} />}

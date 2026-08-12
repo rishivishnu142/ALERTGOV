@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useIncidents } from '../../context/LiveContext';
+import { useIncidents, useLiveContextData } from '../../context/LiveContext';
 import { Card, SeverityBadge, StatusBadge, CategoryBadge, AIPanel } from '../../components/common/UIComponents';
 import { CheckCircle, AlertTriangle, ArrowRight, ShieldAlert, Truck, Radio, Bot, Zap, ClipboardList } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +9,9 @@ import Swal from 'sweetalert2';
 export default function DistrictApprovalQueue() {
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { refreshData } = useLiveContextData();
   const myIncidents = useIncidents();
-  const queue = myIncidents.filter(i => i.status === 'Taluk Verified' || i.status === 'Waiting for Collector');
+  const queue = myIncidents.filter(i => i.status === 'Taluk Verified');
   const [selectedId, setSelectedId] = useState(queue[0]?.id);
   
   const inc = queue.find(i => i.id === selectedId) || queue[0];
@@ -26,6 +27,7 @@ export default function DistrictApprovalQueue() {
           await IncidentService.updateIncidentStatus(inc.id, 'Waiting for Collector', 'collector');
         }
         Swal.fire(t('Escalated', 'மேல்முறையீடு செய்யப்பட்டது'), t('Drafted Broadcast & Resources. Forwarded to Collector for Final Approval.', 'ஒளிபரப்பு மற்றும் வளங்கள் வரையப்பட்டன. இறுதி ஒப்புதலுக்காக ஆட்சியருக்கு அனுப்பப்பட்டது.'), 'success').then(() => {
+          refreshData();
           if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
           else navigate('/district');
         });
@@ -40,6 +42,7 @@ export default function DistrictApprovalQueue() {
           await IncidentService.updateIncidentStatus(inc.id, 'District Coordinated', 'district');
         }
         Swal.fire(t('Deployed!', 'பயன்படுத்தப்பட்டது!'), t('Broadcast & Resources Deployed!', 'ஒளிபரப்பு மற்றும் வளங்கள் பயன்படுத்தப்பட்டன!'), 'success').then(() => {
+          refreshData();
           if (selectedIdx < queue.length - 1) setSelectedIdx(s => s + 1);
           else navigate('/district');
         });
@@ -93,12 +96,12 @@ export default function DistrictApprovalQueue() {
 
             <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', background: 'var(--bg-muted)', padding: '12px', borderRadius: 'var(--radius-sm)' }}>
               <div>
-                <div className="text-xs text-muted font-bold text-uppercase">{t('Reported By', 'அறிக்கையாளர்')}</div>
-                <div className="text-sm font-bold">{inc.reportedBy} ({t('Village', 'கிராமம்')})</div>
+                <div className="text-xs text-muted font-bold text-uppercase">{t('Reported By', 'அறிக்கையளித்தவர்')}</div>
+                <div className="text-sm font-bold">{inc.reportedBy || 'VEO-COIMBATORESOUTH-1'} ({inc.village || t('Village', 'கிராமம்')})</div>
               </div>
               <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '16px' }}>
                 <div className="text-xs text-muted font-bold text-uppercase">{t('Verified By', 'சரிபார்த்தவர்')}</div>
-                <div className="text-sm font-bold" style={{ color: 'var(--primary)' }}>TAL2104 ({t('Taluk', 'தாலுகா')})</div>
+                <div className="text-sm font-bold" style={{ color: 'var(--primary)' }}>{inc.verifiedBy || 'TAL-COIMBATORE-SOUTH'} ({inc.taluk || t('Taluk', 'தாலுகா')})</div>
               </div>
               <div style={{ borderLeft: '1px solid var(--border)', paddingLeft: '16px' }}>
                 <div className="text-xs text-muted font-bold text-uppercase">{t('Taluk Note', 'தாலுகா குறிப்பு')}</div>
@@ -132,27 +135,16 @@ export default function DistrictApprovalQueue() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <Card title={<><Zap size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Required Actions', 'தேவையான செயல்கள்')}</>}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button className="btn btn-primary" style={{ justifyContent: 'space-between' }} onClick={() => handleAction('coordinate')}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Truck size={16} /> 1. {t('Assign Resources', 'வளங்களை ஒதுக்கவும்')}</span>
-                <ArrowRight size={14} />
+              <button 
+                className="btn btn-primary" 
+                style={{ justifyContent: 'space-between', padding: '12px 16px', fontSize: '15px' }} 
+                onClick={() => navigate(`/district/resource-command?incId=${inc.id}&flow=true`)}
+              >
+                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Zap size={18} /> {t('Action', 'செயல்')}
+                </span>
+                <ArrowRight size={16} />
               </button>
-
-              <button className="btn btn-primary" style={{ justifyContent: 'space-between' }} onClick={() => navigate('/district/alert-broadcast')}>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Radio size={16} /> 2. {t('Prepare Broadcast', 'ஒளிபரப்பை தயார் செய்யவும்')}</span>
-                <ArrowRight size={14} />
-              </button>
-
-              <div style={{ borderTop: '1px solid var(--border)', margin: '4px 0' }} />
-
-              {isSevere ? (
-                <button className="btn btn-warning" style={{ justifyContent: 'center' }} onClick={() => handleAction('escalate')}>
-                  <ShieldAlert size={16} /> {t('Forward to Collector', 'ஆட்சியருக்கு அனுப்பவும்')}
-                </button>
-              ) : (
-                <button className="btn btn-success" style={{ justifyContent: 'center' }} onClick={() => handleAction('approve_direct')}>
-                  <CheckCircle size={16} /> {t('Approve & Deploy Directly', 'நேரடியாக ஒப்புதல் அளித்து பயன்படுத்தவும்')}
-                </button>
-              )}
             </div>
           </Card>
         </div>

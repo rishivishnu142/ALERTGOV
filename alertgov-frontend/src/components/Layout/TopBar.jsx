@@ -38,7 +38,7 @@ export default function TopBar() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   // Badge counts
-  const queueCount = INCIDENTS.filter(i => i.status === 'Taluk Verified' || i.status === 'Waiting for Collector').length;
+  const queueCount = INCIDENTS.filter(i => i.status === 'Taluk Verified').length;
   const pendingTaluk = INCIDENTS.filter(i => i.status === 'Waiting for Taluk').length;
 
   const menuMap = {
@@ -58,7 +58,7 @@ export default function TopBar() {
       { path: '/district/approval-queue',    label: t('Queue', 'வரிசை'),              icon: <Inbox size={16} />, badge: queueCount },
       { path: '/district/active-emergencies',label: t('Active', 'செயலில்'),             icon: <ShieldAlert size={16} /> },
       { path: '/district/resource-command',  label: t('Resources', 'வளங்கள்'),          icon: <Navigation size={16} /> },
-      { path: '/district/alert-broadcast',   label: t('Broadcasts', 'ஒளிபரப்புகள்'),         icon: <Radio size={16} /> },
+      { path: '/district/broadcast-center',   label: t('Broadcasts', 'ஒளிபரப்புகள்'),         icon: <Radio size={16} /> },
       { path: '/district/analytics',         label: t('Analytics', 'பகுப்பாய்வு'),          icon: <BarChart2 size={16} /> },
     ],
     collector: [

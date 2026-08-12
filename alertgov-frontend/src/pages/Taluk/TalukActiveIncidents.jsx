@@ -12,11 +12,19 @@ export default function TalukActiveIncidents() {
   const [filter, setFilter] = useState('All');
   const [selected, setSelected] = useState(null);
 
-  // In a real app, this would filter by the user's taluk. Using all mocked incidents for demo.
-  const filtered = INCIDENTS.filter(i =>
-    (filter === 'All' || i.severity === filter || i.status === filter) &&
-    (i.title.toLowerCase().includes(search.toLowerCase()) || i.id.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Status mappings for the UI filters to backend statuses
+  const statusMappings = {
+    'All': null,
+    'Pending Verification': 'Waiting for Taluk',
+    'Verified (Sent to Collector)': 'Waiting for Collector',
+    'Rejected (False Alarm)': 'Resolved'
+  };
+
+  const filtered = INCIDENTS.filter(i => {
+    const matchesFilter = filter === 'All' || i.status === statusMappings[filter] || i.severity === filter;
+    const matchesSearch = i.title.toLowerCase().includes(search.toLowerCase()) || i.id.toLowerCase().includes(search.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
 
   return (
     <div>
@@ -25,9 +33,9 @@ export default function TalukActiveIncidents() {
           <div className="page-title"><ClipboardList size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Active Incidents — Taluk', 'செயலில் உள்ள சம்பவங்கள் — தாலுகா')}</div>
           <div className="page-subtitle">{t('Monitor ongoing emergencies in your jurisdiction', 'உங்கள் அதிகார வரம்பில் நடக்கும் அவசரநிலைகளை கண்காணிக்கவும்')}</div>
         </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {['All', 'Waiting for Taluk', 'District Coordinated'].map(f => {
-            const fLabel = f === 'All' ? t('All', 'அனைத்தும்') : f === 'Waiting for Taluk' ? t('Waiting for Taluk', 'தாலுகாவிற்காக காத்திருக்கிறது') : t('District Coordinated', 'மாவட்டம் ஒருங்கிணைக்கப்பட்டது');
+        <div style={{ display: 'flex', gap: '10px' }}>
+          {['All', 'Pending Verification', 'Verified (Sent to Collector)', 'Rejected (False Alarm)'].map(f => {
+            const fLabel = f; // using the English keys as labels for simplicity here, can add translations later
             return (
               <button key={f} className={`btn btn-sm ${filter === f ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setFilter(f)}>{fLabel}</button>
             )
@@ -65,12 +73,12 @@ export default function TalukActiveIncidents() {
                   <td><StatusBadge status={inc.status} /></td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--text-muted)' }}>
-                      <MapPin size={10} /> {inc.location.address.split(',')[0]}
+                      <MapPin size={10} /> {inc.location?.address?.split(',')[0] || inc.village || 'Unknown'}
                     </div>
                   </td>
                   <td>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '11px', color: 'var(--text-muted)', fontFamily: 'JetBrains Mono, monospace' }}>
-                      <Clock size={10} /> {new Date(inc.reportedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      <Clock size={10} /> {new Date(inc.reportedAt || inc.date || new Date()).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </td>
                   <td>

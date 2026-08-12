@@ -15,9 +15,19 @@ export default function ActiveEmergencies() {
 
   const activeList = useMemo(() => allIncidents.filter(i => 
     i.status !== 'Draft' && i.status !== 'Resolved'
-  ), [allIncidents]);
+  ).sort((a, b) => new Date(b.reportedAt || b.date) - new Date(a.reportedAt || a.date)), [allIncidents]);
   
   const selected = activeList.find(i => i.id === selectedId) || activeList[0];
+
+  if (!allIncidents || allIncidents.length === 0) {
+    return (
+      <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--text-muted)' }}>
+        <ShieldAlert size={48} color="var(--severity-low)" style={{ marginBottom: '16px' }} />
+        <h2>{t('No Active Emergencies', 'செயலில் உள்ள அவசரநிலைகள் இல்லை')}</h2>
+        <p>{t('There are currently no active emergencies in your jurisdiction.', 'தற்போது உங்கள் அதிகார வரம்பில் எந்த அவசரநிலைகளும் இல்லை.')}</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -35,80 +45,63 @@ export default function ActiveEmergencies() {
         </div>
       </div>
 
-      <div className="grid-3">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+      <div style={{ display: 'flex', height: 'calc(100vh - 180px)', gap: '16px', marginTop: '16px' }}>
+        {/* Side Panel (List) */}
+        <div style={{ width: '350px', display: 'flex', flexDirection: 'column', gap: '10px', overflowY: 'auto', paddingRight: '8px' }}>
           {activeList.map(inc => (
             <div
               key={inc.id}
               className={`incident-card severity-${inc.severity.toLowerCase().replace(' ', '-')}`}
               style={{
                 borderColor: selectedId === inc.id ? 'var(--primary)' : 'var(--border)',
-                background: selectedId === inc.id ? 'var(--primary-light)' : 'var(--bg-surface)'
+                background: selectedId === inc.id ? 'var(--primary-light)' : 'var(--bg-surface)',
+                cursor: 'pointer'
               }}
               onClick={() => setSelectedId(inc.id)}
             >
               <div className="incident-card-title">{inc.title}</div>
-              <div className="incident-card-meta" style={{ marginBottom: '8px' }}>
-                <span className="font-mono text-primary">{inc.id}</span>
+              <div className="incident-card-meta" style={{ marginBottom: '8px', display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <span className="font-mono text-primary" style={{ fontWeight: 600 }}>#{inc.id.split('-')[0].toUpperCase()}</span>
+                <span style={{ color: 'var(--text-muted)' }}>•</span>
                 <span>{t(inc.taluk, inc.taluk)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <SeverityBadge severity={inc.severity} />
                 <StatusBadge status={inc.status} />
               </div>
+              {selectedId === inc.id && (
+                <div style={{ marginTop: '12px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button 
+                    className="btn btn-primary btn-sm" 
+                    onClick={(e) => { e.stopPropagation(); navigate(`/district/resource-command?incId=${inc.id}&flow=true`); }}
+                  >
+                    <Truck size={12} style={{marginRight:'4px'}}/> {t('Deploy Resources', 'வளங்களை பயன்படுத்து')}
+                  </button>
+                </div>
+              )}
             </div>
           ))}
           {activeList.length === 0 && <p className="text-muted">{t('No active emergencies right now.', 'தற்போது அவசரநிலைகள் எதுவும் இல்லை.')}</p>}
-
-          {selected && (
-            <>
-              <Card title={t("Resource Summary", "வளங்களின் சுருக்கம்")} action={<button className="btn btn-secondary btn-sm" onClick={() => navigate('/district/resource-command')}><Truck size={12}/> {t('Manage', 'நிர்வகி')}</button>}>
-                {selected.resources?.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {selected.resources.map(r => (
-                      <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', padding: '8px', background: 'var(--bg-muted)', borderRadius: '4px' }}>
-                        <span style={{ fontWeight: 600 }}>{r.type} <span className="font-mono text-muted">({r.vehicleNo})</span></span>
-                        <span style={{ color: r.status === 'On Scene' ? 'var(--severity-low)' : 'var(--primary)' }}>{r.status} {r.eta > 0 ? `- ${t('ETA', 'எதிர்பார்க்கப்படும் நேரம்')} ${r.eta}m` : ''}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : <div className="text-muted text-sm">{t('No resources deployed yet.', 'வளங்கள் இன்னும் பயன்படுத்தப்படவில்லை.')}</div>}
-              </Card>
-              <AIPanel summary={selected.aiSummary} />
-              <div className="section-title">{t('Timeline', 'காலவரிசை')}</div>
-              <Timeline events={selected.timeline} />
-            </>
-          )}
         </div>
 
-        <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {selected && (
-            <>
-              <Card>
-                <div style={{ padding: 0 }}>
-                  <GISMap
-                    center={[selected.location.lat, selected.location.lng]}
-                    zoom={14}
-                    height={400}
-                    incidents={[selected]}
-                    resources={selected.resources || []}
-                    showRadius={true}
-                    radiusKm={selected.affectedRadius || 2}
-                  />
-                </div>
-              </Card>
-
-              <Card title={t("Live Department Feed", "துறை செய்திகள்")}>
-                <div style={{ padding: 0 }}>
-                  {selected.departmentUpdates?.length > 0 ? (
-                    selected.departmentUpdates.map((u, i) => (
-                      <DeptUpdate key={i} icon={u.icon} dept={u.dept} time={u.time} message={u.message} />
-                    ))
-                  ) : <div className="text-muted text-sm p-3">{t('No updates received.', 'புதுப்பிப்புகள் எதுவும் பெறப்படவில்லை.')}</div>}
-                </div>
-              </Card>
-            </>
-          )}
+        {/* Map Panel */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            borderRadius: 'var(--radius)',
+            overflow: 'hidden',
+            border: '1px solid var(--border)',
+            height: 'calc(100vh - 200px)',
+          }}>
+            <GISMap
+              center={selected?.location ? [selected.location.lat, selected.location.lng] : [11.0168, 76.9558]}
+              zoom={selected ? 14 : 11}
+              height="calc(100vh - 200px)"
+              incidents={activeList}
+              resources={activeList.flatMap(inc => inc.resources || [])}
+              showRadius={true}
+              radiusKm={selected?.affectedRadius || 2}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -55,7 +55,7 @@ export default function CriticalIncidents() {
                   <SeverityBadge severity={inc.severity} />
                   <StatusBadge status={inc.status} />
                 </div>
-                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}><MapPin size={12} style={{ display: 'inline' }} /> {inc.location.address}</div>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}><MapPin size={12} style={{ display: 'inline' }} /> {inc.location?.address || inc.village || "Unknown Location"}</div>
               </div>
             </div>
             

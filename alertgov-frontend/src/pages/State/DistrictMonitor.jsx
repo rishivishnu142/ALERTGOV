@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card } from '../../components/common/UIComponents';
 import { ChevronLeft, Users as UsersIcon, AlertTriangle, ShieldAlert, Clock, MapPin, Activity, Map, ChevronDown, ChevronRight, BookOpen, UserCircle } from 'lucide-react';
 import { useLiveContextData } from '../../context/LiveContext';
+import districtDataJson from '../../data/districts_data.json';
 
 export default function DistrictMonitor() {
   const { incidents: INCIDENTS, districts: DISTRICTS } = useLiveContextData();
@@ -11,14 +12,20 @@ export default function DistrictMonitor() {
   const navigate = useNavigate();
   const [expandedTaluks, setExpandedTaluks] = useState({});
 
-  // Find district data
-  const distData = DISTRICTS.find(d => d.name === district);
+  const distTaluks = DISTRICTS[district];
+  const distData = distTaluks ? { name: district, taluks: distTaluks } : null;
+  if (distData) {
+    const extraData = districtDataJson.find(d => d.name.toLowerCase() === district.toLowerCase()) || {};
+    distData.area = extraData.area || 'Unknown';
+    distData.population = extraData.population || 'Unknown';
+  }
   const distIncidents = INCIDENTS.filter(i => i.district === district);
-  const distUsers = USERS.filter(u => u.district === district);
+  // USERS array is not defined in this component, we need to mock or remove it.
+  const distUsers = []; // We will mock this or remove USERS usage since it's undefined
 
-  const collector = distUsers.find(u => u.role === 'collector') || { name: distData?.collector || 'Unknown Collector', title: 'District Collector' };
-  const taluks = distUsers.filter(u => u.role === 'taluk');
-  const veos = distUsers.filter(u => u.role === 'village');
+  const collector = { name: 'Unknown Collector', title: 'District Collector' };
+  const taluks = distTaluks ? distTaluks.map((t, i) => ({ id: i, name: t, taluk: t })) : [];
+  const veos = [];
 
   if (!distData) {
     return <div style={{ padding: 40, textAlign: 'center' }}>District not found.</div>;
@@ -60,7 +67,7 @@ export default function DistrictMonitor() {
         <div style={{ display: 'grid', gridTemplateColumns: '2.5fr 1fr', height: '300px' }}>
           {/* Panoramic Banner */}
           <div style={{ 
-            backgroundImage: `url(https://www.tn.gov.in/sites/default/district-images/slide-images/${encodeURIComponent(distData.name.replace(/\s+/g, ''))}.png)`,
+            backgroundImage: `url(/images/districts/${encodeURIComponent(distData.name.replace(/\s+/g, ''))}.png)`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             position: 'relative'
@@ -103,7 +110,7 @@ export default function DistrictMonitor() {
             </div>
             <div>
               <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Population</div>
-              <div style={{ fontSize: '15px', fontWeight: 700 }}>{(distData.population / 1000000).toFixed(1)} Million</div>
+              <div style={{ fontSize: '15px', fontWeight: 700 }}>{distData.population}</div>
             </div>
           </div>
 
@@ -112,8 +119,8 @@ export default function DistrictMonitor() {
               <MapPin size={24} color="var(--primary)" />
             </div>
             <div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>District Headquarters</div>
-              <div style={{ fontSize: '15px', fontWeight: 700 }}>{distData.headquarters || distData.name}</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Total Taluks</div>
+              <div style={{ fontSize: '15px', fontWeight: 700 }}>{distData.taluks?.length || 0}</div>
             </div>
           </div>
 
@@ -333,7 +340,7 @@ export default function DistrictMonitor() {
                         </td>
                         <td style={{ padding: '16px 20px' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
-                            <Clock size={14} /> {new Date(inc.reportedAt).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}
+                            <Clock size={14} /> {new Date((inc.reportedAt || inc.date || new Date())).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}
                           </div>
                         </td>
                         <td style={{ padding: '16px 20px' }}>

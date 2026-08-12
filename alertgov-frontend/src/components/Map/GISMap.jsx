@@ -106,7 +106,7 @@ export default function GISMap({
           return (
           <Marker
             key={inc.id}
-            position={[inc.location.lat, inc.location.lng]}
+            position={[inc.location?.lat || 11.0168, inc.location?.lng || 76.9558]}
             icon={isBroadcasting ? L.divIcon({
               className: 'broadcast-tower-icon',
               html: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:6px;margin-left:6px;"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/></svg>',
@@ -120,7 +120,7 @@ export default function GISMap({
                 <br />
                 <span style={{ fontSize: '11px', color: '#6B7280' }}>{inc.id} · {inc.severity}</span>
                 <br />
-                <span style={{ fontSize: '11px' }}>{inc.location.address}</span>
+                <span style={{ fontSize: '11px' }}>{inc.location?.address || inc.village || "Unknown Location"}</span>
                 <br />
                 <span style={{ fontSize: '11px', background: '#FEE2E2', color: '#DC2626', padding: '2px 6px', borderRadius: '4px', display: 'inline-block', marginTop: '4px' }}>
                   {inc.status}
@@ -129,7 +129,7 @@ export default function GISMap({
             </Popup>
             {showRadius && (
               <Circle
-                center={[inc.location.lat, inc.location.lng]}
+                center={[inc.location?.lat || 11.0168, inc.location?.lng || 76.9558]}
                 radius={radiusKm * 1000}
                 color={SEVERITY_COLORS[inc.severity] || '#6B7280'}
                 fillOpacity={0.08}

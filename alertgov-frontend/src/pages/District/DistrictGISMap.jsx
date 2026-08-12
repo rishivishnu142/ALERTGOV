@@ -13,10 +13,10 @@ export default function DistrictGISMap() {
   const incidents = useIncidents();
 
   const allResources = [
-    ...RESOURCES.fireTrucks,
-    ...RESOURCES.ambulances,
-    ...RESOURCES.policeUnits,
-    ...RESOURCES.rescueTeams,
+    ...(RESOURCES?.fireTrucks || []),
+    ...(RESOURCES?.ambulances || []),
+    ...(RESOURCES?.policeUnits || []),
+    ...(RESOURCES?.rescueTeams || []),
   ].filter(r => r.status === 'Deployed' || r.status === 'En Route' || r.status === 'On Scene');
 
   return (

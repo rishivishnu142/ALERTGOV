@@ -42,6 +42,7 @@ import DistrictApprovalQueue from './pages/District/DistrictApprovalQueue';
 import ActiveEmergencies from './pages/District/ActiveEmergencies';
 import ResourceCommand from './pages/District/ResourceCommand';
 import AlertBroadcast from './pages/District/AlertBroadcast';
+import BroadcastCenter from './pages/District/BroadcastCenter';
 import DistrictGISMap from './pages/District/DistrictGISMap';
 import DistrictAnalytics from './pages/District/DistrictAnalytics';
 import IncidentTimeline from './pages/District/IncidentTimeline';
@@ -142,6 +143,7 @@ export default function App() {
             <Route path="active-emergencies" element={<ActiveEmergencies />} />
             <Route path="resource-command" element={<ResourceCommand />} />
             <Route path="alert-broadcast" element={<AlertBroadcast />} />
+            <Route path="broadcast-center" element={<BroadcastCenter />} />
             <Route path="map" element={<DistrictGISMap />} />
             <Route path="analytics" element={<DistrictAnalytics />} />
             <Route path="timeline" element={<IncidentTimeline />} />

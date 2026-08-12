@@ -4,6 +4,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { FilePlus, Clock, Radio, ShieldAlert, AlertTriangle, Eye, MapPin, CloudRain, Thermometer, Wind, XCircle, CloudLightning, FileText, CloudSun, UploadCloud } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLiveContextData } from '../../context/LiveContext';
+import { AIBriefBanner } from '../../components/common/UIComponents';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -42,37 +43,20 @@ export default function VillageDashboard() {
   return (
     <div className="animate-in">
       {/* AI Banner */}
-      <div className="ai-brief-banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <div className="ai-brief-header">
-            <ShieldAlert size={14} /> {t('AI DAILY BRIEF', 'செயற்கை நுண்ணறிவு தினசரி சுருக்கம்')}
-          </div>
-          <div className="ai-brief-title" style={{ display: 'flex', alignItems: 'center' }}>
-            {t('Good Afternoon', 'மதிய வணக்கம்')}, {user?.name?.split(' ')[0]}!
-          </div>
-          <div className="ai-brief-text">
-            {language === 'ta' ? (
-              <>இன்று <strong>{activeIncidents.length} செயலில் உள்ள சம்பவங்கள்</strong> உள்ளன · <strong>{criticalCount} தீவிர சம்பவங்கள்</strong> ஆட்சியருக்கு உயர்த்தப்பட்டுள்ளன · வானிலை எச்சரிக்கை: பிற்பகல் 3 மணிக்குள் கடுமையான மழை எதிர்பார்க்கப்படுகிறது</>
-            ) : (
-              <>You have <strong>{activeIncidents.length} active incidents</strong> today · <strong>{criticalCount} critical</strong> escalated to Collector · Weather alert: Heavy rainfall expected by 3 PM</>
-            )}
-          </div>
-          <div className="ai-brief-tags">
-            <span className="ai-brief-tag"><XCircle size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> INC-2024-001 — {t('Extremely Severe', 'மிகவும் தீவிரமானது')}</span>
-            <span className="ai-brief-tag"><CloudLightning size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {t('Weather Alert Active', 'வானிலை எச்சரிக்கை செயலில் உள்ளது')}</span>
-            <span className="ai-brief-tag"><FileText size="1.2em" style={{ verticalAlign: 'middle', marginRight: '4px' }} /> 2 {t('Pending Updates', 'நிலுவையிலுள்ள புதுப்பிப்புகள்')}</span>
-          </div>
-        </div>
-
-        <div style={{ zIndex: 1, background: 'linear-gradient(135deg, var(--primary) 0%, #1e40af 100%)', color: 'white', padding: '12px 20px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', border: '1px solid rgba(255,255,255,0.1)' }}>
-          <div style={{ fontSize: '24px', fontWeight: 800, lineHeight: 1, marginBottom: '4px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-            {timeStr}
-          </div>
-          <div style={{ fontSize: '12px', fontWeight: 600, opacity: 0.9 }}>
-            {dateStr}
-          </div>
-        </div>
-      </div>
+      <AIBriefBanner 
+        type="veo" 
+        location={user?.village || 'Village'} 
+        activeCount={activeIncidents.length} 
+        criticalCount={criticalCount} 
+        tags={[
+          <><XCircle size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> INC-2024-001 — {t('Extremely Severe', 'மிகவும் தீவிரமானது')}</>,
+          <><CloudLightning size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {t('Weather Alert Active', 'வானிலை எச்சரிக்கை செயலில் உள்ளது')}</>,
+          <><FileText size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> 2 {t('Pending Updates', 'நிலுவையிலுள்ள புதுப்பிப்புகள்')}</>
+        ]}
+        customText={language === 'ta' ? 
+          <>இன்று <strong>{activeIncidents.length} செயலில் உள்ள சம்பவங்கள்</strong> உள்ளன · <strong>{criticalCount} தீவிர சம்பவங்கள்</strong> ஆட்சியருக்கு உயர்த்தப்பட்டுள்ளன · வானிலை எச்சரிக்கை: பிற்பகல் 3 மணிக்குள் கடுமையான மழை எதிர்பார்க்கப்படுகிறது</> : null
+        }
+      />
 
       {/* Gradient Stats */}
       <div className="stat-grid">

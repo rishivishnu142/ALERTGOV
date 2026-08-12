@@ -5,9 +5,14 @@ import Swal from 'sweetalert2';
 import { useLiveContextData } from '../../context/LiveContext';
 
 export default function TalukReports() {
-  const { analytics: ANALYTICS_DATA } = useLiveContextData();
+  const { analytics: ANALYTICS_DATA, incidents } = useLiveContextData();
 
   const handleExport = () => {
+    // Use real incidents from state! If empty, provide a fallback mock so UI doesn't break.
+    const availableIncidents = incidents && incidents.length > 0 ? incidents : [
+      { id: 'INC-2026-015', type: 'Warehouse Fire', reporterId: 'Rajesh Kumar', timestamp: '09:20 AM' }
+    ];
+
     Swal.fire({
       title: 'Export PDF Report',
       html: `
@@ -38,18 +43,16 @@ export default function TalukReports() {
         const incidentSelect = document.getElementById('swal-incident-select');
         const detailsContainer = document.getElementById('incident-details');
 
-        // Mock data for incidents
-        const mockIncidents = [
-          { id: 'INC-2026-015', name: 'Warehouse Fire', veo: 'Rajesh Kumar', time: '09:20 AM' },
-          { id: 'INC-2026-016', name: 'Severe Flood', veo: 'Suresh', time: '02:30 PM' },
-          { id: 'INC-2026-017', name: 'Chemical Spill', veo: 'Anita', time: '06:45 PM' }
-        ];
-
         dateInput.addEventListener('change', (e) => {
           if (e.target.value) {
             incidentContainer.style.display = 'block';
             incidentSelect.innerHTML = '<option value="">-- Choose Incident --</option>' + 
-              mockIncidents.map(inc => `<option value="${inc.id}">${inc.time} - ${inc.name} (${inc.id})</option>`).join('');
+              availableIncidents.map(inc => {
+                const dateStr = inc.date || inc.reportedAt;
+                const time = dateStr ? new Date(dateStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                const name = inc.title || inc.category || 'Incident';
+                return `<option value="${inc.id}">${time ? time + ' - ' : ''}${name} (${inc.id})</option>`;
+              }).join('');
             detailsContainer.style.display = 'none';
           } else {
             incidentContainer.style.display = 'none';
@@ -58,17 +61,20 @@ export default function TalukReports() {
         });
 
         incidentSelect.addEventListener('change', (e) => {
-          const selected = mockIncidents.find(inc => inc.id === e.target.value);
+          const selected = availableIncidents.find(inc => inc.id === e.target.value);
           if (selected) {
             detailsContainer.style.display = 'block';
+            const reporter = selected.reportedBy || selected.reporterId || selected.veo || 'Unknown';
+            const dateStr = selected.date || selected.reportedAt;
+            const timeStr = dateStr ? new Date(dateStr).toLocaleString() : new Date().toLocaleString();
             detailsContainer.innerHTML = `
-              <div style="margin-bottom: 4px;"><strong>Reported By:</strong> ${selected.veo}</div>
-              <div style="margin-bottom: 4px;"><strong>Time:</strong> ${selected.time}</div>
+              <div style="margin-bottom: 4px;"><strong>Reported By:</strong> ${reporter}</div>
+              <div style="margin-bottom: 4px;"><strong>Time:</strong> ${timeStr}</div>
               <div style="color: var(--primary); font-weight: 600; margin-top: 8px;">✓ Ready to generate report</div>
             `;
-            incidentSelect.dataset.veo = selected.veo;
-            incidentSelect.dataset.name = selected.name;
-            incidentSelect.dataset.time = selected.time;
+            incidentSelect.dataset.veo = reporter;
+            incidentSelect.dataset.name = selected.title || selected.category || selected.name;
+            incidentSelect.dataset.time = timeStr;
           } else {
             detailsContainer.style.display = 'none';
           }
@@ -87,6 +93,11 @@ export default function TalukReports() {
         const incident = incidentSelect.dataset.name + ' (' + incidentId + ')';
         const veo = incidentSelect.dataset.veo;
         const time = incidentSelect.dataset.time;
+
+        const selected = availableIncidents.find(inc => inc.id === incidentId);
+        if (selected) {
+          localStorage.setItem('latestIncident', JSON.stringify(selected));
+        }
 
         return { incident, veo, date, time };
       }

@@ -297,21 +297,31 @@ export default function CreateIncident() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const incidentData = {
-        title: form.category + ' at ' + form.location,
-        category: form.category,
-        severity: form.severity,
-        status: 'Waiting for Taluk',
-        level: 'taluk',
-        district: user?.district || 'Coimbatore',
-        taluk: user?.taluk || 'Unknown',
-        village: user?.village || 'Unknown',
-        description: form.description,
-        reportedBy: user?.id || 'VEO-1',
-        date: new Date().toISOString()
-      };
+      e.preventDefault();
+      try {
+        let photoBase64 = null;
+        if (files.length > 0) {
+            photoBase64 = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.readAsDataURL(files[0]);
+            });
+        }
+
+        const incidentData = {
+          title: form.category + ' at ' + form.location,
+          category: form.category,
+          severity: form.severity,
+          status: 'Waiting for Taluk',
+          level: 'taluk',
+          district: user?.district || 'Coimbatore',
+          taluk: user?.taluk || 'Unknown',
+          village: user?.village || 'Unknown',
+          description: form.description,
+          reportedBy: user?.id || 'VEO-1',
+          date: new Date().toISOString(),
+          photoBase64: photoBase64
+        };
       
       await IncidentService.createIncident(incidentData);
       setSubmitted(true);

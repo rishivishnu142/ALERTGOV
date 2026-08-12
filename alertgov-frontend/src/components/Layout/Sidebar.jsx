@@ -1,8 +1,8 @@
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { 
 import { useLiveContextData } from '../../context/LiveContext';
+import {
   LayoutDashboard, FilePlus, List, UploadCloud, RefreshCw,
   Map, BarChart2, ShieldAlert, FileText, CheckSquare,
   Navigation, Radio, Brain, LogOut, Bell, Shield,
@@ -34,7 +34,7 @@ export default function Sidebar() {
   const handleLogout = () => { logout(); navigate('/login'); };
 
   // Badge counts
-  const queueCount = INCIDENTS.filter(i => i.status === 'Taluk Verified' || i.status === 'Waiting for Collector').length;
+  const queueCount = INCIDENTS.filter(i => i.status === 'Taluk Verified').length;
   const pendingTaluk = INCIDENTS.filter(i => i.status === 'Waiting for Taluk').length;
 
   const menuMap = {
@@ -59,7 +59,7 @@ export default function Sidebar() {
       { section: t('Command', 'கட்டளை') },
       { path: '/district/map',               label: t('Live GIS Map', 'நேரடி GIS வரைபடம்'),       icon: <Satellite size={18} /> },
       { path: '/district/resource-command',  label: t('Resource Command', 'வள கட்டளை'),   icon: <Navigation size={18} /> },
-      { path: '/district/alert-broadcast',   label: t('Broadcast Center', 'ஒளிபரப்பு மையம்'),   icon: <Radio size={18} /> },
+      { path: '/district/broadcast-center',  label: t('Broadcast Center', 'ஒளிபரப்பு மையம்'),   icon: <Radio size={18} /> },
       { section: t('Intelligence', 'நுண்ணறிவு') },
       { path: '/district/analytics',         label: t('Analytics', 'பகுப்பாய்வு'),          icon: <BarChart2 size={18} /> },
       { path: '/district/timeline',          label: t('Reports', 'அறிக்கைகள்'),            icon: <FileText size={18} /> },

@@ -1,21 +1,25 @@
 package com.alert.incident.entity;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document(collection = "incidents")
+@Entity
+@Table(name = "incident_reports")
 public class IncidentReport {
     
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String title;
     private String category;
     private String severity;
+    @Column(name = "incident_status")
     private String status; // Active, Waiting for Collector, Resolved
+    
+    @Column(name = "incident_level")
     private String level;
     
     private String district;
@@ -24,13 +28,24 @@ public class IncidentReport {
     
     private String description;
     private String reportedBy;
+    
+    @Column(name = "incident_date")
     private LocalDateTime date;
     
+    @ElementCollection
     private List<String> mediaIds = new ArrayList<>();
+    
+    @ElementCollection
     private List<String> updates = new ArrayList<>();
     
+    @Column(length = 1000)
     private String aiSummary;
+    
+    @Column(length = 2000)
     private String aiRecommendation;
+    
+    @Transient
+    private String photoBase64;
 
     public IncidentReport() {}
 
@@ -81,4 +96,7 @@ public class IncidentReport {
     
     public String getAiRecommendation() { return aiRecommendation; }
     public void setAiRecommendation(String aiRecommendation) { this.aiRecommendation = aiRecommendation; }
+    
+    public String getPhotoBase64() { return photoBase64; }
+    public void setPhotoBase64(String photoBase64) { this.photoBase64 = photoBase64; }
 }

@@ -4,6 +4,7 @@ import { IncidentService } from '../../api';
 import { ShieldAlert, ArrowRight, Activity, MapPin, Radio, Brain, Route, AlertTriangle, Cpu, Zap, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
+import { AIBriefBanner } from '../../components/common/UIComponents';
 
 const GradientCard = ({ gradient, label, value, sub }) => {
   let color = 'primary';
@@ -44,9 +45,12 @@ export default function CollectorDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  const criticalIncidents = incidents.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity) && i.status !== 'Resolved');
+  const criticalIncidents = incidents.filter(i => 
+    i.status === 'Waiting for Collector' || 
+    (['High', 'Severe', 'Extremely Severe'].includes(i.severity) && !['Resolved', 'Draft'].includes(i.status))
+  );
   const broadcastPending = incidents.filter(i => i.status === 'Waiting for Collector').length;
-  const evacuations = criticalIncidents.length;
+  const evacuations = incidents.filter(i => i.status === 'Waiting for Collector' || i.status === 'District Coordinated').length;
   const peopleAtRisk = criticalIncidents.length * 1240;
 
   const handleGeneratePdf = (inc) => {
@@ -138,8 +142,8 @@ export default function CollectorDashboard() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await IncidentService.updateIncidentStatus(inc.id, 'Resolved', 'collector');
-          Swal.fire('Approved!', 'The incident has been resolved and broadcast dispatched.', 'success');
+          await IncidentService.updateIncidentStatus(inc.id, 'Approved for Broadcast', 'collector');
+          Swal.fire('Approved!', 'The incident has been approved and moved to the Broadcast Queue.', 'success');
         } catch (err) {
           Swal.fire('Error', 'Failed to approve incident.', 'error');
         }
@@ -156,6 +160,17 @@ export default function CollectorDashboard() {
           <div className="page-subtitle">District Collector · {user?.district} District</div>
         </div>
       </div>
+
+      <AIBriefBanner 
+        type="collector" 
+        location={user?.district || 'District'} 
+        activeCount={incidents.filter(i => i.status !== 'Resolved').length} 
+        criticalCount={criticalIncidents.length}
+        tags={[
+          <><AlertTriangle size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {criticalIncidents.length} Critical</>,
+          <><Radio size={14} style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }}/> {broadcastPending} Broadcasts Pending</>
+        ]}
+      />
 
       {/* Executive Approval Banner */}
       {broadcastPending > 0 && (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   AlertTriangle, CheckCircle, Clock, Info, ShieldAlert, XCircle, 
   Flame, Droplets, Wind, Zap, Plus, ChevronRight, Activity, Cpu, Bot, Ambulance, Shield,
@@ -8,24 +8,70 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import './UIComponents.css'; 
 
 // AI Daily Brief Banner
-export const AIBriefBanner = ({ title, activeCount, criticalCount, recommendations, tags }) => (
-  <div className="ai-brief-banner">
-    <div style={{ position: 'relative', zIndex: 1 }}>
-      <div className="ai-brief-header">
-        <Cpu size={14} /> AI DAILY BRIEF
-      </div>
-      <div className="ai-brief-title">{title}</div>
-      <div className="ai-brief-text">
-        You have <strong>{activeCount} active incidents</strong> today · <strong>{criticalCount} critical</strong> escalated to Collector · AI Recommendation: <em>{recommendations}</em>
-      </div>
-      {tags && (
-        <div className="ai-brief-tags">
-          {tags.map((t, i) => <span key={i} className="ai-brief-tag">{t}</span>)}
+export const AIBriefBanner = ({ type, location, activeCount = 0, criticalCount = 0, customText, tags }) => {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const t = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const timeStr = time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase();
+  const dateStr = time.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+
+  const hour = time.getHours();
+  let greetingEn = 'Good Evening';
+  if (hour < 12) greetingEn = 'Good Morning';
+  else if (hour < 16) greetingEn = 'Good Afternoon';
+
+  // Determine Title based on role type
+  let title = `${greetingEn}, ${location || 'User'}!`;
+  if (type === 'veo') {
+    title = `${greetingEn}, VEO Sir!`;
+  } else if (type === 'taluk') {
+    title = `${greetingEn}, Tahsildar Sir!`;
+  } else if (type === 'collector') {
+    title = `${greetingEn}, Collector Sir!`;
+  } else if (type === 'district') {
+    title = `${greetingEn}, Officers!`;
+  } else if (type === 'state') {
+    title = `${greetingEn}, Chief Secretary!`;
+  }
+
+  return (
+    <div className="ai-brief-banner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        <div className="ai-brief-header" style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <ShieldAlert size={14} /> AI DAILY BRIEF
         </div>
-      )}
+        <div className="ai-brief-title" style={{ display: 'flex', alignItems: 'center' }}>
+          {title}
+        </div>
+        <div className="ai-brief-text">
+          {customText || (
+            <>You have <strong>{activeCount} active incidents</strong> today · <strong>{criticalCount} critical</strong> escalated · Weather alert: Heavy rainfall expected by 3 PM</>
+          )}
+        </div>
+        {tags && tags.length > 0 && (
+          <div className="ai-brief-tags" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+            {tags.map((t, i) => (
+              <span key={i} className="ai-brief-tag">{t}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ zIndex: 1, background: 'linear-gradient(135deg, var(--primary) 0%, #1e40af 100%)', color: 'white', padding: '12px 20px', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)', textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <div style={{ fontSize: '24px', fontWeight: 800, lineHeight: 1, marginBottom: '4px', textShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+          {timeStr}
+        </div>
+        <div style={{ fontSize: '12px', fontWeight: 600, opacity: 0.9 }}>
+          {dateStr}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Stat Card (flat with bottom accent)
 export const StatCard = ({ label, value, color = 'primary', icon, change }) => (
@@ -209,8 +255,7 @@ export const EscalationTracker = ({ currentLevel, incident }) => {
         const isCompleted = idx <= currentIndex;
         const info = getLevelInfo(lvl);
         
-        let timestamp = null;
-        if (idx === 0) timestamp = incident?.date || incident?.reportedAt;
+        let timestamp = incident?.date || incident?.reportedAt;
         if (isCompleted && idx > 0 && timestamp) {
             timestamp = new Date(new Date(timestamp).getTime() + idx * 3600000).toISOString();
         }

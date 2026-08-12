@@ -5,12 +5,23 @@ import { MapPin, Search } from 'lucide-react';
 import { useLiveContextData } from '../../context/LiveContext';
 
 export default function DistrictStatus() {
-  const { districts: DISTRICTS } = useLiveContextData();
+  const { districts: DISTRICTS, incidents: INCIDENTS } = useLiveContextData();
 
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filteredDistricts = DISTRICTS.filter(d => 
+  const districtsArray = Object.keys(DISTRICTS || {}).map(k => {
+    const dIncidents = INCIDENTS.filter(i => i.district === k && i.status !== 'Draft' && i.status !== 'Resolved');
+    return { 
+      id: k, 
+      name: k, 
+      taluks: DISTRICTS[k],
+      activeIncidents: dIncidents.length,
+      criticalIncidents: dIncidents.filter(i => ['High', 'Severe', 'Extremely Severe'].includes(i.severity)).length
+    };
+  });
+
+  const filteredDistricts = districtsArray.filter(d => 
     d.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -23,9 +34,9 @@ export default function DistrictStatus() {
         </div>
         
         {/* Search Bar */}
-        <div style={{ position: 'relative', width: '300px' }}>
-          <div style={{ position: 'absolute', left: 12, top: 10, color: 'var(--text-muted)' }}>
-            <Search size={16} />
+        <div style={{ position: 'relative', width: '320px' }}>
+          <div style={{ position: 'absolute', left: 16, top: 12, color: '#3A1F75' }}>
+            <Search size={18} />
           </div>
           <input 
             type="text" 
@@ -33,7 +44,19 @@ export default function DistrictStatus() {
             placeholder="Search districts..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ paddingLeft: 36, width: '100%', borderRadius: '20px', border: '1px solid var(--border)', background: 'var(--bg-surface)' }}
+            style={{ 
+              padding: '12px 16px 12px 42px', 
+              width: '100%', 
+              borderRadius: '8px', 
+              border: '1px solid #e5e7eb', 
+              background: '#ffffff',
+              fontSize: '15px',
+              outline: 'none',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+            }}
+            onFocus={(e) => e.target.style.border = '1px solid #5E72EB'}
+            onBlur={(e) => e.target.style.border = '1px solid #e5e7eb'}
           />
         </div>
       </div>
@@ -41,12 +64,16 @@ export default function DistrictStatus() {
       {/* Grid Layout */}
       <div style={{ 
         display: 'grid', 
-        gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', 
-        gap: '20px',
-        padding: '10px 0'
+        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+        gap: '24px',
+        padding: '24px 0',
+        background: '#f3f4f6',
+        borderRadius: '16px',
+        marginTop: '20px',
+        padding: '24px'
       }}>
         {filteredDistricts.length === 0 ? (
-          <div style={{ gridColumn: '1 / -1', padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          <div style={{ gridColumn: '1 / -1', padding: '60px', textAlign: 'center', color: '#6b7280', fontSize: '16px' }}>
             No districts found matching "{searchTerm}"
           </div>
         ) : (
@@ -54,49 +81,74 @@ export default function DistrictStatus() {
             <div 
               key={d.id} 
               style={{ 
-                background: 'var(--bg-surface)', 
+                background: '#ffffff', 
                 borderRadius: '12px', 
                 overflow: 'hidden',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
                 cursor: 'pointer',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                border: '1px solid var(--border-light)'
+                transition: 'all 0.3s ease',
+                border: '1px solid #f3f4f6',
+                display: 'flex',
+                flexDirection: 'column'
               }}
               onClick={() => navigate(`/state/monitor/${d.name}`)}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.transform = 'translateY(-6px)';
                 e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
+                const title = e.currentTarget.querySelector('h3');
+                if (title) title.style.color = '#5E72EB';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+                e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+                const title = e.currentTarget.querySelector('h3');
+                if (title) title.style.color = '#3A1F75';
               }}
             >
-              {/* Image Section */}
+              {/* Top Visual Section */}
               <div style={{ 
-                height: '140px', 
                 width: '100%', 
-                backgroundImage: `url(${d.image})`,
+                aspectRatio: '4/3', 
+                backgroundColor: '#e2e8f0',
+                backgroundImage: `url('/images/districts/${encodeURIComponent(d.name.replace(/\s+/g, ''))}.png')`,
                 backgroundSize: 'cover',
-                backgroundPosition: 'center'
+                backgroundPosition: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative'
               }}>
-                {/* Overlay gradient for text readability if needed */}
-                <div style={{
-                  width: '100%',
-                  height: '100%',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 50%)',
-                  display: 'flex',
-                  alignItems: 'flex-end',
-                  padding: '12px'
+              </div>
+
+              {/* Bottom Data Section */}
+              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <h3 style={{ 
+                  fontSize: '18px', 
+                  fontWeight: '700', 
+                  color: '#3A1F75',
+                  margin: 0,
+                  transition: 'color 0.2s ease'
                 }}>
-                  <span style={{ 
-                    color: 'white', 
-                    fontWeight: 700, 
-                    fontSize: '16px',
-                    textShadow: '0 1px 2px rgba(0,0,0,0.8)'
-                  }}>
-                    {d.name}
-                  </span>
+                  {d.name}
+                </h3>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                    <span style={{ color: '#6b7280' }}>Total Taluks:</span>
+                    <strong style={{ color: '#111827' }}>{d.taluks?.length || 0}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                    <span style={{ color: '#6b7280' }}>Active Incidents:</span>
+                    <strong style={{ color: d.activeIncidents > 0 ? '#ef4444' : '#111827' }}>
+                      {d.activeIncidents}
+                    </strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                    <span style={{ color: '#6b7280' }}>Critical Alerts:</span>
+                    <strong style={{ color: d.criticalIncidents > 0 ? '#dc2626' : '#111827' }}>
+                      {d.criticalIncidents}
+                    </strong>
+                  </div>
                 </div>
               </div>
             </div>

@@ -62,6 +62,16 @@ public class AiController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    @GetMapping("/weather-advisory")
+    public ResponseEntity<Map> getWeatherAdvisory() {
+        try {
+            ResponseEntity<Map> response = restTemplate.getForEntity(pythonAiServiceUrl + "/ai/weather-advisory", Map.class);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+        }
+    }
     
     @GetMapping("/prediction/{incidentId}")
     public ResponseEntity<AiPrediction> getPrediction(@PathVariable String incidentId) {
