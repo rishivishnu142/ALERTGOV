@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { IncidentService, ReferenceDataService, AnalyticsService, NotificationService } from '../api';
+import { IncidentService, ReferenceDataService, AnalyticsService, NotificationService, ApprovalService, WeatherService } from '../api';
 
 const LiveContext = createContext();
 
@@ -13,17 +13,10 @@ export function LiveProvider({ children }) {
     activeIncidents: 0, criticalAlerts: 0, resourcesDeployed: 0, peopleAtRisk: 0,
     dailyTrends: [], districtBreakdown: [], severityBreakdown: [],
     incidentsByType: [], incidentsBySeverity: [], incidentsByDay: [],
-    responseTime: [
-      { month: 'Jan', avg: 25 }, { month: 'Feb', avg: 22 }, { month: 'Mar', avg: 18 },
-      { month: 'Apr', avg: 15 }, { month: 'May', avg: 12 }, { month: 'Jun', avg: 14 }
-    ],
-    broadcastByMonth: [
-      { month: 'Jan', broadcasts: 12 }, { month: 'Feb', broadcasts: 15 }, { month: 'Mar', broadcasts: 8 },
-      { month: 'Apr', broadcasts: 24 }, { month: 'May', broadcasts: 32 }, { month: 'Jun', broadcasts: 45 }
-    ]
+    responseTime: [], broadcastByMonth: []
   });
   const [notifications, setNotifications] = useState([]);
-  const [weather, setWeather] = useState({ temperature: 28, condition: 'Cloudy', humidity: 78, windSpeed: 14, rainfall: 12 });
+  const [weather, setWeather] = useState(null);
   const [approvals, setApprovals] = useState([]);
   
   const { user } = useAuth();
@@ -49,7 +42,7 @@ export function LiveProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    // Polling for incidents, analytics, notifications
+    // Polling for incidents, analytics, notifications, approvals, weather
     const fetchLiveData = async () => {
       try {
         if (!user) return;
@@ -74,7 +67,6 @@ export function LiveProvider({ children }) {
         if (['state', 'collector', 'district', 'taluk'].includes(user.role)) {
           const stats = await AnalyticsService.getDashboardStats();
           
-          // Compute breakdown from filtered incidents for this user's scope
           const typeMap = {};
           const sevMap = {};
           const dayMap = { 'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0, 'Sun': 0 };
@@ -107,8 +99,18 @@ export function LiveProvider({ children }) {
         }
         
         // 3. Fetch Notifications
-        const notifs = await NotificationService.getNotifications(user.role);
+        const notifs = await NotificationService.getNotifications(user.id);
         setNotifications(notifs);
+
+        // 4. Fetch Approvals
+        const pAppr = await ApprovalService.getPendingApprovals();
+        setApprovals(pAppr);
+
+        // 5. Fetch Weather (if state/collector)
+        if (['state', 'collector'].includes(user.role)) {
+           const w = await WeatherService.getWeatherAdvisory();
+           if (w) setWeather(w);
+        }
         
       } catch (err) {
         console.error("Error fetching live data:", err);
@@ -117,7 +119,6 @@ export function LiveProvider({ children }) {
     
     fetchLiveData();
     
-    // Expose fetch function globally so components can trigger immediate refresh
     window.__triggerLiveRefresh = fetchLiveData;
 
     const interval = setInterval(() => {
@@ -151,7 +152,6 @@ export const useLiveContextData = () => {
   return context;
 };
 
-// Kept for backward compatibility while refactoring
 export const useLive = () => {
   const context = useContext(LiveContext);
   return context ? context.tick : 0;

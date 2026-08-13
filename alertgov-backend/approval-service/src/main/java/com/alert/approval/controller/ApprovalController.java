@@ -28,9 +28,18 @@ public class ApprovalController {
         return ResponseEntity.ok(repository.findByAssignedCollectorId(collectorId));
     }
     
+    @GetMapping("/pending")
+    public ResponseEntity<List<ApprovalWorkflow>> getPendingApprovals() {
+        return ResponseEntity.ok(repository.findByStatus("PENDING"));
+    }
+    
     @PutMapping("/{id}")
     public ResponseEntity<ApprovalWorkflow> updateApprovalStatus(@PathVariable String id, @RequestBody ApprovalWorkflow update) {
         return repository.findById(id).map(existing -> {
+            // End-to-End Sequence Enforcement: Only pending can go LIVE
+            if ("LIVE".equals(update.getStatus()) && !"PENDING".equals(existing.getStatus())) {
+                return ResponseEntity.badRequest().<ApprovalWorkflow>build();
+            }
             existing.setStatus(update.getStatus());
             existing.setComments(update.getComments());
             return ResponseEntity.ok(repository.save(existing));

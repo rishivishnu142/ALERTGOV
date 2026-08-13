@@ -252,7 +252,9 @@ export const EscalationTracker = ({ currentLevel, incident }) => {
       </div>
       
       {levels.map((lvl, idx) => {
-        const isCompleted = idx <= currentIndex;
+        const isFullyDone = incident?.status === 'Resolved' || incident?.status === 'Approved for Broadcast';
+        const isCompleted = isFullyDone ? idx <= currentIndex : idx < currentIndex;
+        const isActive = !isFullyDone && idx === currentIndex;
         const info = getLevelInfo(lvl);
         
         let timestamp = incident?.date || incident?.reportedAt;
@@ -264,27 +266,27 @@ export const EscalationTracker = ({ currentLevel, incident }) => {
           <div key={lvl} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 1, width: '20%', position: 'relative' }}>
             <div style={{ 
               width: '32px', height: '32px', borderRadius: '50%', 
-              background: isCompleted ? 'var(--primary)' : 'var(--bg-card)', 
-              border: `3px solid ${isCompleted ? 'var(--primary)' : 'var(--border)'}`,
+              background: isCompleted ? 'var(--primary)' : (isActive ? 'var(--bg-card)' : 'var(--bg-card)'), 
+              border: `3px solid ${isCompleted ? 'var(--primary)' : (isActive ? 'var(--primary)' : 'var(--border)')}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: isCompleted ? 'white' : 'transparent',
               marginBottom: '12px',
               transition: 'all 0.3s ease',
-              boxShadow: isCompleted ? '0 0 10px rgba(59, 130, 246, 0.5)' : 'none'
+              boxShadow: isCompleted ? '0 0 10px rgba(59, 130, 246, 0.5)' : (isActive ? '0 0 10px rgba(59, 130, 246, 0.8)' : 'none')
             }}>
-              {isCompleted ? <Check size={16} strokeWidth={3} /> : <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--border)' }}></div>}
+              {isCompleted ? <Check size={16} strokeWidth={3} /> : (isActive ? <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--primary)' }} className="pulse"></div> : <div style={{ width: '12px', height: '12px', borderRadius: '50%', background: 'var(--border)' }}></div>)}
             </div>
             
-            <div style={{ color: isCompleted ? 'var(--primary)' : 'var(--text-muted)', marginBottom: '8px' }}>
+            <div style={{ color: isCompleted || isActive ? 'var(--primary)' : 'var(--text-muted)', marginBottom: '8px' }}>
               {info.icon}
             </div>
             
-            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-primary)', textAlign: 'center' }}>
+            <div style={{ fontSize: '12px', fontWeight: 600, color: isActive ? 'var(--primary)' : 'var(--text-primary)', textAlign: 'center' }}>
               {info.title}
             </div>
             
             <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px', fontFamily: 'JetBrains Mono, monospace' }}>
-              {isCompleted && timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Pending'}
+              {isCompleted && timestamp ? new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (isActive ? 'In Progress' : 'Pending')}
             </div>
             <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginTop: '2px' }}>
               {isCompleted && timestamp ? new Date(timestamp).toLocaleDateString([], { day: '2-digit', month: 'short' }) : ''}

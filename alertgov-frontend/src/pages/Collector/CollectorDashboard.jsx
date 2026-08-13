@@ -46,8 +46,7 @@ export default function CollectorDashboard() {
   }, []);
 
   const criticalIncidents = incidents.filter(i => 
-    i.status === 'Waiting for Collector' || 
-    (['High', 'Severe', 'Extremely Severe'].includes(i.severity) && !['Resolved', 'Draft'].includes(i.status))
+    i.status === 'Waiting for Collector'
   );
   const broadcastPending = incidents.filter(i => i.status === 'Waiting for Collector').length;
   const evacuations = incidents.filter(i => i.status === 'Waiting for Collector' || i.status === 'District Coordinated').length;

@@ -63,14 +63,25 @@ public class AiController {
         }
     }
 
+    @io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker(name = "weatherService", fallbackMethod = "weatherAdvisoryFallback")
     @GetMapping("/weather-advisory")
     public ResponseEntity<Map> getWeatherAdvisory() {
         try {
             ResponseEntity<Map> response = restTemplate.getForEntity(pythonAiServiceUrl + "/ai/weather-advisory", Map.class);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
+            // Throw exception so CircuitBreaker catches it if restTemplate fails
+            throw new RuntimeException("AI Weather Service failed: " + e.getMessage());
         }
+    }
+    
+    public ResponseEntity<Map> weatherAdvisoryFallback(Exception e) {
+        System.out.println("Circuit Breaker triggered: Returning simulated fallback advisory.");
+        Map<String, String> fallbackData = Map.of(
+            "draft", "High wind speeds and precipitation detected. Automated advisory generated due to AI service timeout. Please take precautions.",
+            "severity", "HIGH"
+        );
+        return ResponseEntity.ok(fallbackData);
     }
     
     @GetMapping("/prediction/{incidentId}")

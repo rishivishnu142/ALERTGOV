@@ -1,8 +1,8 @@
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/controller/AuthController.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/security/JwtUtil.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/repository/AuthUserRepository.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/entity/AuthUser.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/security/SecurityConfig.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/dto/AuthResponse.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/dto/AuthRequest.java
-/usr/src/mymaven/auth-service/src/main/java/com/alert/auth/AuthServiceApplication.java
+/app/auth-service/src/main/java/com/alert/auth/repository/AuthUserRepository.java
+/app/auth-service/src/main/java/com/alert/auth/controller/AuthController.java
+/app/auth-service/src/main/java/com/alert/auth/dto/AuthRequest.java
+/app/auth-service/src/main/java/com/alert/auth/AuthServiceApplication.java
+/app/auth-service/src/main/java/com/alert/auth/security/JwtUtil.java
+/app/auth-service/src/main/java/com/alert/auth/security/SecurityConfig.java
+/app/auth-service/src/main/java/com/alert/auth/dto/AuthResponse.java
+/app/auth-service/src/main/java/com/alert/auth/entity/AuthUser.java
