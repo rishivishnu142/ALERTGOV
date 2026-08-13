@@ -102,9 +102,11 @@ export function LiveProvider({ children }) {
         const notifs = await NotificationService.getNotifications(user.id);
         setNotifications(notifs);
 
-        // 4. Fetch Approvals
-        const pAppr = await ApprovalService.getPendingApprovals();
-        setApprovals(pAppr);
+        // 4. Fetch Approvals (Only for District/Collector/State)
+        if (['district', 'collector', 'state'].includes(user.role)) {
+          const pAppr = await ApprovalService.getPendingApprovals();
+          setApprovals(pAppr);
+        }
 
         // 5. Fetch Weather (if state/collector)
         if (['state', 'collector'].includes(user.role)) {
@@ -121,12 +123,6 @@ export function LiveProvider({ children }) {
     
     window.__triggerLiveRefresh = fetchLiveData;
 
-    const interval = setInterval(() => {
-      fetchLiveData();
-      setTick(t => t + 1);
-    }, 10000); // 10 seconds polling
-
-    return () => clearInterval(interval);
   }, [user]);
 
   return (

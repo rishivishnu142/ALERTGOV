@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import api from '../api';
-import credentials from '../data/credentials.json';
+
 
 const AuthContext = createContext(null);
 
@@ -13,27 +13,6 @@ export function AuthProvider({ children }) {
 
   const login = async (officerId, password) => {
     try {
-      const upperId = officerId.toUpperCase();
-      
-      const validUser = credentials.find(c => c.id === upperId && c.password === password);
-
-      if (validUser) {
-        const userData = {
-          id: validUser.id,
-          name: validUser.name,
-          role: validUser.role,
-          district: validUser.district,
-          taluk: validUser.taluk,
-          village: validUser.village,
-          loginTime: new Date().toISOString()
-        };
-        setLoginAttempts(0);
-        localStorage.setItem('token', 'real-token-' + validUser.role);
-        localStorage.setItem('alertgov_user', JSON.stringify(userData));
-        setUser(userData);
-        return { success: true, user: userData };
-      }
-
       const response = await api.post('/api/v1/auth/login', {
         username: officerId,
         password: password
@@ -41,6 +20,7 @@ export function AuthProvider({ children }) {
 
       if (response.data && response.data.success) {
         setLoginAttempts(0);
+        // Using response.data.user because the backend now returns all details including name, district, etc.
         const userData = { ...response.data.user, loginTime: new Date().toISOString() };
         
         localStorage.setItem('token', response.data.token);

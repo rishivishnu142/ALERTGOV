@@ -34,7 +34,14 @@ public class AuthController {
             AuthUser user = userOpt.get();
             if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
                 String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
-                AuthResponse.UserDetails userDetails = new AuthResponse.UserDetails(user.getUsername(), user.getRole());
+                AuthResponse.UserDetails userDetails = new AuthResponse.UserDetails(
+                        user.getUsername(), 
+                        user.getRole(),
+                        user.getName(),
+                        user.getDistrict(),
+                        user.getTaluk(),
+                        user.getVillage()
+                );
                 return ResponseEntity.ok(new AuthResponse(true, token, "Login successful", userDetails));
             }
         }

@@ -98,94 +98,92 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <LiveProvider>
-          <LanguageProvider>
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          
-          <Route path="/policies" element={<WebsitePolicies />} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/contact" element={<ContactUs />} />
-          <Route path="/feedback" element={<Feedback />} />
-          
-          <Route path="/dashboard" element={<RoleRouter />} />
+        <LanguageProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        
+        <Route path="/policies" element={<WebsitePolicies />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/feedback" element={<Feedback />} />
+        
+        <Route path="/dashboard" element={<RoleRouter />} />
 
-          {/* VILLAGE ROUTES */}
-          <Route path="/village" element={<ProtectedRoute allowedRole="village"><AppShell /></ProtectedRoute>}>
-            <Route index element={<VillageDashboard />} />
-            <Route path="create-incident" element={<CreateIncident />} />
-            <Route path="active-incidents" element={<ActiveIncidents />} />
-            <Route path="update-status" element={<UpdateIncidentStatus />} />
-            <Route path="upload-media" element={<UploadMedia />} />
-            <Route path="export-pdf" element={<ExportPDF />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
+        {/* VILLAGE ROUTES */}
+        <Route path="/village" element={<ProtectedRoute allowedRole="village"><AppShell /></ProtectedRoute>}>
+          <Route index element={<VillageDashboard />} />
+          <Route path="create-incident" element={<CreateIncident />} />
+          <Route path="active-incidents" element={<ActiveIncidents />} />
+          <Route path="update-status" element={<UpdateIncidentStatus />} />
+          <Route path="upload-media" element={<UploadMedia />} />
+          <Route path="export-pdf" element={<ExportPDF />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
 
-          {/* TALUK ROUTES */}
-          <Route path="/taluk/print-report" element={<ProtectedRoute allowedRole="taluk"><PrintReport /></ProtectedRoute>} />
-          <Route path="/taluk" element={<ProtectedRoute allowedRole="taluk"><AppShell /></ProtectedRoute>}>
-            <Route index element={<TalukDashboard />} />
-            <Route path="verification" element={<IncidentVerification />} />
-            <Route path="active-incidents" element={<TalukActiveIncidents />} />
-            <Route path="map" element={<TalukMap />} />
-            <Route path="reports" element={<TalukReports />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
+        {/* TALUK ROUTES */}
+        <Route path="/taluk/print-report" element={<ProtectedRoute allowedRole="taluk"><PrintReport /></ProtectedRoute>} />
+        <Route path="/taluk" element={<ProtectedRoute allowedRole="taluk"><AppShell /></ProtectedRoute>}>
+          <Route index element={<TalukDashboard />} />
+          <Route path="verification" element={<IncidentVerification />} />
+          <Route path="active-incidents" element={<TalukActiveIncidents />} />
+          <Route path="map" element={<TalukMap />} />
+          <Route path="reports" element={<TalukReports />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
 
-          {/* DISTRICT ROUTES */}
-          <Route path="/district" element={<ProtectedRoute allowedRole="district"><AppShell /></ProtectedRoute>}>
-            <Route index element={<DistrictDashboard />} />
-            <Route path="approval-queue" element={<DistrictApprovalQueue />} />
-            <Route path="active-emergencies" element={<ActiveEmergencies />} />
-            <Route path="resource-command" element={<ResourceCommand />} />
-            <Route path="alert-broadcast" element={<AlertBroadcast />} />
-            <Route path="broadcast-center" element={<BroadcastCenter />} />
-            <Route path="map" element={<DistrictGISMap />} />
-            <Route path="analytics" element={<DistrictAnalytics />} />
-            <Route path="timeline" element={<IncidentTimeline />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
+        {/* DISTRICT ROUTES */}
+        <Route path="/district" element={<ProtectedRoute allowedRole="district"><AppShell /></ProtectedRoute>}>
+          <Route index element={<DistrictDashboard />} />
+          <Route path="approval-queue" element={<DistrictApprovalQueue />} />
+          <Route path="active-emergencies" element={<ActiveEmergencies />} />
+          <Route path="resource-command" element={<ResourceCommand />} />
+          <Route path="alert-broadcast" element={<AlertBroadcast />} />
+          <Route path="broadcast-center" element={<BroadcastCenter />} />
+          <Route path="map" element={<DistrictGISMap />} />
+          <Route path="analytics" element={<DistrictAnalytics />} />
+          <Route path="timeline" element={<IncidentTimeline />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
 
-          {/* COLLECTOR ROUTES */}
-          <Route path="/collector" element={<ProtectedRoute allowedRole="collector"><AppShell /></ProtectedRoute>}>
-            <Route index element={<CollectorDashboard />} />
-            <Route path="critical-incidents" element={<CriticalIncidents />} />
-            <Route path="broadcast-approval" element={<BroadcastApproval />} />
-            <Route path="situation-map" element={<DistrictSituationMap />} />
-            <Route path="analytics" element={<ExecutiveAnalytics />} />
-            <Route path="official-orders" element={<OfficialOrders />} />
-            <Route path="ai-reports" element={<AIReports />} />
-            <Route path="state-advisories" element={<StateAdvisories />} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
+        {/* COLLECTOR ROUTES */}
+        <Route path="/collector" element={<ProtectedRoute allowedRole="collector"><AppShell /></ProtectedRoute>}>
+          <Route index element={<CollectorDashboard />} />
+          <Route path="critical-incidents" element={<CriticalIncidents />} />
+          <Route path="broadcast-approval" element={<BroadcastApproval />} />
+          <Route path="situation-map" element={<DistrictSituationMap />} />
+          <Route path="analytics" element={<ExecutiveAnalytics />} />
+          <Route path="official-orders" element={<OfficialOrders />} />
+          <Route path="ai-reports" element={<AIReports />} />
+          <Route path="state-advisories" element={<StateAdvisories />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
 
-          {/* STATE ROUTES */}
-          <Route path="/state" element={<ProtectedRoute allowedRole="state"><AppShell /></ProtectedRoute>}>
-            <Route index element={<StateDashboard />} />
-            <Route path="map" element={<StateMap />} />
-            <Route path="districts" element={<DistrictStatus />} />
-            <Route path="monitor/:district" element={<DistrictMonitor />} />
-            <Route path="prediction" element={<DisasterPrediction />} />
-            {/* Using generic placeholders for the remaining to avoid errors */}
-            <Route path="requests" element={<div style={{padding: 40}}>Collector Requests (State)</div>} />
-            <Route path="analytics" element={<div style={{padding: 40}}>State Analytics</div>} />
-            <Route path="resources" element={<div style={{padding: 40}}>Resource Distribution</div>} />
-            <Route path="users" element={<UserManagement />} />
-            <Route path="notifications" element={<Notifications />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
+        {/* STATE ROUTES */}
+        <Route path="/state" element={<ProtectedRoute allowedRole="state"><AppShell /></ProtectedRoute>}>
+          <Route index element={<StateDashboard />} />
+          <Route path="map" element={<StateMap />} />
+          <Route path="districts" element={<DistrictStatus />} />
+          <Route path="monitor/:district" element={<DistrictMonitor />} />
+          <Route path="prediction" element={<DisasterPrediction />} />
+          {/* Using generic placeholders for the remaining to avoid errors */}
+          <Route path="requests" element={<div style={{padding: 40}}>Collector Requests (State)</div>} />
+          <Route path="analytics" element={<div style={{padding: 40}}>State Analytics</div>} />
+          <Route path="resources" element={<div style={{padding: 40}}>Resource Distribution</div>} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="notifications" element={<Notifications />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-          </LanguageProvider>
-        </LiveProvider>
+        <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </LanguageProvider>
       </AuthProvider>
     </BrowserRouter>
   );

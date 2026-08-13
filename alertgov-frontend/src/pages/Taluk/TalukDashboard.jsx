@@ -43,8 +43,6 @@ export default function TalukDashboard() {
       }
     };
     fetchIncidents();
-    const interval = setInterval(fetchIncidents, 5000); // Poll every 5s for real-time feel
-    return () => clearInterval(interval);
   }, [user]);
 
   const pending = incidents.filter(i => i.status === 'Waiting for Taluk');

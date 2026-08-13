@@ -41,8 +41,6 @@ export default function CollectorDashboard() {
       }
     };
     fetchIncidents();
-    const interval = setInterval(fetchIncidents, 5000); // Poll every 5s for real-time feel
-    return () => clearInterval(interval);
   }, []);
 
   const criticalIncidents = incidents.filter(i => 
