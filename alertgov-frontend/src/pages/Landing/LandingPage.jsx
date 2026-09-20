@@ -71,7 +71,7 @@ const translations = {
     footFeedback: "Feedback",
     footOwned: "Content Owned by State Administration",
     footCopy: "© Content owned and maintained by Tamil Nadu State Administration , Developed and hosted by National Informatics Centre, \nMinistry of Electronics & Information Technology, Government of India",
-    footUpdate: "Last Updated: Jun 29, 2026",
+    footUpdate: "Last Updated: Aug 14, 2026",
     footLogo1: "Secure, Scalable and Sugamya Website as a Service",
     footLogo2: "National Informatics Center",
     footLogo3: "Digital India Power To Empower",
@@ -166,7 +166,7 @@ const LandingPage = () => {
   const handleFontSize = (action) => {
     const html = document.documentElement;
     let currentSize = parseInt(html.style.fontSize) || 100;
-    
+
     if (action === 'decrease' && currentSize > 80) {
       html.style.fontSize = `${currentSize - 10}%`;
     } else if (action === 'increase' && currentSize < 120) {
@@ -178,7 +178,7 @@ const LandingPage = () => {
 
   return (
     <div className="landing-page">
-      
+
       {/* 1. Top Bar */}
       <div className="ndma-top-bar">
         <div className="top-bar-left">
@@ -186,20 +186,20 @@ const LandingPage = () => {
         </div>
         <div className="top-bar-right">
           <div className="font-sizers">
-            <span onClick={() => handleFontSize('decrease')} style={{cursor: 'pointer'}} title="Decrease Font Size">A-</span>
-            <span onClick={() => handleFontSize('reset')} style={{cursor: 'pointer'}} title="Normal Font Size">A</span>
-            <span onClick={() => handleFontSize('increase')} style={{cursor: 'pointer'}} title="Increase Font Size">A+</span>
+            <span onClick={() => handleFontSize('decrease')} style={{ cursor: 'pointer' }} title="Decrease Font Size">A-</span>
+            <span onClick={() => handleFontSize('reset')} style={{ cursor: 'pointer' }} title="Normal Font Size">A</span>
+            <span onClick={() => handleFontSize('increase')} style={{ cursor: 'pointer' }} title="Increase Font Size">A+</span>
           </div>
           <div className="language-selector" style={{ borderRight: 'none' }}>
-            <span 
-              className={lang === 'en' ? "active" : ""} 
+            <span
+              className={lang === 'en' ? "active" : ""}
               onClick={() => setLang('en')}
-              style={{cursor: 'pointer'}}
-            >English</span> | 
-            <span 
-              className={lang === 'ta' ? "active" : ""} 
+              style={{ cursor: 'pointer' }}
+            >English</span> |
+            <span
+              className={lang === 'ta' ? "active" : ""}
               onClick={() => setLang('ta')}
-              style={{cursor: 'pointer'}}
+              style={{ cursor: 'pointer' }}
             >தமிழ்</span>
           </div>
         </div>
@@ -208,10 +208,10 @@ const LandingPage = () => {
       {/* 2. Logo Bar (Logos, Title) */}
       <div className="ndma-logo-bar">
         <div className="logo-left">
-          <img 
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYrCtU8k-Z8dC8m0yFrXAll8qUAYJeg6ypB-MGZ2-keA&s=10" 
-            alt="Tamil Nadu Emblem" 
-            style={{ height: '70px', width: 'auto', marginRight: '10px' }} 
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYrCtU8k-Z8dC8m0yFrXAll8qUAYJeg6ypB-MGZ2-keA&s=10"
+            alt="Tamil Nadu Emblem"
+            style={{ height: '70px', width: 'auto', marginRight: '10px' }}
           />
           <div className="logo-text">
             <h1>{t.title}</h1>
@@ -222,24 +222,24 @@ const LandingPage = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '25px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '25px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <img 
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgT0vDPyimsdLQojC9kFqAS-FsmIUUZQS-6zHfAX6FegNwFh1JWhqjU6Q&s=10" 
-                  alt={t.cmName} 
-                  style={{ height: '65px', width: '60px', borderRadius: '4px', objectFit: 'cover', border: '2px solid #1C4E80', marginBottom: '4px' }} 
+                <img
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgT0vDPyimsdLQojC9kFqAS-FsmIUUZQS-6zHfAX6FegNwFh1JWhqjU6Q&s=10"
+                  alt={t.cmName}
+                  style={{ height: '65px', width: '60px', borderRadius: '4px', objectFit: 'cover', border: '2px solid #1C4E80', marginBottom: '4px' }}
                 />
                 <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#1C4E80', lineHeight: '1.2' }}>
-                  {t.cmTitle}<br/>{t.cmName}
+                  {t.cmTitle}<br />{t.cmName}
                 </div>
               </div>
-              
+
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-                <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/4/4f/K.A._Sengottaiyan.jpg" 
-                  alt={t.minName} 
-                  style={{ height: '65px', width: '60px', borderRadius: '4px', objectFit: 'cover', border: '2px solid #1C4E80', marginBottom: '4px' }} 
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/4/4f/K.A._Sengottaiyan.jpg"
+                  alt={t.minName}
+                  style={{ height: '65px', width: '60px', borderRadius: '4px', objectFit: 'cover', border: '2px solid #1C4E80', marginBottom: '4px' }}
                 />
                 <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#1C4E80', lineHeight: '1.2', maxWidth: '140px' }}>
-                  {t.minTitle}<br/>{t.minName}
+                  {t.minTitle}<br />{t.minName}
                 </div>
               </div>
             </div>
@@ -255,7 +255,7 @@ const LandingPage = () => {
           <a href="#home">{t.navHome}</a>
           <a href="#hierarchy">{t.navMoves}</a>
           <a href="#features">{t.navFeatures}</a>
-          
+
           <button className="login-btn-nav" onClick={() => navigate('/login')}>
             {t.navLogin}
           </button>
@@ -264,15 +264,15 @@ const LandingPage = () => {
 
       {/* 4. Hero Banner */}
       <section className="ndma-hero" id="home">
-        
+
         {/* Left Floating Box */}
         <div className="hero-left-box">
-          <h2 className="hero-title">{t.hero1}<br/>{t.hero2}<br/>{t.hero3}</h2>
+          <h2 className="hero-title">{t.hero1}<br />{t.hero2}<br />{t.hero3}</h2>
           <div className="hero-left-text">
             <p>{t.heroDesc}</p>
             <div className="hero-buttons">
               <button onClick={() => navigate('/login')}>{t.btnAccess}</button>
-              <button onClick={() => window.location.href='#hierarchy'}>{t.btnChain}</button>
+              <button onClick={() => window.location.href = '#hierarchy'}>{t.btnChain}</button>
             </div>
           </div>
         </div>
@@ -280,7 +280,7 @@ const LandingPage = () => {
         {/* Right Angled Blue Shape */}
         <div className="hero-right-angled">
           <div className="hero-right-content">
-            <h2 style={{fontSize: '2.2rem'}}>{t.heroRight1}<br />{t.heroRight2}<br />{t.heroRight3}<br />{t.heroRight4}<br />{t.heroRight5}</h2>
+            <h2 style={{ fontSize: '2.2rem' }}>{t.heroRight1}<br />{t.heroRight2}<br />{t.heroRight3}<br />{t.heroRight4}<br />{t.heroRight5}</h2>
           </div>
         </div>
       </section>
@@ -307,13 +307,13 @@ const LandingPage = () => {
         <div className="section-header">
           <h2 className="ndma-section-title">{t.movesTitle}</h2>
           <p className="section-subtitle">
-            {t.movesSub1}<br/>
+            {t.movesSub1}<br />
             {t.movesSub2}
           </p>
         </div>
 
         <div className="tiers-container">
-          
+
           <div className="tier-card">
             <div className="tier-prefix">
               <span className="num">01</span>
@@ -380,7 +380,7 @@ const LandingPage = () => {
         </div>
 
         <div className="features-grid">
-          
+
           <div className="feature-box">
             <h3>{t.feat1Title}</h3>
             <p>{t.feat1Desc}</p>
@@ -449,11 +449,11 @@ const LandingPage = () => {
             <Link to="/feedback">{t.footFeedback}</Link>
           </div>
           <p className="footer-owned">{t.footOwned}</p>
-          <p style={{whiteSpace: 'pre-line'}}>{t.footCopy}</p>
+          <p style={{ whiteSpace: 'pre-line' }}>{t.footCopy}</p>
           <p className="last-updated">{t.footUpdate}</p>
           <div className="footer-logos-text">
-            <span>{t.footLogo1}</span> | 
-            <span>{t.footLogo2}</span> | 
+            <span>{t.footLogo1}</span> |
+            <span>{t.footLogo2}</span> |
             <span>{t.footLogo3}</span>
           </div>
         </div>

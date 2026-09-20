@@ -15,6 +15,13 @@ public class UserController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<Employee> getUser(@PathVariable String userId) {
+        Optional<Employee> employee = employeeRepository.findById(userId);
+        return employee.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/profile/{username}")
     public ResponseEntity<Employee> getProfile(@PathVariable String username) {
         Optional<Employee> employee = employeeRepository.findById(username);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { IncidentService } from '../../api';
+import { useLiveContextData } from '../../context/LiveContext';
 import { CheckSquare, AlertTriangle, ArrowRight, Clock, Shield, MapPin, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AIBriefBanner } from '../../components/common/UIComponents';
@@ -30,24 +30,15 @@ export default function TalukDashboard() {
   const { user } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const [incidents, setIncidents] = useState([]);
-  
-  useEffect(() => {
-    if (!user?.taluk) return;
-    const fetchIncidents = async () => {
-      try {
-        const data = await IncidentService.getIncidentsByTaluk(user.taluk);
-        setIncidents(data);
-      } catch(e) {
-        console.error('Failed to fetch incidents', e);
-      }
-    };
-    fetchIncidents();
-  }, [user]);
+  const { incidents: INCIDENTS, refreshData } = useLiveContextData();
 
-  const pending = incidents.filter(i => i.status === 'Waiting for Taluk');
-  const verified = incidents.filter(i => i.status === 'Waiting for Collector' || i.status === 'Resolved');
-  const critical = pending.filter(i => ['Severe', 'Extremely Severe'].includes(i.severity));
+  useEffect(() => {
+    if (refreshData) refreshData();
+  }, []);
+
+  const pending = INCIDENTS.filter(i => i.status === 'Waiting for Taluk');
+  const verified = INCIDENTS.filter(i => i.status === 'Waiting for Collector' || i.status === 'Taluk Verified' || i.status === 'Resolved');
+  const critical = pending.filter(i => ['Severe', 'Extremely Severe', 'High'].includes(i.severity));
 
   return (
     <div className="animate-in">
@@ -115,7 +106,7 @@ export default function TalukDashboard() {
                   <div className="list-row-title">{inc.title}</div>
                   <div className="list-row-meta">
                     <span className="font-mono" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: 11 }}>{inc.id}</span>
-                    <span><MapPin size={10} style={{ display: 'inline', marginRight: 2 }} />{inc.village}</span>
+                    <span><MapPin size={10} style={{ display: 'inline', marginRight: 2 }} />{inc.village || inc.location?.address?.split(',')[0] || inc.taluk || 'Local Area'}</span>
                   </div>
                 </div>
                 <SevBadge severity={t(inc.severity, inc.severity)} />

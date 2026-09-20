@@ -6,6 +6,7 @@ import AppShell from './components/Layout/AppShell';
 
 // Auth
 import LoginPage from './pages/Login/LoginPage';
+import RegisterPage from './pages/Login/RegisterPage';
 
 // Common
 import Profile from './pages/common/Profile';
@@ -63,6 +64,7 @@ import StateMap from './pages/State/StateMap';
 import DistrictStatus from './pages/State/DistrictStatus';
 import DisasterPrediction from './pages/State/DisasterPrediction';
 import DistrictMonitor from './pages/State/DistrictMonitor';
+import ResourceManagement from './pages/State/ResourceManagement';
 
 // Admin / User Management
 import UserManagement from './pages/common/UserManagement';
@@ -102,6 +104,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         
         <Route path="/policies" element={<WebsitePolicies />} />
         <Route path="/help" element={<HelpPage />} />
@@ -175,7 +178,7 @@ export default function App() {
           {/* Using generic placeholders for the remaining to avoid errors */}
           <Route path="requests" element={<div style={{padding: 40}}>Collector Requests (State)</div>} />
           <Route path="analytics" element={<div style={{padding: 40}}>State Analytics</div>} />
-          <Route path="resources" element={<div style={{padding: 40}}>Resource Distribution</div>} />
+          <Route path="resources" element={<ResourceManagement />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="profile" element={<Profile />} />

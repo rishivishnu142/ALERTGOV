@@ -8,10 +8,15 @@ import Swal from 'sweetalert2';
 import { useLiveContextData } from '../../context/LiveContext';
 
 export default function IncidentVerification() {
-  const { incidents: INCIDENTS } = useLiveContextData();
+  const { incidents: INCIDENTS, refreshData } = useLiveContextData();
 
   const navigate = useNavigate();
   const { t } = useLanguage();
+  
+  // Always fetch fresh data when entering verification page
+  useEffect(() => {
+    if (refreshData) refreshData();
+  }, []);
   const [queue, setQueue] = useState([]);
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [currentImage, setCurrentImage] = useState(null);
@@ -65,6 +70,7 @@ export default function IncidentVerification() {
       if (inc && inc.id && !inc.id.includes('NEW')) {
          const { IncidentService } = await import('../../api');
          await IncidentService.updateIncidentStatus(inc.id, newStatus, newLevel);
+         if (refreshData) refreshData();
       }
       
       Swal.fire(title, text, icon).then(() => {

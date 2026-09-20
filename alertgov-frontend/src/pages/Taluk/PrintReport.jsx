@@ -12,20 +12,35 @@ export default function PrintReport() {
 
   // Load from localStorage and trigger print dialog
   useEffect(() => {
-    const stored = localStorage.getItem('latestIncident');
-    if (stored) {
-      try {
-        setIncidentData(JSON.parse(stored));
-      } catch (e) {
-        console.error('Error parsing stored incident', e);
+    const loadData = async () => {
+      const stored = localStorage.getItem('latestIncident');
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setIncidentData(parsed);
+          
+          // Fetch image if available
+          if (parsed.id && !parsed.id.includes('NEW')) {
+            const { IncidentService } = await import('../../api');
+            try {
+              const res = await IncidentService.getIncidentImage(parsed.id);
+              if (res && res.photoBase64) {
+                setIncidentData(prev => ({ ...prev, photoBase64: res.photoBase64 }));
+              }
+            } catch(e) { console.error('Failed to load image', e); }
+          }
+        } catch (e) {
+          console.error('Error parsing stored incident', e);
+        }
       }
-    }
+      
+      // Slight delay to ensure images are loaded before print
+      setTimeout(() => {
+        window.print();
+      }, 1500);
+    };
     
-    // Slight delay to ensure images are loaded
-    const timer = setTimeout(() => {
-      window.print();
-    }, 1000);
-    return () => clearTimeout(timer);
+    loadData();
   }, []);
 
   return (

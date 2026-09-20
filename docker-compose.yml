@@ -14,6 +14,14 @@ services:
       timeout: 5s
       retries: 10
 
+  local-mongo:
+    image: mongo:latest
+    container_name: local-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
   discovery-server:
     build:
       context: ./alertgov-backend/discovery-server
@@ -72,7 +80,7 @@ services:
       - "8084:8084"
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-server:8761/eureka/
-      - SPRING_DATA_MONGODB_URI=mongodb+srv://rv75749d_db_user:rv75749d_db_user@cluster0.7efvpxm.mongodb.net/alertgov_media?retryWrites=true&w=majority&appName=Cluster0
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://rv75749d_db_user:lIqoKIPEhqAqj9tp@cluster0.7efvpxm.mongodb.net/alertgov_media?retryWrites=true&w=majority&appName=Cluster0
       - SPRING_DATASOURCE_URL=jdbc:oracle:thin:@oracle-db:1521:XE
       - TZ=Asia/Kolkata
     depends_on:
@@ -183,3 +191,4 @@ services:
 
 volumes:
   ollama_data:
+  mongo_data:

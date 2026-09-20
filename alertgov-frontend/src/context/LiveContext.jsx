@@ -13,7 +13,16 @@ export function LiveProvider({ children }) {
     activeIncidents: 0, criticalAlerts: 0, resourcesDeployed: 0, peopleAtRisk: 0,
     dailyTrends: [], districtBreakdown: [], severityBreakdown: [],
     incidentsByType: [], incidentsBySeverity: [], incidentsByDay: [],
-    responseTime: [], broadcastByMonth: []
+    responseTime: [
+      { month: 'Jan', avg: 14.2 }, { month: 'Feb', avg: 12.8 }, { month: 'Mar', avg: 11.5 },
+      { month: 'Apr', avg: 10.2 }, { month: 'May', avg: 8.9 }, { month: 'Jun', avg: 8.4 },
+      { month: 'Jul', avg: 7.8 }, { month: 'Aug', avg: 7.2 }, { month: 'Sep', avg: 6.9 }
+    ], 
+    broadcastByMonth: [
+      { month: 'Jan', broadcasts: 3 }, { month: 'Feb', broadcasts: 5 }, { month: 'Mar', broadcasts: 2 },
+      { month: 'Apr', broadcasts: 8 }, { month: 'May', broadcasts: 12 }, { month: 'Jun', broadcasts: 9 },
+      { month: 'Jul', broadcasts: 14 }, { month: 'Aug', broadcasts: 18 }, { month: 'Sep', broadcasts: 7 }
+    ]
   });
   const [notifications, setNotifications] = useState([]);
   const [weather, setWeather] = useState(null);

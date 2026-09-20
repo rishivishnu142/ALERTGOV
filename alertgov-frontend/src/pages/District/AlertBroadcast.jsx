@@ -130,7 +130,7 @@ export default function AlertBroadcast() {
 
   const handleAction = async () => {
     try {
-      const { IncidentService } = await import('../../api');
+      const { IncidentService, AlertService } = await import('../../api');
       if (isSevere) {
         if (inc && inc.id && !inc.id.includes('NEW')) {
           await IncidentService.updateIncidentStatus(inc.id, 'Waiting for Collector', 'collector');
@@ -139,6 +139,14 @@ export default function AlertBroadcast() {
       } else {
         if (inc && inc.id && !inc.id.includes('NEW')) {
           await IncidentService.updateIncidentStatus(inc.id, 'District Coordinated', 'district');
+          await AlertService.broadcastAlert({
+            incidentId: inc.id,
+            type: type,
+            radiusKm: radius,
+            languages: languages,
+            cellMessage: cellScript,
+            radioMessage: radioScript
+          });
         }
         Swal.fire('Dispatched', 'Broadcast Approved and Dispatched directly by District EOC.', 'success').then(() => { refreshData(); navigate('/district'); });
       }

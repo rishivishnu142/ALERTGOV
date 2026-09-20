@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { IncidentService } from '../../api';
+import { IncidentService, ApprovalService } from '../../api';
 import { ShieldAlert, ArrowRight, Activity, MapPin, Radio, Brain, Route, AlertTriangle, Cpu, Zap, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -40,8 +40,17 @@ export default function CollectorDashboard() {
         console.error('Failed to fetch incidents', e);
       }
     };
+    const fetchApprovals = async () => {
+      try {
+        const data = await ApprovalService.getCollectorApprovals(user.id || user.username);
+        // Do something with approvals data if needed
+      } catch(e) {
+        console.error('Failed to fetch approvals', e);
+      }
+    };
     fetchIncidents();
-  }, []);
+    fetchApprovals();
+  }, [user]);
 
   const criticalIncidents = incidents.filter(i => 
     i.status === 'Waiting for Collector'

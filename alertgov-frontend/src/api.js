@@ -18,11 +18,44 @@ export const aiApi = axios.create({
   }
 });
 
+export const AuthService = {
+  register: async (userData) => {
+    try {
+      const response = await api.post('/api/v1/auth/register', userData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error registering user", error);
+      return { success: false, error: error.response?.data?.message || error.message };
+    }
+  }
+};
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 }, (error) => Promise.reject(error));
+
+export const UserService = {
+  getProfile: async (username) => {
+    try {
+      const response = await api.get(`/api/v1/users/profile/${username}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching profile", error);
+      return null;
+    }
+  },
+  updateProfile: async (profileData) => {
+    try {
+      const response = await api.post('/api/v1/users/profile', profileData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error updating profile", error);
+      return { success: false, error: error.message };
+    }
+  }
+};
 
 // Incident Service API Methods
 export const IncidentService = {
@@ -53,6 +86,36 @@ export const IncidentService = {
     } catch (error) {
       console.error("Error fetching taluk incidents", error);
       return [];
+    }
+  },
+
+  getIncident: async (id) => {
+    try {
+      const response = await api.get(`/api/v1/incidents/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching incident", error);
+      return null;
+    }
+  },
+
+  getIncidentStats: async () => {
+    try {
+      const response = await api.get('/api/v1/incidents/stats');
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching stats", error);
+      return null;
+    }
+  },
+
+  clearAllIncidents: async () => {
+    try {
+      const response = await api.delete('/api/v1/incidents/clear-all');
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error clearing incidents", error);
+      return { success: false, error: error.message };
     }
   },
 
@@ -88,24 +151,27 @@ export const ReferenceDataService = {
     }
   },
   getResources: async () => {
-    // Keep mock data for resources as requested
-    return {
-      fireTrucks: [
-        { id: 'FT-01', vehicleNo: 'TN-38-F-1011', station: 'Coimbatore Central', status: 'Available' },
-        { id: 'FT-02', vehicleNo: 'TN-38-F-1022', station: 'Peelamedu', status: 'Available' },
-        { id: 'FT-03', vehicleNo: 'TN-38-F-1033', station: 'Ganapathy', status: 'Available' }
-      ],
-      policeUnits: [
-        { id: 'PU-01', vehicleNo: 'TN-38-P-2011', station: 'RS Puram', status: 'Available' },
-        { id: 'PU-02', vehicleNo: 'TN-38-P-2022', station: 'Race Course', status: 'Available' }
-      ],
-      ambulances: [
-        { id: 'AMB-01', vehicleNo: 'TN-38-A-3011', station: 'GH Coimbatore', status: 'Available' }
-      ],
-      rescueTeams: [
-        { id: 'NDRF-01', vehicleNo: 'TN-38-R-4011', station: 'Arakkonam Unit', status: 'Available' }
-      ]
-    };
+    try {
+      const response = await api.get('/api/v1/reference/resources');
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching resources", error);
+      return {
+        fireTrucks: [],
+        policeUnits: [],
+        ambulances: [],
+        rescueTeams: []
+      };
+    }
+  },
+  addResource: async (resourceData) => {
+    try {
+      const response = await api.post('/api/v1/reference/resources', resourceData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error adding resource", error);
+      return { success: false, error: error.message };
+    }
   }
 };
 
@@ -127,6 +193,15 @@ export const AnalyticsService = {
         incidentsByDay: []
       };
     }
+  },
+  takeSnapshot: async () => {
+    try {
+      const response = await api.post('/api/v1/analytics/snapshot');
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error taking snapshot", error);
+      return { success: false, error: error.message };
+    }
   }
 };
 
@@ -146,6 +221,15 @@ export const NotificationService = {
       return { success: true, data: response.data };
     } catch (error) {
       console.error("Error marking notification as read", error);
+      return { success: false, error: error.message };
+    }
+  },
+  sendNotification: async (notificationData) => {
+    try {
+      const response = await api.post('/api/v1/notifications', notificationData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error sending notification", error);
       return { success: false, error: error.message };
     }
   }
@@ -178,6 +262,15 @@ export const ApprovalService = {
       console.error("Error creating approval", error);
       return { success: false, error: error.message };
     }
+  },
+  getCollectorApprovals: async (collectorId) => {
+    try {
+      const response = await api.get(`/api/v1/approvals/collector/${collectorId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching collector approvals", error);
+      return [];
+    }
   }
 };
 
@@ -189,6 +282,27 @@ export const WeatherService = {
     } catch (error) {
       console.error("Error fetching weather advisory", error);
       return null;
+    }
+  },
+  getPrediction: async (incidentId) => {
+    try {
+      const response = await api.get(`/api/v1/ai/prediction/${incidentId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching AI prediction", error);
+      return null;
+    }
+  }
+};
+
+export const AlertService = {
+  broadcastAlert: async (alertData) => {
+    try {
+      const response = await api.post('/api/v1/alerts', alertData);
+      return { success: true, data: response.data };
+    } catch (error) {
+      console.error("Error broadcasting alert", error);
+      return { success: false, error: error.message };
     }
   }
 };
