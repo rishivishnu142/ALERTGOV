@@ -1,18 +1,5 @@
 # 🚨 ALERT 4.0 GOVERNMENT (AlertGov AI)
 
-<div align="center">
-
-![Java 17](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot 3](https://img.shields.io/badge/Spring_Boot-3.2.4-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![Ollama](https://img.shields.io/badge/Ollama-Llama_3-000000?style=for-the-badge&logo=ollama&logoColor=white)
-![Oracle Database](https://img.shields.io/badge/Oracle-XE_21c-F80000?style=for-the-badge&logo=oracle&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white)
-![Smart India Hackathon](https://img.shields.io/badge/SIH_2025-SIH25__097-FF9933?style=for-the-badge&logo=gov.uk&logoColor=white)
-
-<br/>
-
 **AI-Integrated Multi-Tier Disaster Management & Local Language Emergency Instruction System**  
 *Built for the Tamil Nadu Disaster Management Authority (TNDMA) & Ministry of Home Affairs*
 
