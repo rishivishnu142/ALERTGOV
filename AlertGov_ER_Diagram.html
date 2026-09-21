@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ALERT 4.0 GOVERNMENT - ER Diagram</title>
+<style>
+  @page {
+    size: A3 landscape;
+    margin: 0;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 2500px;
+    height: 1450px;
+    overflow: hidden;
+  }
+  svg {
+    width: 2500px;
+    height: 1450px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2500 1450" width="2500" height="1450" style="background-color: #ffffff; font-family: Segoe UI, -apple-system, BlinkMacSystemFont, Arial, sans-serif;">
+
+    <defs>
+      <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%">
+        <feDropShadow dx="1.5" dy="2.5" stdDeviation="2.5" flood-color="#0f172a" flood-opacity="0.12" />
+      </filter>
+      <style>
+        .title-text { font-size: 28px; font-weight: 800; fill: #0f172a; letter-spacing: 0.5px; }
+        .subtitle-text { font-size: 14.5px; font-weight: 500; fill: #475569; }
+        
+        .entity-box { fill: #ffffff; stroke: #1e3a8a; stroke-width: 2.8; }
+        .entity-title { font-size: 15px; font-weight: 800; fill: #1e3a8a; text-anchor: middle; dominant-baseline: middle; letter-spacing: 0.6px; }
+        
+        .rel-diamond { fill: #ffffff; stroke: #047857; stroke-width: 2.4; }
+        .rel-title { font-size: 12.5px; font-weight: 700; fill: #047857; text-anchor: middle; dominant-baseline: middle; }
+        
+        .attr-oval { fill: #ffffff; stroke: #475569; stroke-width: 1.5; }
+        .attr-oval-pk { fill: #eff6ff; stroke: #1d4ed8; stroke-width: 2.2; }
+        .attr-text { font-size: 12px; font-weight: 500; fill: #334155; text-anchor: middle; dominant-baseline: middle; }
+        .attr-text-pk { font-size: 12px; font-weight: 800; fill: #1e3a8a; text-anchor: middle; dominant-baseline: middle; text-decoration: underline; }
+        .attr-text-fk { font-size: 12px; font-style: italic; font-weight: 500; fill: #475569; text-anchor: middle; dominant-baseline: middle; }
+        
+        .conn-line { stroke: #64748b; stroke-width: 1.4; }
+        .rel-line { stroke: #047857; stroke-width: 2.2; }
+        
+        .card-badge { fill: #ffffff; stroke: #f43f5e; stroke-width: 1.2; rx: 4; }
+        .card-text { font-size: 12.5px; font-weight: 800; fill: #e11d48; text-anchor: middle; dominant-baseline: middle; }
+        
+        .legend-card { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 1.8; rx: 8; }
+      </style>
+    </defs>
+    
+
+    <!-- Document Header -->
+    <g transform="translate(60, 55)">
+      <text x="0" y="0" class="title-text">ALERT 4.0 GOVERNMENT — ENTITY RELATIONSHIP (ER) DIAGRAM</text>
+      <text x="0" y="24" class="subtitle-text">Tamil Nadu Disaster Management Authority (TNDMA) | SIH25_097 | Complete 5-Tier Command &amp; Emergency Relational Schema</text>
+    </g>
+    
+
+    <!-- Legend -->
+    <g transform="translate(60, 1310)">
+      <rect width="530" height="95" class="legend-card" filter="url(#shadow)" />
+      <text x="18" y="22" font-size="12px" font-weight="800" fill="#0f172a">ER DIAGRAM NOTATION KEY (CHEN NOTATION)</text>
+      
+      <!-- Entity Sample -->
+      <rect x="18" y="38" width="80" height="24" class="entity-box" rx="3" />
+      <text x="58" y="50" class="entity-title" font-size="10px">ENTITY</text>
+      <text x="106" y="51" font-size="11px" font-weight="500" fill="#475569">Entity / Table</text>
+
+      <!-- Relationship Sample -->
+      <polygon points="215,50 238,38 261,50 238,62" class="rel-diamond" />
+      <text x="238" y="50" class="rel-title" font-size="9px">REL</text>
+      <text x="272" y="51" font-size="11px" font-weight="500" fill="#475569">Relationship</text>
+
+      <!-- PK Sample -->
+      <ellipse cx="60" cy="78" rx="42" ry="11" class="attr-oval-pk" />
+      <text x="60" y="78" class="attr-text-pk" font-size="10px">primary_key</text>
+      <text x="108" y="79" font-size="11px" font-weight="500" fill="#475569">Primary Key</text>
+
+      <!-- Attribute Sample -->
+      <ellipse cx="238" cy="78" rx="36" ry="11" class="attr-oval" />
+      <text x="238" y="78" class="attr-text" font-size="10px">attribute</text>
+      <text x="280" y="79" font-size="11px" font-weight="500" fill="#475569">Attribute</text>
+
+      <!-- Cardinality Sample -->
+      <rect x="380" y="40" width="34" height="20" class="card-badge" />
+      <text x="397" y="50" class="card-text">1 : N</text>
+      <text x="424" y="51" font-size="11px" font-weight="500" fill="#475569">Cardinality</text>
+    </g>
+    
+<line x1="1050" y1="180" x2="765" y2="180" class="rel-line" />
+<line x1="765" y1="180" x2="480" y2="180" class="rel-line" />
+<rect x="946.8" y="169.0" width="24" height="22" class="card-badge" />
+<text x="958.8" y="180.0" class="card-text">1</text>
+<rect x="559.2" y="169.0" width="24" height="22" class="card-badge" />
+<text x="571.2" y="180.0" class="card-text">N</text>
+<line x1="1050" y1="180" x2="1325" y2="180" class="rel-line" />
+<line x1="1325" y1="180" x2="1600" y2="180" class="rel-line" />
+<rect x="1126.0" y="169.0" width="24" height="22" class="card-badge" />
+<text x="1138.0" y="180.0" class="card-text">1</text>
+<rect x="1500.0" y="169.0" width="24" height="22" class="card-badge" />
+<text x="1512.0" y="180.0" class="card-text">N</text>
+<line x1="1600" y1="180" x2="1860" y2="180" class="rel-line" />
+<line x1="1860" y1="180" x2="2120" y2="180" class="rel-line" />
+<rect x="1671.2" y="169.0" width="24" height="22" class="card-badge" />
+<text x="1683.2" y="180.0" class="card-text">1</text>
+<rect x="2024.8" y="169.0" width="24" height="22" class="card-badge" />
+<text x="2036.8" y="180.0" class="card-text">N</text>
+<line x1="380" y1="560" x2="715" y2="370" class="rel-line" />
+<line x1="715" y1="370" x2="1050" y2="180" class="rel-line" />
+<rect x="475.2" y="488.2" width="24" height="22" class="card-badge" />
+<text x="487.2" y="499.2" class="card-text">N</text>
+<rect x="930.8" y="229.8" width="24" height="22" class="card-badge" />
+<text x="942.8" y="240.8" class="card-text">1</text>
+<line x1="380" y1="560" x2="715" y2="640" class="rel-line" />
+<line x1="715" y1="640" x2="1050" y2="720" class="rel-line" />
+<rect x="475.2" y="574.6" width="24" height="22" class="card-badge" />
+<text x="487.2" y="585.6" class="card-text">1</text>
+<rect x="930.8" y="683.4" width="24" height="22" class="card-badge" />
+<text x="942.8" y="694.4" class="card-text">N</text>
+<path d="M 380 560 Q 1050 450 1050 450" class="rel-line" fill="none" />
+<path d="M 1050 450 Q 1050 450 1680 720" class="rel-line" fill="none" />
+<rect x="582.4" y="513.8" width="24" height="22" class="card-badge" />
+<text x="594.4" y="524.8" class="card-text">1</text>
+<rect x="1466.4" y="622.6" width="24" height="22" class="card-badge" />
+<text x="1478.4" y="633.6" class="card-text">N</text>
+<line x1="1050" y1="720" x2="1365" y2="720" class="rel-line" />
+<line x1="1365" y1="720" x2="1680" y2="720" class="rel-line" />
+<rect x="1138.8" y="709.0" width="24" height="22" class="card-badge" />
+<text x="1150.8" y="720.0" class="card-text">1</text>
+<rect x="1567.2" y="709.0" width="24" height="22" class="card-badge" />
+<text x="1579.2" y="720.0" class="card-text">1</text>
+<line x1="1680" y1="720" x2="1930" y2="720" class="rel-line" />
+<line x1="1930" y1="720" x2="2180" y2="720" class="rel-line" />
+<rect x="1748.0" y="709.0" width="24" height="22" class="card-badge" />
+<text x="1760.0" y="720.0" class="card-text">1</text>
+<rect x="2088.0" y="709.0" width="24" height="22" class="card-badge" />
+<text x="2100.0" y="720.0" class="card-text">1</text>
+<line x1="1050" y1="720" x2="1050" y2="970" class="rel-line" />
+<line x1="1050" y1="970" x2="1050" y2="1220" class="rel-line" />
+<rect x="1038.0" y="789.0" width="24" height="22" class="card-badge" />
+<text x="1050.0" y="800.0" class="card-text">1</text>
+<rect x="1038.0" y="1129.0" width="24" height="22" class="card-badge" />
+<text x="1050.0" y="1140.0" class="card-text">N</text>
+<line x1="1050" y1="720" x2="765" y2="920" class="rel-line" />
+<line x1="765" y1="920" x2="480" y2="1120" class="rel-line" />
+<rect x="946.8" y="773.0" width="24" height="22" class="card-badge" />
+<text x="958.8" y="784.0" class="card-text">1</text>
+<rect x="559.2" y="1045.0" width="24" height="22" class="card-badge" />
+<text x="571.2" y="1056.0" class="card-text">1</text>
+<line x1="2180" y1="720" x2="2180" y2="550" class="rel-line" />
+<line x1="2180" y1="550" x2="2180" y2="380" class="rel-line" />
+<rect x="2168.0" y="654.6" width="24" height="22" class="card-badge" />
+<text x="2180.0" y="665.6" class="card-text">1</text>
+<rect x="2168.0" y="423.4" width="24" height="22" class="card-badge" />
+<text x="2180.0" y="434.4" class="card-text">N</text>
+<line x1="2180" y1="720" x2="2180" y2="940" class="rel-line" />
+<line x1="2180" y1="940" x2="2180" y2="1160" class="rel-line" />
+<rect x="2168.0" y="779.4" width="24" height="22" class="card-badge" />
+<text x="2180.0" y="790.4" class="card-text">1</text>
+<rect x="2168.0" y="1078.6" width="24" height="22" class="card-badge" />
+<text x="2180.0" y="1089.6" class="card-text">N</text>
+<polygon points="765,152 817,180 765,208 713,180" class="rel-diamond" filter="url(#shadow)" />
+<text x="765" y="180" class="rel-title">Deploys</text>
+<polygon points="1325,152 1377,180 1325,208 1273,180" class="rel-diamond" filter="url(#shadow)" />
+<text x="1325" y="180" class="rel-title">Contains_T</text>
+<polygon points="1860,152 1912,180 1860,208 1808,180" class="rel-diamond" filter="url(#shadow)" />
+<text x="1860" y="180" class="rel-title">Contains_V</text>
+<polygon points="715,342 767,370 715,398 663,370" class="rel-diamond" filter="url(#shadow)" />
+<text x="715" y="370" class="rel-title">Assigned_To</text>
+<polygon points="715,612 767,640 715,668 663,640" class="rel-diamond" filter="url(#shadow)" />
+<text x="715" y="640" class="rel-title">Reports</text>
+<polygon points="1050,422 1102,450 1050,478 998,450" class="rel-diamond" filter="url(#shadow)" />
+<text x="1050" y="450" class="rel-title">Reviews</text>
+<polygon points="1365,692 1417,720 1365,748 1313,720" class="rel-diamond" filter="url(#shadow)" />
+<text x="1365" y="720" class="rel-title">Governs</text>
+<polygon points="1930,692 1982,720 1930,748 1878,720" class="rel-diamond" filter="url(#shadow)" />
+<text x="1930" y="720" class="rel-title">Triggers</text>
+<polygon points="1050,942 1102,970 1050,998 998,970" class="rel-diamond" filter="url(#shadow)" />
+<text x="1050" y="970" class="rel-title">Contains_M</text>
+<polygon points="765,892 817,920 765,948 713,920" class="rel-diamond" filter="url(#shadow)" />
+<text x="765" y="920" class="rel-title">Analyzes</text>
+<polygon points="2180,522 2232,550 2180,578 2128,550" class="rel-diamond" filter="url(#shadow)" />
+<text x="2180" y="550" class="rel-title">Dispatches</text>
+<polygon points="2180,912 2232,940 2180,968 2128,940" class="rel-diamond" filter="url(#shadow)" />
+<text x="2180" y="940" class="rel-title">Localizes</text>
+<line x1="480" y1="180" x2="330" y2="100" class="conn-line" />
+<ellipse cx="330" cy="100" rx="61.0" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="330" y="100" class="attr-text-pk">resourceId</text>
+<line x1="480" y1="180" x2="480" y2="85" class="conn-line" />
+<ellipse cx="480" cy="85" rx="70.80000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="480" y="85" class="attr-text">resourceType</text>
+<line x1="480" y1="180" x2="630" y2="100" class="conn-line" />
+<ellipse cx="630" cy="100" rx="95.30000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="630" y="100" class="attr-text-fk">allocatedDistrict</text>
+<line x1="480" y1="180" x2="320" y2="180" class="conn-line" />
+<ellipse cx="320" cy="180" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="320" y="180" class="attr-text">quantity</text>
+<line x1="480" y1="180" x2="320" y2="255" class="conn-line" />
+<ellipse cx="320" cy="255" rx="80.60000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="320" y="255" class="attr-text">officerContact</text>
+<line x1="480" y1="180" x2="480" y2="270" class="conn-line" />
+<ellipse cx="480" cy="270" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="480" y="270" class="attr-text">status</text>
+<rect x="400.0" y="154.0" width="160" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="480" y="180" class="entity-title">RESOURCES</text>
+<line x1="1050" y1="180" x2="900" y2="95" class="conn-line" />
+<ellipse cx="900" cy="95" rx="61.0" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="900" y="95" class="attr-text-pk">districtId</text>
+<line x1="1050" y1="180" x2="1050" y2="80" class="conn-line" />
+<ellipse cx="1050" cy="80" rx="70.80000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1050" y="80" class="attr-text">districtName</text>
+<line x1="1050" y1="180" x2="1200" y2="95" class="conn-line" />
+<ellipse cx="1200" cy="95" rx="70.80000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1200" y="95" class="attr-text">headquarters</text>
+<line x1="1050" y1="180" x2="920" y2="265" class="conn-line" />
+<ellipse cx="920" cy="265" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="920" y="265" class="attr-text">zoneCode</text>
+<line x1="1050" y1="180" x2="1050" y2="275" class="conn-line" />
+<ellipse cx="1050" cy="275" rx="56.1" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1050" y="275" class="attr-text">stateCode</text>
+<rect x="970.0" y="154.0" width="160" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="1050" y="180" class="entity-title">DISTRICTS</text>
+<line x1="1600" y1="180" x2="1470" y2="95" class="conn-line" />
+<ellipse cx="1470" cy="95" rx="46.300000000000004" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="1470" y="95" class="attr-text-pk">talukId</text>
+<line x1="1600" y1="180" x2="1600" y2="80" class="conn-line" />
+<ellipse cx="1600" cy="80" rx="56.1" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1600" y="80" class="attr-text">talukName</text>
+<line x1="1600" y1="180" x2="1730" y2="95" class="conn-line" />
+<ellipse cx="1730" cy="95" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1730" y="95" class="attr-text-fk">districtId</text>
+<line x1="1600" y1="180" x2="1600" y2="270" class="conn-line" />
+<ellipse cx="1600" cy="270" rx="75.7" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1600" y="270" class="attr-text">tahsildarName</text>
+<rect x="1525.0" y="154.0" width="150" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="1600" y="180" class="entity-title">TALUKS</text>
+<line x1="2120" y1="180" x2="1990" y2="95" class="conn-line" />
+<ellipse cx="1990" cy="95" rx="56.1" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="1990" y="95" class="attr-text-pk">villageId</text>
+<line x1="2120" y1="180" x2="2120" y2="80" class="conn-line" />
+<ellipse cx="2120" cy="80" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2120" y="80" class="attr-text">villageName</text>
+<line x1="2120" y1="180" x2="2250" y2="95" class="conn-line" />
+<ellipse cx="2250" cy="95" rx="46.300000000000004" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2250" y="95" class="attr-text-fk">talukId</text>
+<line x1="2120" y1="180" x2="2010" y2="270" class="conn-line" />
+<ellipse cx="2010" cy="270" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2010" y="270" class="attr-text">riskZone</text>
+<line x1="2120" y1="180" x2="2180" y2="270" class="conn-line" />
+<ellipse cx="2180" cy="270" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2180" y="270" class="attr-text">population</text>
+<rect x="2045.0" y="154.0" width="150" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="2120" y="180" class="entity-title">VILLAGES</text>
+<line x1="380" y1="560" x2="180" y2="460" class="conn-line" />
+<ellipse cx="180" cy="460" rx="44" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="180" y="460" class="attr-text-pk">userId</text>
+<line x1="380" y1="560" x2="180" y2="525" class="conn-line" />
+<ellipse cx="180" cy="525" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="180" y="525" class="attr-text">username</text>
+<line x1="380" y1="560" x2="180" y2="590" class="conn-line" />
+<ellipse cx="180" cy="590" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="180" y="590" class="attr-text">password</text>
+<line x1="380" y1="560" x2="180" y2="655" class="conn-line" />
+<ellipse cx="180" cy="655" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="180" y="655" class="attr-text">role</text>
+<line x1="380" y1="560" x2="310" y2="420" class="conn-line" />
+<ellipse cx="310" cy="420" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="310" y="420" class="attr-text">department</text>
+<line x1="380" y1="560" x2="440" y2="420" class="conn-line" />
+<ellipse cx="440" cy="420" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="440" y="420" class="attr-text">phoneNumber</text>
+<line x1="380" y1="560" x2="310" y2="695" class="conn-line" />
+<ellipse cx="310" cy="695" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="310" y="695" class="attr-text">email</text>
+<line x1="380" y1="560" x2="450" y2="695" class="conn-line" />
+<ellipse cx="450" cy="695" rx="80.60000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="450" y="695" class="attr-text-fk">jurisdictionId</text>
+<rect x="305.0" y="534.0" width="150" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="380" y="560" class="entity-title">USERS</text>
+<line x1="1050" y1="720" x2="840" y2="595" class="conn-line" />
+<ellipse cx="840" cy="595" rx="61.0" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="840" y="595" class="attr-text-pk">incidentId</text>
+<line x1="1050" y1="720" x2="970" y2="575" class="conn-line" />
+<ellipse cx="970" cy="575" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="970" y="575" class="attr-text">title</text>
+<line x1="1050" y1="720" x2="1110" y2="575" class="conn-line" />
+<ellipse cx="1110" cy="575" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1110" y="575" class="attr-text">category</text>
+<line x1="1050" y1="720" x2="1240" y2="595" class="conn-line" />
+<ellipse cx="1240" cy="595" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1240" y="595" class="attr-text">severity</text>
+<line x1="1050" y1="720" x2="820" y2="675" class="conn-line" />
+<ellipse cx="820" cy="675" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="820" y="675" class="attr-text">status</text>
+<line x1="1050" y1="720" x2="820" y2="745" class="conn-line" />
+<ellipse cx="820" cy="745" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="820" y="745" class="attr-text-fk">reportedBy</text>
+<line x1="1050" y1="720" x2="840" y2="820" class="conn-line" />
+<ellipse cx="840" cy="820" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="840" y="820" class="attr-text">reportedAt</text>
+<line x1="1050" y1="720" x2="1250" y2="675" class="conn-line" />
+<ellipse cx="1250" cy="675" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1250" y="675" class="attr-text">gpsLatitude</text>
+<line x1="1050" y1="720" x2="1250" y2="745" class="conn-line" />
+<ellipse cx="1250" cy="745" rx="70.80000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1250" y="745" class="attr-text">gpsLongitude</text>
+<line x1="1050" y1="720" x2="1250" y2="820" class="conn-line" />
+<ellipse cx="1250" cy="820" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1250" y="820" class="attr-text">description</text>
+<rect x="960.0" y="692.0" width="180" height="56" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="1050" y="720" class="entity-title">INCIDENTS</text>
+<line x1="1680" y1="720" x2="1510" y2="590" class="conn-line" />
+<ellipse cx="1510" cy="590" rx="61.0" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="1510" y="590" class="attr-text-pk">approvalId</text>
+<line x1="1680" y1="720" x2="1660" y2="575" class="conn-line" />
+<ellipse cx="1660" cy="575" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1660" y="575" class="attr-text-fk">incidentId</text>
+<line x1="1680" y1="720" x2="1820" y2="590" class="conn-line" />
+<ellipse cx="1820" cy="590" rx="105.10000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1820" y="590" class="attr-text-fk">assignedCollectorId</text>
+<line x1="1680" y1="720" x2="1510" y2="845" class="conn-line" />
+<ellipse cx="1510" cy="845" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1510" y="845" class="attr-text">status</text>
+<line x1="1680" y1="720" x2="1660" y2="860" class="conn-line" />
+<ellipse cx="1660" cy="860" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1660" y="860" class="attr-text">comments</text>
+<line x1="1680" y1="720" x2="1800" y2="845" class="conn-line" />
+<ellipse cx="1800" cy="845" rx="56.1" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1800" y="845" class="attr-text">createdAt</text>
+<line x1="1680" y1="720" x2="1930" y2="790" class="conn-line" />
+<ellipse cx="1930" cy="790" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1930" y="790" class="attr-text">reviewedAt</text>
+<rect x="1575.0" y="692.0" width="210" height="56" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="1680" y="720" class="entity-title">APPROVAL_WORKFLOWS</text>
+<line x1="2180" y1="720" x2="2030" y2="600" class="conn-line" />
+<ellipse cx="2030" cy="600" rx="46.300000000000004" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="2030" y="600" class="attr-text-pk">alertId</text>
+<line x1="2180" y1="720" x2="2160" y2="585" class="conn-line" />
+<ellipse cx="2160" cy="585" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2160" y="585" class="attr-text-fk">incidentId</text>
+<line x1="2180" y1="720" x2="2290" y2="600" class="conn-line" />
+<ellipse cx="2290" cy="600" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2290" y="600" class="attr-text-fk">senderId</text>
+<line x1="2180" y1="720" x2="2370" y2="675" class="conn-line" />
+<ellipse cx="2370" cy="675" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2370" y="675" class="attr-text">title</text>
+<line x1="2180" y1="720" x2="2370" y2="745" class="conn-line" />
+<ellipse cx="2370" cy="745" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2370" y="745" class="attr-text">severity</text>
+<line x1="2180" y1="720" x2="2030" y2="835" class="conn-line" />
+<ellipse cx="2030" cy="835" rx="80.60000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2030" y="835" class="attr-text">targetDistrict</text>
+<line x1="2180" y1="720" x2="2160" y2="850" class="conn-line" />
+<ellipse cx="2160" cy="850" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2160" y="850" class="attr-text">targetTaluk</text>
+<line x1="2180" y1="720" x2="2290" y2="835" class="conn-line" />
+<ellipse cx="2290" cy="835" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2290" y="835" class="attr-text">validUntil</text>
+<rect x="2105.0" y="694.0" width="150" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="2180" y="720" class="entity-title">ALERTS</text>
+<line x1="2180" y1="380" x2="2020" y2="275" class="conn-line" />
+<ellipse cx="2020" cy="275" rx="80.60000000000001" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="2020" y="275" class="attr-text-pk">notificationId</text>
+<line x1="2180" y1="380" x2="2160" y2="260" class="conn-line" />
+<ellipse cx="2160" cy="260" rx="46.300000000000004" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2160" y="260" class="attr-text-fk">alertId</text>
+<line x1="2180" y1="380" x2="2300" y2="275" class="conn-line" />
+<ellipse cx="2300" cy="275" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2300" y="275" class="attr-text">channelType</text>
+<line x1="2180" y1="380" x2="2370" y2="350" class="conn-line" />
+<ellipse cx="2370" cy="350" rx="75.7" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2370" y="350" class="attr-text">recipientRole</text>
+<line x1="2180" y1="380" x2="2370" y2="415" class="conn-line" />
+<ellipse cx="2370" cy="415" rx="80.60000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2370" y="415" class="attr-text">deliveryStatus</text>
+<line x1="2180" y1="380" x2="2180" y2="465" class="conn-line" />
+<ellipse cx="2180" cy="465" rx="44" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2180" y="465" class="attr-text">sentAt</text>
+<rect x="2090.0" y="354.0" width="180" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="2180" y="380" class="entity-title">NOTIFICATIONS</text>
+<line x1="2180" y1="1160" x2="2010" y2="1065" class="conn-line" />
+<ellipse cx="2010" cy="1065" rx="75.7" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="2010" y="1065" class="attr-text-pk">translationId</text>
+<line x1="2180" y1="1160" x2="2160" y2="1050" class="conn-line" />
+<ellipse cx="2160" cy="1050" rx="46.300000000000004" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2160" y="1050" class="attr-text-fk">alertId</text>
+<line x1="2180" y1="1160" x2="2310" y2="1065" class="conn-line" />
+<ellipse cx="2310" cy="1065" rx="70.80000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2310" y="1065" class="attr-text">languageCode</text>
+<line x1="2180" y1="1160" x2="2010" y2="1255" class="conn-line" />
+<ellipse cx="2010" cy="1255" rx="56.1" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2010" y="1255" class="attr-text">tamilText</text>
+<line x1="2180" y1="1160" x2="2160" y2="1270" class="conn-line" />
+<ellipse cx="2160" cy="1270" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2160" y="1270" class="attr-text">englishText</text>
+<line x1="2180" y1="1160" x2="2310" y2="1255" class="conn-line" />
+<ellipse cx="2310" cy="1255" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="2310" y="1255" class="attr-text">audioUrl</text>
+<rect x="2090.0" y="1134.0" width="180" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="2180" y="1160" class="entity-title">TRANSLATIONS</text>
+<line x1="1050" y1="1220" x2="870" y2="1135" class="conn-line" />
+<ellipse cx="870" cy="1135" rx="46.300000000000004" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="870" y="1135" class="attr-text-pk">mediaId</text>
+<line x1="1050" y1="1220" x2="1020" y2="1120" class="conn-line" />
+<ellipse cx="1020" cy="1120" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1020" y="1120" class="attr-text-fk">incidentId</text>
+<line x1="1050" y1="1220" x2="1170" y2="1135" class="conn-line" />
+<ellipse cx="1170" cy="1135" rx="51.2" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1170" y="1135" class="attr-text">fileType</text>
+<line x1="1050" y1="1220" x2="870" y2="1315" class="conn-line" />
+<ellipse cx="870" cy="1315" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="870" y="1315" class="attr-text">storageUrl</text>
+<line x1="1050" y1="1220" x2="1020" y2="1330" class="conn-line" />
+<ellipse cx="1020" cy="1330" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1020" y="1330" class="attr-text">capturedAt</text>
+<line x1="1050" y1="1220" x2="1170" y2="1315" class="conn-line" />
+<ellipse cx="1170" cy="1315" rx="75.7" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="1170" y="1315" class="attr-text">fileSizeBytes</text>
+<rect x="955.0" y="1194.0" width="190" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="1050" y="1220" class="entity-title">INCIDENT_MEDIA</text>
+<line x1="480" y1="1120" x2="300" y2="1035" class="conn-line" />
+<ellipse cx="300" cy="1035" rx="70.80000000000001" ry="15" class="attr-oval-pk" filter="url(#shadow)" />
+<text x="300" y="1035" class="attr-text-pk">predictionId</text>
+<line x1="480" y1="1120" x2="450" y2="1020" class="conn-line" />
+<ellipse cx="450" cy="1020" rx="61.0" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="450" y="1020" class="attr-text-fk">incidentId</text>
+<line x1="480" y1="1120" x2="600" y2="1035" class="conn-line" />
+<ellipse cx="600" cy="1035" rx="95.30000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="600" y="1035" class="attr-text">predictedSeverity</text>
+<line x1="480" y1="1120" x2="300" y2="1215" class="conn-line" />
+<ellipse cx="300" cy="1215" rx="80.60000000000001" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="300" y="1215" class="attr-text">spreadRadiusKm</text>
+<line x1="480" y1="1120" x2="450" y2="1230" class="conn-line" />
+<ellipse cx="450" cy="1230" rx="85.5" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="450" y="1230" class="attr-text">recommendations</text>
+<line x1="480" y1="1120" x2="600" y2="1215" class="conn-line" />
+<ellipse cx="600" cy="1215" rx="65.9" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="600" y="1215" class="attr-text">generatedAt</text>
+<line x1="480" y1="1120" x2="280" y2="1125" class="conn-line" />
+<ellipse cx="280" cy="1125" rx="85.5" ry="15" class="attr-oval" filter="url(#shadow)" />
+<text x="280" y="1125" class="attr-text">confidenceScore</text>
+<rect x="390.0" y="1094.0" width="180" height="52" class="entity-box" rx="6" filter="url(#shadow)" />
+<text x="480" y="1120" class="entity-title">AI_PREDICTIONS</text>
+</svg>
+</body>
+</html>

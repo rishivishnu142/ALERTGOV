@@ -1,1 +1,31 @@
+# IDE and metadata
 /.metadata/
+/.vscode/
+/.idea/
+*.suo
+*.user
+
+# Build outputs
+target/
+**/target/
+build/
+dist/
+*.class
+*.jar
+*.war
+
+# Logs and runtime
+service-logs/
+*.log
+
+# Dependencies & Environments
+node_modules/
+**/node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Temporary html outputs
+temp_*.html
+test_*.pdf
